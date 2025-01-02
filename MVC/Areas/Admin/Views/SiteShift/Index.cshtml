@@ -1,0 +1,193 @@
+﻿@using Microsoft.AspNetCore.Identity.Data;
+@model OmSaiModels.Admin.SiteShiftModel
+
+@{
+    ViewData["Title"] = "Site Shifts";
+    Layout = "/Views/Shared/_Layout.cshtml";
+    ViewData["AreaName"] = "Admin";
+    ViewData["ControllerName"] = "SiteShift";
+    int serialNumber = 0;
+}
+
+@section css {
+        <style>
+            .btnEdit:hover {
+                cursor: pointer;
+            }
+        </style>
+}
+
+
+<div class="app-content-header">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <!--begin::Row-->
+        <div class="row">
+            <div class="col-sm-6">
+                <h3 class="page-title">
+                    Site Shifts
+                    <button class="btn btn-sm btn-primary" id="btnShowForm">Add New</button>
+                </h3>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="/">Master</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Site Shift
+                    </li>
+                </ol>
+            </div>
+        </div> <!--end::Row-->
+    </div> <!--end::Container-->
+</div> <!--end::App Content Header--> <!--begin::App Content-->
+
+
+<div class="app-content">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <partial name="~/Views/shared/_alertpartial.cshtml" />
+        <div class="row">
+
+
+            <div class="col-lg-12 col-md-12 col-sm-12" id="leftCard">
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table card-table table-vcenter text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th class="w-1">No.</th>
+                                    <th>Site</th>
+                                    <th>Shift Name</th>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in ViewBag.AllData)
+                                {
+                                    serialNumber++;
+                                        <tr class="align-middle">
+                                            <td>@serialNumber</td>
+                                            <td>@item.SiteName</td>
+                                            <td>@item.ShiftName</td>
+                                            <td>@item.StartTime</td>
+                                            <td>@item.EndTime</td>
+                                            <td>
+                                                <nav class="nav justify-content-center">
+                                                    <a class="nav-link badge shadow m-0 text-warning btn btnEdit"
+                                                        data-id="@item.SiteShiftId"
+                                                        data-name="@item.ShiftName"
+                                                       data-start_time="@item.StartTime"
+                                                       data-end_time="@item.EndTime">
+                                                        <i class="fe fe-edit"></i>
+                                                    </a>
+                                                    <a class="nav-link badge shadow m-0 text-danger btn btn-delete"
+                                                       data-delete_id="@item.SiteShiftId"
+                                                        data-delete_display="@item.ShiftName">
+                                                        <i class="fe fe-trash"></i>
+                                                    </a>
+                                                </nav>
+                                            </td>
+
+                                        </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-4 col-sm-12" id="rightCard" style="display:none;">
+                <div class="card card-warning card-outline mb-4 ">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <form id="SiteShiftForm" method="post" asp-area="admin" asp-controller="SiteShift" asp-action="Create" asp-antiforgery="true">
+                        <input type="hidden" asp-for="SiteShiftId" id="SiteShiftId" />
+                        <div class="card-body">
+
+                            <div class="mb-3">
+                                <label asp-for="SiteId" class="col-form-label">Site Name</label>
+                                <select asp-for="SiteId" class="form-control" required>
+                                    @foreach (var item in ViewBag.Sites)
+                                    {
+                                        <option value="@item.SiteId">@item.SiteName</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="ShiftName" class="col-form-label">Shift Name</label>
+                                <input type="text" class="form-control" asp-for="ShiftName" placeholder="Shift Name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="StartTime" class="col-form-label">Start Time</label>
+                                <input type="time" class="form-control" asp-for="StartTime" placeholder="Start Time" required>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="EndTime" class="col-form-label">End Time</label>
+                                <input type="time" class="form-control" asp-for="EndTime" placeholder="End Time" required>
+                            </div>
+                        </div>
+                        <div class="card-footer text-center">
+                            <button type="submit" class="btn btn-outline-secondary" id="btnSubmit">Save</button>
+                            <button type="button" class="btn btn-outline-warning" id="btnCloseForm">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+@section modals {
+        <partial name="~/Views/shared/_DeleteModelPartial.cshtml" />
+}
+
+@section Scripts {
+        <script>
+            $('#btnShowForm').click(() => {
+                $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+                $('#rightCard').fadeIn();
+                $('#btnShowForm').fadeOut();
+                $('#btnSubmit').text("Save");
+
+            $('#SiteShiftForm').attr('action', '/admin/SiteShift/Create');
+                $('#SiteShiftId').val("");
+            });
+
+            $('#btnCloseForm').click(() => {
+                $('#leftCard').addClass("col-lg-12 col-md-12").removeClass("col-lg-8 col-md-8");
+                $('#rightCard').fadeOut();
+                $('#btnShowForm').fadeIn();
+            });
+
+            $('.btnEdit').click(function () {
+                $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+                $('#rightCard').fadeIn();
+                $('#btnShowForm').fadeOut();
+                $('#btnSubmit').text("Update");
+
+                let data = $(this).data();
+                $('#SiteShiftId').val(data.id);
+                $('#ShiftName').val(data.name);
+                $('#StartTime').val(data.start_time);
+                $('#EndTime').val(data.end_time);
+                $('#SiteShiftForm').attr('action', '/admin/SiteShift/Edit');
+            });
+
+            $('.btn-delete').click(function () {
+                $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+                $('#rightCard').fadeIn();
+                $('#btnShowForm').fadeOut();
+                $('#btnSubmit').text("Delete");
+
+                let data = $(this).data();
+                $('#SiteShiftId').val(data.delete_id);
+                $('#SiteShiftForm').attr('action', '/admin/SiteShift/Delete');
+            });
+        </script>
+}

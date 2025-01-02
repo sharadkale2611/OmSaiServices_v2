@@ -1,0 +1,153 @@
+﻿@using Microsoft.AspNetCore.Identity.Data;
+@model IEnumerable<OmSaiModels.Worker.WorkerModel>
+
+@{
+    ViewData["Title"] = "Workers";
+    Layout = "/Views/Shared/_Layout.cshtml";
+    ViewData["AreaName"] = "Worker";
+    ViewData["ControllerName"] = "Workers";
+    int serialNumber = 1;
+}
+
+@section css {
+    <style>
+        .btnEdit:hover {
+            cursor: pointer;
+        }
+    </style>
+}
+
+<div class="app-content-header">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <!--begin::Row-->
+        <div class="row">
+            <div class="col-sm-6">
+                <h3 class="page-title">
+                    Worker 
+                    <a class="btn btn-sm btn-primary" asp-action="Create" asp-controller="Worker" asp-area="Worker">Add New</a>
+                    <a class="btn btn-sm btn-primary" asp-action="index" asp-controller="WorkerProjectSite" asp-area="Worker">Projects And Sites</a>
+
+                    @* <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-edit-2"></i> Qualificatiion </a> *@
+                    @* <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-message-square"></i> Address And Contact</a> *@
+                    @* <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-pocket"></i> Uniform</a> *@
+                    @* <div class="dropdown-divider"></div> *@
+                    @* <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-link"></i> Document Uploads</a> *@
+
+
+                </h3>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">Master</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Worker
+                    </li>
+                </ol>
+            </div>
+        </div> <!--end::Row-->
+    </div> <!--end::Container-->
+</div> <!--end::App Content Header--> <!--begin::App Content-->
+
+<div class="app-content">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <partial name="~/Views/shared/_alertpartial.cshtml" />
+        <div class="row">
+
+
+            <div class="col-lg-12 col-md-12 col-sm-12" id="leftCard">
+                <div class="card">
+                    <div class="table-responsive" >
+                        <table class="table card-table table-vcenter text-nowrap" style="min-height:200px">
+                            <thead>
+                                <tr>
+                                    <th style="width: 10px">Sr No.</th>
+                                    <th class="" scope="col">Workman Id</th>
+                                    <th class="" scope="col">Name</th>
+                                    <th class="" scope="col">Department Name</th>
+                                    @* <th class="" scope="col">Marrital Status</th> *@
+                                    @* <th class="text-center" scope="col">Date of Birth</th> *@
+                                    <th class="" scope="col">Age</th>
+                                    <th class="" scope="col">Gender</th>
+                                    @* <th class="text-center" scope="col">Spouse Name</th> *@
+                                    <th class="" scope="col">Date of Joining</th>
+                                    <th class="" scope="col">Status</th>
+                                    <th class="text-center" scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody >
+                                @foreach (var worker in ViewBag.AllData)
+                                {
+                                    
+                                    <tr class="align-middle">
+                                        <td>@serialNumber</td>
+                                        <td>
+                                            <a asp-area="worker" asp-controller="worker"  asp-action="Profile" asp-route-id="@worker.WorkerId">
+                                                @worker.WorkmanId
+                                            </a>
+                                        </td>
+
+                                        <td>@worker.FirstName @worker.MiddleName @worker.LastName</td>
+                                        <td>@worker.DepartmentName</td>
+                                        @* <td>@worker.MarritalStatus</td> *@
+                                        @* <td>@worker.DateofBirth</td> *@
+                                        <td>@worker.Age</td>
+                                        <td>@worker.Gender</td>
+                                        @* <td>@worker.SpouseName</td> *@
+                                        <td>@worker.DateofJoining</td>
+                                        <td>
+                                            @if (worker.Status == true)
+                                            {
+                                                <span class="status-icon bg-success"></span> <span>Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="status-icon bg-danger"></span> <span>Inactive</span>
+                                            }
+
+                                        </td>
+                                        <td>
+                                            <nav class="nav justify-content-center">
+                                                <a asp-action="Edit" class="nav-link badge shadow m-1 text-warning btn btnEdit" asp-controller="Worker" asp-area="Worker" asp-route-id="@worker.WorkerId">
+                                                    <i class="fe fe-edit"></i>
+                                                </a>
+                                                <a class="nav-link badge shadow m-0 text-danger btn btn-delete">
+                                                    @*  data-delete_id="@worker.DepartmentId"
+                                                        data-delete_display="@worker.DepartmentName"> *@
+                                                    <i class="fe fe-trash"></i>
+                                                </a>
+
+                                                <a asp-area="worker" asp-controller="Attendance" asp-action="Index" asp-route-wokrman="@worker.WorkmanId" class="nav-link badge shadow m-1 text-info btn">
+                                                    <i class="fe fe-user-check"></i>
+                                                </a>
+
+                                            </nav>
+                                        </td>
+
+                                    </tr>
+                                    serialNumber++;
+                                }
+
+                            </tbody>
+                           
+                        </table>
+                    </div>
+                </div>
+            </div>
+        
+        </div>
+    </div>
+</div>
+
+@section modals {
+    <partial name="~/Views/shared/_DeleteModelPartial.cshtml" />
+
+}
+
+@section Scripts{
+    <script>
+
+    </script>
+}
+

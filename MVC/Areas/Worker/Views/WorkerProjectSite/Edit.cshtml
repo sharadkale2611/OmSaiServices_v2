@@ -1,0 +1,88 @@
+﻿@model OmSaiModels.Worker.WorkerProjectSiteModel
+@{
+    ViewData["Title"] = "Edit WorkerProjectSite";
+}
+
+<div class="app-content-header">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <!--begin::Row-->
+        <div class="row">
+            <div class="col-sm-6">
+                <h3 class="mb-0">
+                    Add New WorkerProjectSite
+                </h3>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">Master</a></li>
+                    <li class="breadcrumb-item"><a asp-area="Worker" asp-controller="WorkerProjectSite" asp-action="Index">Roles</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Edit
+                    </li>
+                </ol>
+            </div>
+        </div> <!--end::Row-->
+    </div> <!--end::Container-->
+</div> <!--end::App Content Header--> <!--begin::App Content-->
+
+
+<div class="app-content">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <partial name="~/Views/shared/_alertpartial.cshtml" />
+        <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-12">
+                <div class=" mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <form asp-action="Create" method="post" asp-area="Worker" asp-controller="WorkerProjectSite">
+                                <input type="hidden" asp-for="WorkerProjectSitesId" />
+                              @*   <div class="form-group mb-3">
+                                    <label for="workerId">Worker Id</label>
+                                    <input type="text" name="workerId" id="workerId" class="form-control" />
+                                </div> *@
+
+                                <div class="form-group mb-3">
+                                    <label for="workerName">Worker Name</label>
+                                    <input type="text" name="workerName" id="workerName" class="form-control" />
+                                </div>
+                                @* <div class="form-group mb-3">
+                                    <label for="projectId">Project Id</label>
+                                    <input type="text" name="projectId" id="projectId" class="form-control" />
+                                </div> *@
+
+                                <div class="form-group mb-3">
+                                    <label for="projectName">Project Name</label>
+                                    <input type="text" name="projectName" id="projectName" class="form-control" />
+                                </div>
+
+                               @*  <div class="form-group mb-3">
+                                    <label for="siteId">Site Id</label>
+                                    <input type="text" name="siteId" id="siteId" class="form-control" />
+                                </div> *@
+
+                                <div class="form-group mb-3">
+                                    <label for="siteName">Site Name</label>
+                                    <input type="text" name="siteName" id="siteName" class="form-control" />
+                                </div>
+
+                                <div class="form-group mb-3 form-check form-switch ">
+                                    <label asp-for="Status">Status</label>
+                                    <input class="form-check-input" type="checkbox" asp-for="Status" name="status" />
+                                </div>
+
+
+                                <button type="submit" class="btn btn-primary">Save</button>
+
+                                <a class="btn btn-outline-warning" asp-area="Worker" asp-controller="WorkerProjectSite" asp-action="Index"> Cancel</a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,31 @@
+﻿@using GeneralTemplate.Areas.Identity.Data;
+@model AppUser
+
+@{
+    ViewData["Title"] = "AssignRole";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Assign Role to @ViewBag.User.UserName</h1>
+
+<form asp-action="AssignRole" method="post">
+    <input type="hidden" name="userId" value="@ViewBag.User.Id" />
+    <div>
+        <label>Role</label>
+        <select name="role">
+            @foreach (var role in ViewBag.Roles)
+            {
+                <option value="@role.Name">@role.Name</option>
+            }
+        </select>
+    </div>
+    <button type="submit">Assign</button>
+</form>
+
+<h2>Current Roles</h2>
+<ul>
+    @foreach (var userRole in ViewBag.UserRoles)
+    {
+        <li>@userRole</li>
+    }
+</ul>

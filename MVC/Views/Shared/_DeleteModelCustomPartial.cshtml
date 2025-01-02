@@ -1,0 +1,48 @@
+﻿<!-- Modal -->
+<div class="modal fade" id="delete_confirm_model" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" >
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body text-center">
+				<form method="post" id="formDelete" asp-area="@ViewData["AreaNameCustom"]" asp-controller="@ViewData["ControllerNameCustom"]" asp-action="@ViewData["ActionNameCustom"]">
+					<h2><i class="trash icon"></i>Are you sure want to delete ?</h2>
+					<blockquote class="my-3 py-4 px-3">
+						<p><strong id="delete_display"></strong></p>
+					</blockquote>
+					<button type="button" class="main-btn cancel" id="closeModel" data-dismiss="modal">No</button>
+					<input type="hidden" name="id" id="delete_id" value="" />
+					<input type="hidden" name="otherId" id="other_id" value="" />
+					<input type="submit" value="Yes" class="main-btn" id="btnFormDelete" />
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+
+	$("#closeModel").click(() => {
+		$("#delete_confirm_model").modal('hide')
+	})
+
+	$('#delete_confirm_model').on('shown.bs.modal', function () {
+
+		$('#formDelete').submit((e) => {
+			e.preventDefault(); // Prevent default form submission for debugging
+
+			// Submit the form if everything is fine
+			$('#formDelete').off('submit').submit();
+		});
+	});
+
+	$('.btn-delete').click((event) => {
+		const delete_id = $(event.currentTarget).data('delete_id');
+		const other_id = $(event.currentTarget).data('other_id');
+		const delete_display = $(event.currentTarget).data('delete_display');
+		$('#delete_id').val(delete_id);
+		$('#other_id').val(other_id);
+		$('#delete_display').text(delete_display);
+		$("#delete_confirm_model").modal('show')
+
+	})
+
+</script>

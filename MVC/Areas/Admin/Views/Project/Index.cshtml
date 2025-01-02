@@ -1,0 +1,116 @@
+﻿@using Microsoft.AspNetCore.Identity.Data;
+@model IEnumerable<OmSaiModels.Admin.ProjectModel>
+
+@{
+    ViewData["Title"] = "Projects";
+    Layout = "/Views/Shared/_Layout.cshtml";
+    ViewData["AreaName"] = "Admin";
+    ViewData["ControllerName"] = "Project";
+    int serialNumber = 1;
+}
+
+@section css {
+    <style>
+        .btnEdit:hover {
+            cursor: pointer;
+        }
+    </style>
+}
+
+<div class="app-content-header">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <!--begin::Row-->
+        <div class="row">
+            <div class="col-sm-6">
+                <h3 class="page-title">
+                    Projects
+                    <a class="btn btn-sm btn-primary" asp-action="Create" asp-controller="Project" asp-area="Admin">Add New</a>
+                </h3>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">Master</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Projects
+                    </li>
+                </ol>
+            </div>
+        </div> <!--end::Row-->
+    </div> <!--end::Container-->
+</div> <!--end::App Content Header--> <!--begin::App Content-->
+
+<div class="app-content">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <partial name="~/Views/shared/_alertpartial.cshtml" />
+        <div class="row">
+
+
+            <div class="col-lg-12 col-md-12 col-sm-12" id="leftCard">
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table card-table table-vcenter text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th style="width: 10px">Sr No.</th>
+                                    <th class="" scope="col">Project Name</th>
+                                    <th class="" scope="col">Project Description</th>
+                                    <th class="" scope="col">Total Man Power</th>
+                                    <th class="" scope="col">Project Budget</th>
+                                    <th class="" scope="col">Status</th>
+                                    @* <th class="text-center" scope="col">Remark</th> *@
+                                    <th class="" scope="col">Project Start Date</th>
+                                    @* <th class="text-center" scope="col">Project End Date</th> *@
+                                    <th class="" scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var project in ViewBag.AllData)
+                                {
+                                    serialNumber++;
+                                    <tr class="align-middle">
+                                        <td>@serialNumber</td>
+                                        <td>@project.ProjectName</td>
+                                        <td>@project.ProjectDiscription</td>
+                                        <td>@project.TotalManPower</td>
+                                        <td>@project.ProjectBudget</td>
+                                        <td>@project.Status</td>
+                                        @* <td>@project.Remark</td> *@
+                                        <td>@project.ProjectStartDate</td>
+                                        @* <td>@project.ProjectEndDate</td> *@
+                                        <td>
+                                            <nav class="nav justify-content-center">
+
+                                                <a asp-action="edit" class="nav-link badge shadow text-info btn " asp-controller="Project" asp-area="Admin" asp-route-id="@project.ProjectId">
+                                                    <i class="fe fe-map"></i>
+                                                </a>
+
+                                                <a asp-action="edit" class="nav-link badge shadow ml-1 text-warning btn " asp-controller="Project" asp-area="Admin" asp-route-id="@project.ProjectId">                                                 
+                                                    <i class="fe fe-edit"></i>
+                                                </a>
+
+                                                <a class="nav-link badge shadow m-0 text-danger btn btn-delete"
+                                                    data-delete_id="@project.ProjectId"
+                                                    data-delete_display="@project.ProjectName">
+                                                    <i class="fe fe-trash"></i>
+                                                </a>
+                                            </nav>
+                                        </td>
+                                      
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section modals {
+    <partial name="~/Views/shared/_DeleteModelPartial.cshtml" />
+}
+

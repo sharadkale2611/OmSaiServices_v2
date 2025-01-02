@@ -1,0 +1,98 @@
+﻿@using GeneralTemplate.Areas.Identity.Data;
+@model IEnumerable<UserRolesViewModel>
+
+
+@{
+    ViewData["Title"] = "Staff";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    ViewData["AreaName"] = "Admin";
+    ViewData["ControllerName"] = "User";
+    int serialNumber = 0;
+
+}
+
+@section css {
+    <style>
+        .btnEdit:hover {
+            cursor: pointer;
+        }
+    </style>
+}
+
+
+<div class="app-content-header">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <!--begin::Row-->
+        <div class="row">
+            <div class="col-sm-6">
+                <h3 class="page-title">
+                    Staff
+                    <a asp-action="Create" class="btn btn-sm btn-primary" >Add New</a>
+                </h3>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Staff List
+                    </li>
+                </ol>
+            </div>
+        </div> <!--end::Row-->
+    </div> <!--end::Container-->
+</div> <!--end::App Content Header--> <!--begin::App Content-->
+
+
+<div class="app-content">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <partial name="~/Views/shared/_alertpartial.cshtml" />
+        <div class="row">
+
+            <div class="col-lg-12 col-md-12 col-sm-12" id="leftCard">
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table card-table table-vcenter text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th class="w-1">No.</th>
+                                    <th>Email</th>
+                                    <th>Roles</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var user in Model)
+                                {
+                                    serialNumber++;
+                                    <tr class="align-middle">
+                                        <td>@serialNumber</td>
+                                        <td>@user.Email</td>
+                                        <td>@string.Join(", ", user.Roles)</td> <!-- Display roles as comma-separated list -->
+                                        <td>
+
+                                            <nav class="nav justify-content-center">
+                                                <a class="nav-link badge shadow m-0 text-warning btn" asp-action="Edit" asp-route-id="@user.Id">
+                                                    <i class="fe fe-edit"></i>
+                                                </a>
+                                                @* <a asp-action="Delete" class="nav-link badge shadow m-0 text-danger btn" asp-route-id="@user.Id"> *@
+                                                @*     <i class="fe fe-trash"></i> *@
+                                                @* </a> *@
+                                            </nav>
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
