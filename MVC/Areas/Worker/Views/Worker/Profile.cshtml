@@ -1,44 +1,90 @@
 ﻿@{
     var worker = @ViewBag.AllData;
     var fullName = worker.FirstName + " " + worker.MiddleName + " " + worker.LastName;
-    var attendanceHistory = ViewBag.AttendanceHistory;
+    var attendanceHistory = ViewBag.AttendanceHistory; //test commentn
 }
 
 <style>
-    .selfie-image {
-        width: 40px;
-        border: 1px solid #eee;
-        border-radius: 5px;
+
+    .selfie-image{
+        width:40px;
+        border:1px solid #eee;
+        border-radius:5px;
         box-shadow: 1px 1px 3px gray;
     }
+
+    .calendar {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr); /* 7 columns for the days of the week */
+        gap: 5px;
+    }
+
+    .calendar-box {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+        .calendar-box.present {
+            background-color: #28a745; /* Green for Present */
+            color: #fff;
+        }
+
+        .calendar-box.absent {
+            background-color: #dc3545; /* Red for Absent */
+            color: #fff;
+        }
+
+        .calendar-box.empty {
+            background-color: #f8f9fa; /* Light gray for empty days */
+        }
+
+    .calendar-header {
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .calendar-header .col{
+            width: 30px;
+            height: 30px;
+            font-size:11px;
+            text-align:center;
+        }
+
 </style>
 
-<div class="my-3 my-md-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-4">
+        <div class="my-3 my-md-5">
+          <div class="container">
+            <div class="row">
+              <div class="col-lg-4">
                 <div class="card">
-                    <div class="card-body">
-                        <div class="media">
-                            @*                             <span class="avatar avatar-xxl mr-5" style="background-image: url('@user.ImagePath')"></span>
- *@
-                            <span class="avatar avatar-xxl mr-5" style="background-image: url(demo/faces/male/21.jpg)">
-                                <i class="fe fe-camera"></i>
-                            </span>
+                  <div class="card-body">
+                    <div class="media">
+                            @* <span class="avatar avatar-xxl mr-5" style="background-image: url('@user.ImagePath')"></span> *@
 
-                            <div class="media-body">
-                                <h4 class="m-0 mb-1">@fullName</h4>
+                      <span class="avatar avatar-xxl mr-5" style="background-image: url(demo/faces/male/21.jpg)">
+                        <i class="fe fe-camera"></i>    
+                      </span>
+                      <div class="media-body">
+                        <h4 class="m-0 mb-1">@fullName</h4>
                                 <p class="text-muted mb-1"><b class="text-info">@worker.WorkmanId</b> [ <b>@worker.DepartmentName</b>]</p>
                                 <p class="text-muted mb-1">Qualification: <b>@worker.QualificationName</b></p>
 
-                                <ul class="social-links list-inline mb-0 mt-2">
-                                    <li class="list-inline-item">
+                        <ul class="social-links list-inline mb-0 mt-2">
+                          <li class="list-inline-item">
                                         <i class="fa fa-phone"></i> &nbsp;&nbsp; @worker.MobileNumber
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+                          </li>
+                        </ul>
+                      </div>
                     </div>
+                  </div>
                 </div>
 
                 <div class="card">
@@ -56,8 +102,75 @@
                     </div>
                 </div>
 
-            </div>
-            <div class="col-lg-8">
+    
+                <div class="card">
+                    <div class="card-body">
+
+                        <div class="container p-2">
+                            <h2 class="text-center mb-4">Mini Grid Calendar</h2>
+
+                            <!-- Calendar Header -->
+                            <div class="calendar-header row text-center">
+                                <div class="col">Sun</div>
+                                <div class="col">Mon</div>
+                                <div class="col">Tue</div>
+                                <div class="col">Wed</div>
+                                <div class="col">Thu</div>
+                                <div class="col">Fri</div>
+                                <div class="col">Sat</div>
+                            </div>
+
+                            <!-- Calendar Grid -->
+                            <div class="calendar">
+                                <!-- Empty Days (for alignment) -->
+                                <div class="calendar-box empty"></div>
+                                <div class="calendar-box empty"></div>
+                                <div class="calendar-box empty"></div>
+                                <div class="calendar-box empty"></div>
+
+                                <!-- Days with Present/Absent Status -->
+                                <div class="calendar-box present">1</div>
+                                <div class="calendar-box absent">2</div>
+                                <div class="calendar-box present">3</div>
+                                <div class="calendar-box absent">4</div>
+                                <div class="calendar-box present">5</div>
+                                <div class="calendar-box present">6</div>
+                                <div class="calendar-box absent">7</div>
+                                <div class="calendar-box present">8</div>
+                                <div class="calendar-box absent">9</div>
+                                <div class="calendar-box absent">10</div>
+                                <div class="calendar-box present">11</div>
+                                <div class="calendar-box present">12</div>
+                                <div class="calendar-box absent">13</div>
+                                <div class="calendar-box present">14</div>
+                                <div class="calendar-box present">15</div>
+                                <div class="calendar-box absent">16</div>
+                                <div class="calendar-box present">17</div>
+                                <div class="calendar-box absent">18</div>
+                                <div class="calendar-box absent">19</div>
+                                <div class="calendar-box present">20</div>
+                                <div class="calendar-box absent">21</div>
+                                <div class="calendar-box present">22</div>
+                                <div class="calendar-box absent">23</div>
+                                <div class="calendar-box present">24</div>
+                                <div class="calendar-box absent">25</div>
+                                <div class="calendar-box absent">26</div>
+                                <div class="calendar-box present">27</div>
+                                <div class="calendar-box present">28</div>
+                                <div class="calendar-box absent">29</div>
+                                <div class="calendar-box present">30</div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+
+
+
+              </div>
+              <div class="col-lg-8">
 
                 <div class="card">
                     <div class="card-header">
@@ -86,11 +199,11 @@
                                         <td>
                                             <img src="@attendance.InSelfiPath" class="selfie-image" />
                                             @attendance.InTime?.ToString("hh:mm tt")
-                                        </td>
+                                            </td>
                                         <td>
                                             <img src="@attendance.OutSelfiPath" class="selfie-image" />
                                             @attendance.OutTime?.ToString("hh:mm tt")
-                                        </td>
+                                            </td>
                                         <td>
 
                                             @if (attendance.Status == "Present")
@@ -103,10 +216,8 @@
                                             }
                                             else if (attendance.Status == "Miss")
                                             {
-                                                <span class="badge bg-warning">M</span> @attendance.Status
-                                            }
-                                            else
-                                            {
+                                                <span class="badge bg-warning">I</span> @("In")
+                                            }else{
                                                 <span class="badge bg-dark">@attendance.Status</span>
                                             }
                                         </td>
@@ -143,7 +254,7 @@
                                         <td>
                                             @if (!string.IsNullOrEmpty(doc.DocumentImage))
                                             {
-                                                <img src="@doc.DocumentImage" alt="Uploaded Document" class="media-object avatar avatar-md mr-4" />
+                                                <img src="~/@doc.DocumentImage" alt="Uploaded Document" class="media-object avatar avatar-md mr-4" />
                                             }
                                             else
                                             {
@@ -183,15 +294,16 @@
                                     </tr>
 
                                 }
+
                             </tbody>
                         </table>
                     </div>
                 </div>
 
+              </div>
             </div>
+          </div>
         </div>
-    </div>
-</div>
 
 
 <!-- Modal -->

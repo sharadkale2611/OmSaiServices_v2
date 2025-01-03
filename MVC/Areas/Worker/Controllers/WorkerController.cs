@@ -40,12 +40,11 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 
 		}
 
-
 		public IActionResult Index()
 		{
 			ViewBag.AllData = _workerService.GetAll();
-			ViewBag.Department = _departmentService.GetAll();
-			ViewBag.Sites = _siteService.GetAll();
+			ViewBag.Department=_departmentService.GetAll();
+			ViewBag.Sites= _siteService.GetAll();
 
 			ViewBag.Projects = _projectService.GetAll();
 			ViewBag.Workers = _workerService.GetAll();
@@ -59,7 +58,6 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			ViewBag.AttendanceHistory = _attendanceService.GetAll(id);
 			ViewBag.WorkerDocuments = _workerDocumentService.GetAll(id);
 
-
 			return View();
 		}
 
@@ -67,6 +65,8 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 		[Route("api/Worker/UploadDocument")]
 		public IActionResult UploadDocument([FromForm] IFormFile? file, [FromForm] int WorkerId, int DocumentId, [FromForm] string? documentNumber = "", string? documentImage = null)
 		{
+			string uploadPath = "media/documents";
+
 			var model = new WorkerDocumentModel
 			{
 				DocumentId = DocumentId,
@@ -79,7 +79,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 				if (file != null && file.Length > 0)
 				{
 
-					var documentPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "documents");
+					var documentPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", uploadPath);
 
 
 					if (!Directory.Exists(documentPath))
@@ -94,14 +94,14 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 					{
 						file.CopyTo(stream);
 					}
-					model.DocumentImage = $"/documents/{uniqueFileName}";
+					model.DocumentImage = $"{uploadPath}/{uniqueFileName}";
 					_workerDocumentService.Update(model);
 
 					return Ok(new
 					{
 						success = true,
 						message = "Document uploaded successfully!",
-						filePath = $"/documents/{uniqueFileName}"
+						filePath = $"{uploadPath}/{uniqueFileName}"
 					});
 				}
 				else
@@ -142,7 +142,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public IActionResult Create(WorkerModel model, int ProjectId, int SiteId, int QualificationId, string MobileNumber, bool Status)
+		public IActionResult Create(WorkerModel model, int ProjectId, int SiteId, string SiteName, int QualificationId, string MobileNumber, bool Status)
 		{
 			try
 			{
@@ -152,8 +152,10 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 				{
 					TempData["success"] = "Record added successfully!";
 
-					var lastWorkerId = _workerService.Create(model);
+					model.SiteName = SiteName;
 
+					var lastWorkerId = _workerService.Create(model);
+					
 					WorkerProjectSiteModel model2 = new WorkerProjectSiteModel
 					{
 						WorkerId = lastWorkerId,
