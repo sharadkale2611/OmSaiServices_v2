@@ -25,6 +25,7 @@ obj/
 **/node_modules/
 **/bower_components/
 **/wwwroot/lib/
+**/wwwroot/media/
 
 
 # Ignore logs
