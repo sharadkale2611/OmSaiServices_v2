@@ -1,0 +1,178 @@
+﻿@using Microsoft.AspNetCore.Identity.Data;
+@model OmSaiModels.Admin.QualificationModel
+
+@{
+    ViewData["Title"] = "Qualification";
+    Layout = "/Views/Shared/_Layout.cshtml";
+    ViewData["AreaName"] = "Admin";
+    ViewData["ControllerName"] = "Qualification";
+    int serialNumber = 0;
+}
+
+@section css {
+    <style>
+        .btnEdit:hover {
+            cursor: pointer;
+        }
+    </style>
+}
+
+<div class="app-content-header">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <!--begin::Row-->
+        <div class="row">
+            <div class="col-sm-6">
+                <h3 class="mb-0">
+                    Qualifications
+                    <button class="btn btn-sm btn-primary" id="btnShowForm">Add New</button>
+                </h3>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">Master</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Qualifications
+                    </li>
+                </ol>
+            </div>
+        </div> <!--end::Row-->
+    </div> <!--end::Container-->
+</div> <!--end::App Content Header--> <!--begin::App Content-->
+
+
+<div class="app-content">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <partial name="~/Views/shared/_alertpartial.cshtml" />
+        <div class="row">
+
+
+            <div class="col-lg-12 col-md-12 col-sm-12" id="leftCard">
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table card-table table-vcenter text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th class="w-1">No.</th>
+                                    <th>Qualification Name</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in ViewBag.AllData)
+                                {
+                                    serialNumber++;
+                                    <tr class="align-middle">
+                                        <td>@serialNumber</td>
+                                        <td>@item.QualificationName</td>
+                                        <td>
+                                            @if (item.Status == true)
+                                            {
+                                                <span class="status-icon bg-success"></span> <span>Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="status-icon bg-danger"></span> <span>Inactive</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <nav class="nav justify-content-center d-flex flex-nowrap">
+                                                <a class="nav-link badge shadow m-0 text-warning btn btnEdit"
+                                                   data-id="@item.QualificationId"
+                                                   data-name="@item.QualificationName"
+                                                   data-status="@item.Status">
+                                                    <i class="fe fe-edit"></i>
+                                                </a>
+                                                <a class="nav-link badge shadow m-0 text-danger btn btn-delete"
+                                                   data-delete_id="@item.QualificationId"
+                                                   data-delete_display="@item.QualificationName">
+                                                    <i class="fe fe-trash"></i>
+                                                </a>
+                                            </nav>
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-4 col-sm-12" id="rightCard" style="display:none;">
+                <div class="card card-warning card-outline mb-4 ">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <form id="QualificationForm" method="post" asp-area="admin" asp-controller="Qualification" asp-action="Create" asp-antiforgery="true">
+                        <input type="hidden" asp-for="QualificationId" id="QualificationId" />
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label asp-for="QualificationName" class="col-form-label">Qualification Name</label>
+                                <input type="text" class="form-control" asp-for="QualificationName" placeholder="Qualification Name" required>
+                            </div>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" asp-for="Status" type="checkbox" id="status" checked>
+                                <label class="form-check-label" for="status">Is Active</label>
+                            </div>
+                        </div>
+                        <div class="card-footer text-center">
+                            <button type="submit" class="btn btn-outline-secondary" id="btnSubmit">Save</button>
+                            <button type="button" class="btn btn-outline-warning" id="btnCloseForm">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+@section modals {
+    <partial name="~/Views/shared/_DeleteModelPartial.cshtml" />
+}
+
+@section Scripts {
+    <script>
+        $('#btnShowForm').click(() => {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Save");
+
+            $('#QualificationForm').attr('action', '/admin/Qualification/Create');
+            $('#QualificationId').val("");
+        });
+
+        $('#btnCloseForm').click(() => {
+            $('#leftCard').addClass("col-lg-12 col-md-12").removeClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeOut();
+            $('#btnShowForm').fadeIn();
+        });
+
+        $('.btnEdit').click(function () {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Update");
+
+            let data = $(this).data();
+            $('#QualificationId').val(data.id);
+            $('#QualificationName').val(data.name);
+            $('#QualificationForm').attr('action', '/admin/Qualification/Edit');
+        });
+        $('.btn-delete').click(function () {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Delete");
+
+            let data = $(this).data();
+            $('#QualificationId').val(data.delete_id);
+            $('#QualificationForm').attr('action', '/admin/Qualification/Delete');
+        });
+    </script>
+}

@@ -1,0 +1,336 @@
+﻿@model OmSaiModels.Worker.WorkerQualificationModel
+
+@{
+    ViewData["Title"] = "Worker Qualifications";
+    Layout = "/Views/Shared/_Layout.cshtml";
+    ViewData["AreaName"] = "Worker";
+    ViewData["ControllerName"] = "WorkerQualification";
+    int serialNumber = 1;
+}
+
+@section css {
+    <style>
+        .btnEdit:hover {
+            cursor: pointer;
+        }
+    </style>
+}
+
+<div class="app-content-header">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6">
+                <h3 class="mb-0">
+                    Worker Qualifications
+                    <button class="btn btn-sm btn-primary" id="btnShowForm">Add New</button>
+                </h3>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">Management</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Workers</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="app-content">
+    <div class="container-fluid">
+        <partial name="~/Views/shared/_alertpartial.cshtml" />
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12" id="leftCard">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <p>Total Records: <b>@ViewBag.TotalRecords</b></p>
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width: 10px">#</th>
+                                    <th>Worker Name</th>
+                                    <th>Qualification Name</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var qualification in ViewBag.workerQualifications)
+                                {
+                                    <tr class="align-middle">
+                                        <td>@serialNumber</td>
+                                        <td>@qualification.WorkerName</td>
+                                        <td>@qualification.QualificationName</td>
+                                        <td>
+                                            <nav class="nav justify-content-center d-flex flex-nowrap">
+                                                <a class="nav-link badge shadow m-1 text-warning btn btnEdit"
+                                                   data-id="@qualification.WorkerQualificationId"
+                                                   data-workerid="@qualification.WorkerId"
+                                                   data-qualificationid="@qualification.QualificationId">
+                                                    <i class="bi bi-pencil-square"></i> Edit
+                                                </a>
+                                                <a class="nav-link badge shadow m-1 text-danger btn btn-delete"
+                                                   data-delete_id="@qualification.WorkerQualificationId"
+                                                   data-delete_display="@qualification.WorkerId">
+                                                    <i class="bi bi-trash3-fill"></i> Delete
+                                                </a>
+                                            </nav>
+                                        </td>
+                                    </tr>
+                                    serialNumber++;
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form for Add/Update Qualification -->
+            <div class="col-lg-4 col-md-4 col-sm-12" id="rightCard" style="display:none;">
+                <div class="card card-warning card-outline mb-4 mt-4">
+                    <form id="workerQualificationForm" method="post" asp-area="Worker" asp-controller="WorkerQualification" asp-action="Create" asp-antiforgery="true">
+                        <input type="hidden" asp-for="WorkerQualificationId" id="workerQualificationId" />
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label asp-for="WorkerId" class="col-form-label">Worker</label>
+                                <select asp-for="WorkerId" class="form-control">
+                                    <option value="">Select Worker</option>
+                                    @foreach (var worker in ViewBag.workers)
+                                    {
+                                        <option value="@worker.WorkerId">@worker.FirstName @worker.MiddleName @worker.LastName </option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="QualificationId" class="col-form-label">Qualification</label>
+                                <select asp-for="QualificationId" class="form-control">
+                                    <option value="">Select Qualification</option>
+                                    @foreach (var qualification in ViewBag.qualifications)
+                                    {
+                                        <option value="@qualification.QualificationId">@qualification.QualificationName</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="card-footer text-center">
+                            <button type="submit" class="btn btn-outline-warning" id="btnSubmit">Save</button>
+                            <button type="button" class="btn btn-outline-danger" id="btnCloseForm">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section modals {
+    <partial name="~/Views/shared/_DeleteModelPartial.cshtml" />
+}
+
+@section Scripts {
+    <script>
+        $('#btnShowForm').click(() => {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Save");
+
+            $('#workerQualificationForm').attr('action', '/Worker/WorkerQualification/Create');
+            $('#workerQualificationId').val("");
+        });
+
+        $('#btnCloseForm').click(() => {
+            $('#leftCard').addClass("col-lg-12 col-md-12").removeClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeOut();
+            $('#btnShowForm').fadeIn();
+        });
+
+        $('.btnEdit').click(function () {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Update");
+
+            let data = $(this).data();
+            $('#workerQualificationId').val(data.id);
+            $('#WorkerId').val(data.workerid);
+            $('#QualificationId').val(data.qualificationid);
+            $('#workerQualificationForm').attr('action', '/worker/WorkerQualification/Edit');
+        });
+
+        $('.btn-delete').click(function () {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Delete");
+
+            let data = $(this).data();
+            $('#workerQualificationId').val(data.delete_id);
+            $('#workerQualificationForm').attr('action', '/worker/WorkerQualification/Edit');
+        });
+    </script>
+}
+
+@* @model OmSaiModels.Worker.WorkerQualificationModel
+@{
+    ViewData["Title"] = "Worker Qualifications";
+    Layout = "/Views/Shared/_Layout.cshtml";
+    ViewData["AreaName"] = "Worker";
+    ViewData["ControllerName"] = "WorkerQualification";
+    int serialNumber = 1;
+}
+
+@section css {
+    <style>
+        .btnEdit:hover {
+            cursor: pointer;
+        }
+    </style>
+}
+
+<div class="app-content-header">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6">
+                <h3 class="mb-0">
+                    Worker Qualifications
+                    <button class="btn btn-sm btn-primary" id="btnShowForm">Add New</button>
+                </h3>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">Management</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Workers</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="app-content">
+    <div class="container-fluid">
+        <partial name="~/Views/shared/_alertpartial.cshtml" />
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12" id="leftCard">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <p>Total Records: <b>@ViewBag.TotalRecords</b></p>
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width: 10px">#</th>
+                                    <th>Worker ID</th>
+                                    <th>Qualification ID</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var qualification in ViewBag.workerQualifications)
+                                {
+                                    <tr class="align-middle">
+                                        <td>@serialNumber</td>
+                                        <td>@qualification.WorkerId</td>
+                                        <td>@qualification.QualificationId</td>
+                                        <td>
+                                            <nav class="nav justify-content-center d-flex flex-nowrap">
+                                                <a class="nav-link badge shadow m-1 text-warning btn btnEdit"
+                                                   data-id="@qualification.WorkerQualificationId"
+                                                   data-workerid="@qualification.WorkerId"
+                                                   data-qualificationid="@qualification.QualificationId">
+                                                    <i class="bi bi-pencil-square"></i> Edit
+                                                </a>
+                                                <a class="nav-link badge shadow m-1 text-danger btn btn-delete"
+                                                   data-delete_id="@qualification.WorkerQualificationId"
+                                                   data-delete_display="@qualification.WorkerId">
+                                                    <i class="bi bi-trash3-fill"></i> Delete
+                                                </a>
+                                            </nav>
+                                        </td>
+                                    </tr>
+                                    serialNumber++;
+
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-4 col-sm-12" id="rightCard" style="display:none;">
+                <div class="card card-warning card-outline mb-4 mt-4">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <form id="workerQualificationForm" method="post" asp-area="Worker" asp-controller="WorkerQualification" asp-action="Create" asp-antiforgery="true">
+                        <input type="hidden" asp-for="WorkerQualificationId" id="workerQualificationId" />
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label asp-for="WorkerId" class="col-form-label">Worker ID</label>
+                                <input type="number" class="form-control" asp-for="WorkerId" placeholder="Worker ID" required>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="QualificationId" class="col-form-label">Qualification</label>
+                                <select asp-for="QualificationId" class="form-control">
+                                    <option value="">Select Qualification</option>
+                                    @foreach (var qualification in ViewBag.qualifications)
+                                    {
+                                        <option value="@qualification.QualificationId">@qualification.QualificationName</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="card-footer text-center">
+                            <button type="submit" class="btn btn-outline-warning" id="btnSubmit">Save</button>
+                            <button type="button" class="btn btn-outline-danger" id="btnCloseForm">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section modals {
+    <partial name="~/Views/shared/_DeleteModelPartial.cshtml" />
+}
+
+@section Scripts {
+    <script>
+        $('#btnShowForm').click(() => {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Save");
+
+            $('#workerQualificationForm').attr('action', '/Worker/WorkerQualification/Create');
+            $('#workerQualificationId').val("");
+        });
+
+        $('#btnCloseForm').click(() => {
+            $('#leftCard').addClass("col-lg-12 col-md-12").removeClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeOut();
+            $('#btnShowForm').fadeIn();
+        });
+
+        $('.btnEdit').click(function () {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Update");
+
+            let data = $(this).data();
+            $('#workerQualificationId').val(data.id);
+            $('#WorkerId').val(data.workerid);
+            $('#QualificationId').val(data.qualificationid);
+            $('#workerQualificationForm').attr('action', '/worker/WorkerQualification/Edit');
+        });
+
+        $('.btn-delete').click(function () {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Delete");
+
+            let data = $(this).data();
+            $('#workerQualificationId').val(data.delete_id);
+            $('#workerQualificationForm').attr('action', '/worker/WorkerQualification/Edit');
+        });
+    </script>
+}
+ *@

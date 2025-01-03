@@ -1,0 +1,112 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+<!-- Hero Section -->
+<header class="bg-primary text-white text-center py-5">
+    <div class="container-fluid">
+        <h1 class="display-4">Professional Security & Bouncer Services</h1>
+        <p class="lead">Ensuring safety, protecting your events, and providing peace of mind</p>
+        <a href="#contact" class="btn btn-light btn-lg">Get a Quote</a>
+    </div>
+</header>
+
+<!-- Services Section -->
+<section id="services" class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-4">Our Services</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <img src="~/demo/security1.png" class="card-img-top" alt="Event Security">
+                    <div class="card-body">
+                        <h5 class="card-title">Event Security</h5>
+                        <p class="card-text">We provide professional bouncers to ensure the safety of your event and guests.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <img src="~/demo/security2.png" class="card-img-top" alt="VIP Protection">
+                    <div class="card-body">
+                        <h5 class="card-title">VIP Protection</h5>
+                        <p class="card-text">Specialized security detail for VIPs, celebrities, and high-profile individuals.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <img src="~/demo/security3.png" class="card-img-top" alt="24/7 Surveillance">
+                    <div class="card-body">
+                        <h5 class="card-title">24/7 Surveillance</h5>
+                        <p class="card-text">Round-the-clock surveillance services for high-risk areas or properties.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Us Section -->
+<section id="about" class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">About Us</h2>
+        <p class="text-center">With over 10 years of experience in the security industry, SecureGuard offers trusted and reliable security solutions for all types of events and clients. Our bouncers and security personnel are trained professionals committed to ensuring your safety at all times.</p>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section id="testimonials" class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-4">What Our Clients Say</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <blockquote class="blockquote text-center">
+                    <p class="mb-0">"SecureGuard provided exceptional security for our concert. They were professional, efficient, and kept the crowd under control." </p>
+                    <footer class="blockquote-footer">John Doe, Event Manager</footer>
+                </blockquote>
+            </div>
+            <div class="col-md-4">
+                <blockquote class="blockquote text-center">
+                    <p class="mb-0">"We rely on SecureGuard for all our high-profile clients. Their attention to detail and professionalism are unmatched." </p>
+                    <footer class="blockquote-footer">Sarah Lee, Celebrity Manager</footer>
+                </blockquote>
+            </div>
+            <div class="col-md-4">
+                <blockquote class="blockquote text-center">
+                    <p class="mb-0">"The 24/7 surveillance service offered by SecureGuard has greatly improved our security measures at our facility." </p>
+                    <footer class="blockquote-footer">Mark Johnson, Facility Manager</footer>
+                </blockquote>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Contact Us</h2>
+        <form action="#" method="POST">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="name" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="email" required>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="message" class="form-label">Your Message</label>
+                <textarea class="form-control" id="message" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Send Message</button>
+        </form>
+    </div>
+</section>

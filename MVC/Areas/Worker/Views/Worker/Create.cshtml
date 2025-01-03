@@ -1,0 +1,184 @@
+﻿@model OmSaiModels.Worker.WorkerModel
+
+
+@{
+	ViewData["Title"] = "Create Worker";
+	var GenderList = new List<string>(){
+		"Male","Female","Other"
+	};
+	var MarriedList = new List<string>(){
+		"Married","Unmarried"
+	};
+}
+
+
+<div class="app-content">
+	<div class="container-fluid">
+		<partial name="~/Views/shared/_alertpartial.cshtml" />
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12">
+
+				<div class="card mb-4">
+					<div class="card-header">
+						<h4 style="padding:5px 7px "><b>Add Worker Details</b></h4>
+					</div>
+
+					<form id="workerForm" method="post" asp-area="Worker" asp-controller="Worker" asp-action="Create" asp-antiforgery="true">
+						<input type="hidden" asp-for="WorkerId" id="WorkerId" />
+						<div class="card-body">
+
+
+							<div class="row border-bottom border-danger pb-2 mb-2">
+
+								<div class="col-md-4  mb-3">
+									<label asp-for="DepartmentId" class="col-form-label">DepartmentName</label>
+									<select class="form-control" asp-for="DepartmentId"  required>
+										<option value="">Select Department</option>
+										@foreach (var department in ViewBag.Department)
+										{
+											<option value="@department.DepartmentId">@department.DepartmentName</option>
+										}
+									</select>
+									<span asp-validation-for="DepartmentName" class="text-danger"></span>
+								</div>
+							</div>
+
+							<div class="row ">
+								<div class="col-md-4  mb-3">
+									<label asp-for="FirstName" class="col-form-label">First Name</label>
+									<input type="text" class="form-control" asp-for="FirstName" placeholder="FirstName" required>
+									<span asp-validation-for="FirstName" class="text-danger"></span>
+								</div>
+								<div class="col-md-4  mb-3">
+									<label asp-for="MiddleName" class="col-form-label">MiddleName</label>
+									<input type="text" class="form-control" asp-for="MiddleName" placeholder="MiddleName" required>
+									<span asp-validation-for="MiddleName" class="text-danger"></span>
+								</div>
+								<div class="col-md-4  mb-3">
+									<label asp-for="LastName" class="col-form-label">LastName</label>
+									<input type="text" class="form-control" asp-for="LastName" placeholder="LastName" required>
+									<span asp-validation-for="LastName" class="text-danger"></span>
+								</div>
+
+							</div>
+
+							<div class="row">
+								<div class="col-md-4  mb-3">
+									<label asp-for="DateofBirth" class="col-form-label">Date of Birth</label>
+									<input type="date" class="form-control" asp-for="DateofBirth" placeholder="Date of Birth" required>
+									<span asp-validation-for="DateofBirth" class="text-danger"></span>
+								</div>
+
+								<div class="col-md-4  mb-3">
+									<label asp-for="Age" class="col-form-label">Age</label>
+									<input type="number" class="form-control" asp-for="Age" placeholder="Age" required>
+									<span asp-validation-for="Age" class="text-danger"></span>
+								</div>
+								<div class="col-md-4  mb-3">
+									<label asp-for="Gender" class="col-form-label">Gender</label>
+									<select class="form-control" type="text" asp-for="Gender" placeholder="Gender" required>
+										<option value="">Select Gender</option>
+										@foreach (string gender in GenderList)
+										{
+											<option value="@gender">@gender</option>
+										}
+									</select>
+									
+									<span asp-validation-for="Gender" class="text-danger"></span>
+								</div>
+							</div>
+
+							<div class="row border-bottom border-danger pb-2 mb-2">
+								<div class="col-md-4  mb-3">
+									<label asp-for="MarritalStatus" class="col-form-label">Marrital Status</label>
+									<select class="form-control" type="text" asp-for="MarritalStatus" placeholder="Marrital Status" required>
+										<option value="">Select Marrital Status</option>
+										@foreach (string m in MarriedList)
+										{
+											<option value="@m">@m</option>
+										}
+									</select>
+									<span asp-validation-for="MarritalStatus" class="text-danger"></span>
+								</div>
+
+								<div class="col-md-4  mb-3">
+									<label asp-for="SpouseName" class="col-form-label">Spouse Name</label>
+									<input type="text" class="form-control" asp-for="SpouseName" placeholder="Spouse Name(Partner Name)" required>
+									<span asp-validation-for="SpouseName" class="text-danger"></span>
+								</div>
+
+								<div class="col-md-4  mb-3">
+									<label asp-for="DateofJoining" class="col-form-label">Date of Joining</label>
+									<input type="date" class="form-control" asp-for="DateofJoining" placeholder="DateofJoining" required>
+									<span asp-validation-for="DateofJoining" class="text-danger"></span>
+								</div>
+
+
+							</div>
+
+							<div class="row">
+								<div class="col-md-4 mb-3">
+									<label for="ProjectId" class="col-form-label">Project Name</label>
+									<select name="ProjectId" class="form-control" required>
+										<option value="" selected>Select Option</option>
+										@foreach (var project in ViewBag.Projects)
+										{
+											<option value="@project.ProjectId">@project.ProjectName</option>
+										}
+									</select>
+								</div>
+
+								<div class="col-md-4 mb-3">
+									<label for="SiteId" class="col-form-label">Site Name</label>
+									<select name="SiteId" id="SiteId" class="form-control" required>
+										<option value="" selected>Select Option</option>
+										@foreach (var site in ViewBag.Sites)
+										{
+											<option value="@site.SiteId">@site.SiteName</option>
+										}
+									</select>
+									<input type="hidden" name="SiteName" id="SiteName" />
+								</div>
+
+								<div class="col-md-4 mb-3">
+									<label for="Qualification" class="col-form-label">Qualification</label>
+									<select name="QualificationId" id="Qualification" class="form-control" required>
+										<option value="" selected>Select Option</option>
+										@foreach (var q in ViewBag.Qualifications)
+										{
+											<option value="@q.QualificationId">@q.QualificationName</option>
+										}
+									</select>
+								</div>
+
+								<div class="col-md-4 form-group">
+									<label class="form-label">Mobile Number</label>
+									<input type="text" class="form-control" name="MobileNumber" placeholder="Mobile Number" />
+								</div>
+
+							</div>
+						
+						</div>
+
+						<div class="card-footer text-center">
+							<button type="submit" class="btn btn-outline-warning" id="btnSubmit">Save</button>
+							<a class="btn btn-outline-danger" asp-area="worker" asp-controller="worker" asp-action="Index">Cancel</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+
+@section Scripts{
+	<script>
+		$('#DepartmentId').change(()=>{
+			var siteNameValue = $('#DepartmentId option:selected').text(); // Get the text of the selected option
+			var capitalizedSiteName = siteNameValue.charAt(0).toUpperCase(); // Capitalize the first letter			
+			$('#SiteName').val(capitalizedSiteName);
+		});
+	</script>
+}

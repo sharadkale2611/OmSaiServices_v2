@@ -1,0 +1,41 @@
+﻿@if (TempData["success"] != null)
+{
+	<div class="alert alert-success timer-alert">
+		<p>@TempData["success"]</p>
+	</div>
+}
+
+@if (TempData["error"] != null)
+{
+	<div class="alert alert-danger">
+		<p>@TempData["error"]</p>
+	</div>
+}
+@if (TempData["errors"] != null)
+{
+	<div class="alert alert-danger">
+		<ul>
+
+			@foreach (var err in (IEnumerable<string>)TempData["errors"])
+			{
+				<li>@err</li>
+			}
+		</ul>
+	</div>
+}
+
+@if (TempData["msg"] != null)
+{
+	<div class="alert alert-success timer-alert">
+        @TempData["msg"]
+    </div>
+}
+
+
+<script>
+
+	setTimeout(() => {
+		$('.timer-alert').slideUp();
+	}, 3000);
+
+</script>

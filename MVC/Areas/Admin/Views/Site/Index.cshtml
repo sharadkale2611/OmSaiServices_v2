@@ -1,0 +1,290 @@
+﻿@using Microsoft.AspNetCore.Identity.Data;
+@model OmSaiModels.Admin.SiteModel
+
+@{
+    ViewData["Title"] = "Sites";
+    Layout = "/Views/Shared/_Layout.cshtml";
+    ViewData["AreaName"] = "Admin";
+    ViewData["ControllerName"] = "Site";
+    int serialNumber = 0;
+}
+
+@section css {
+    <style>
+        .btnEdit:hover {
+            cursor: pointer;
+        }
+    </style>
+}
+
+
+<div class="app-content-header">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <!--begin::Row-->
+        <div class="row">
+            <div class="col-sm-6">
+                <h3 class="page-title">
+                    Sites
+                    <button class="btn btn-sm btn-primary" id="btnShowForm">Add New</button>
+                </h3>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="/">Master</a></li>
+                    <li class="breadcrumb-item"><a asp-area="admin" asp-controller="Project" asp-action="Index">Projects</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Sites
+                    </li>
+                </ol>
+            </div>
+        </div> <!--end::Row-->
+    </div> <!--end::Container-->
+</div> <!--end::App Content Header--> <!--begin::App Content-->
+
+
+<div class="app-content">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <partial name="~/Views/shared/_alertpartial.cshtml" />
+        <div class="row">
+
+
+            <div class="col-lg-12 col-md-12 col-sm-12" id="leftCard">
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table card-table table-vcenter text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th class="w-1">No.</th>
+                                    @* <th>Project Id</th> *@
+                                    <th>Project Name</th>
+                                    <th>Site Name</th>
+                                    <th>Site Location</th>
+                                    <th>Gps Location</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in ViewBag.AllData)
+                                {
+                                    serialNumber++;
+                                    <tr class="align-middle">
+                                        <td>@serialNumber</td>
+                                         @* <td>@item.ProjectId</td>  *@
+                                        <td>@item.ProjectName</td>
+                                        <td>@item.SiteName</td>
+                                        <td>@item.SiteLocation</td>
+                                        <td>@item.GpsLocation</td>
+
+                                        <td>
+                                            @if (item.SiteStatus == true)
+                                            {
+                                                <span class="status-icon bg-success"></span> <span>Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="status-icon bg-danger"></span> <span>Inactive</span>
+                                            }
+                                        </td>
+ 
+
+                                        <td>
+                                            <nav class="nav justify-content-center d-flex flex-nowrap">
+                                                <!-- Edit Button -->
+                                                <a class="nav-link badge shadow m-0 text-warning btn btnEdit"
+                                                   data-id="@item.SiteId"
+                                                   data-projectid="@item.ProjectId"
+                                                   data-sitename="@item.SiteName"
+                                                   data-sitelocation="@item.SiteLocation"
+                                                   data-gpslocation="@item.GpsLocation"
+                                                   data-status="@item.SiteStatus">
+                                                    <i class="fe fe-edit"></i>
+                                                </a>
+
+                                                <!-- Delete Button -->
+                                                <a class="nav-link badge shadow m-0 text-danger btn btn-delete"
+                                                   data-delete_id="@item.SiteId"
+                                                   data-delete_display="@item.SiteName">
+                                                    <i class="fe fe-trash"></i>
+                                                </a>
+                                            </nav>
+                                        </td>
+
+
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-4 col-sm-12" id="rightCard" style="display:none;">
+                <div class="card card-warning card-outline mb-4 ">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <form id="SiteForm" method="post" asp-area="admin" asp-controller="Site" asp-action="Create" asp-antiforgery="true">
+                        <input type="hidden" asp-for="SiteId" id="SiteId" />
+                        <div class="card-body">
+                             <div class="mb-3">
+                                <label asp-for="ProjectId" class="col-form-label">Project Name</label>
+                                <select asp-for="ProjectId" class="form-control" required>
+                                    <option value="" selected>Select Project</option>
+                                    @foreach (var project in ViewBag.Projects)
+                                    {
+                                        <option value="@project.ProjectId">@project.ProjectName</option>
+                                    }
+                                </select>
+                            </div> 
+                           @*  <div class="mb-3">
+                                <label asp-for="ProjectName" class="col-form-label">Project Name</label>
+                                <input type="text" class="form-control" asp-for="ProjectName" placeholder="Project Id" required>
+                            </div> *@
+
+                            <div class="mb-3">
+                                <label asp-for="SiteName" class="col-form-label">Site Name</label>
+                                <input type="text" class="form-control" asp-for="SiteName" placeholder="Site Name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="SiteLocation" class="col-form-label">Site Location</label>
+                                <input type="text" class="form-control" asp-for="SiteLocation" placeholder="Site Location" required>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="GpsLocation" class="col-form-label">Gps Location</label>
+                                <span class="badge bg-info mt-3 nav-link py-1" onclick="getGeoLocation()" style="float:right;">Get Current Location</span>
+                                <input type="text" class="form-control" asp-for="GpsLocation" placeholder="Gps Location" required>
+                            </div>
+
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" asp-for="SiteStatus" type="checkbox" id="status" checked>
+                                <label class="form-check-label" for="status">Is Active</label>
+                            </div>
+                        </div>
+                        <div class="card-footer text-center">
+                            <button type="submit" class="btn btn-outline-secondary" id="btnSubmit">Save</button>
+                            <button type="button" class="btn btn-outline-warning" id="btnCloseForm">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+@section modals {
+    <partial name="~/Views/shared/_DeleteModelPartial.cshtml" />
+}
+
+@section Scripts {
+    <script>
+
+        $('#btnShowForm').click(() => {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Save");
+
+            $('#ProjectId').val("");
+            $('#SiteId').val("");
+            $('#SiteName').val("");
+            $('#SiteLocation').val("");
+            $('#GpsLocation').val("");
+            
+
+            $('#SiteForm').attr('action', '/admin/Site/Create');
+        });
+
+        $('#btnCloseForm').click(() => {
+            $('#leftCard').addClass("col-lg-12 col-md-12").removeClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeOut();
+            $('#btnShowForm').fadeIn();
+            $('#ProjectId').val("");
+            $('#SiteId').val("");
+            $('#SiteName').val("");
+            $('#SiteLocation').val("");
+            $('#GpsLocation').val("");
+
+        });
+
+        $('.btnEdit').click(function () {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Update");
+
+            let data = $(this).data();
+            $('#SiteId').val(data.id);
+            // $('#ProjectName').val(data.projectname);
+             $('#ProjectId').val(data.projectid);
+            $('#SiteName').val(data.sitename); // Correct reference here
+            $('#SiteLocation').val(data.sitelocation); // Correct reference here
+            $('#GpsLocation').val(data.gpslocation); // Correct reference here
+            $('#SiteForm').attr('action', '/admin/Site/Edit');
+        });
+
+        $('.btn-delete').click(function () {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Delete");
+
+            let data = $(this).data();
+            $('#SiteId').val(data.delete_id);
+            // $('#ProjectName').val(data.projectname); // Correct reference here
+             $('#ProjectId').val(data.projectid);
+            $('#SiteName').val(data.sitename); // Correct reference here
+            $('#SiteLocation').val(data.sitelocation); // Correct reference here
+            $('#GpsLocation').val(data.gpslocation); // Correct reference here
+            $('#SiteForm').attr('action', '/admin/Site/Delete');
+        });
+
+
+        function getGeoLocation() {
+                     if (navigator.geolocation) {
+                         navigator.geolocation.getCurrentPosition(
+                             function (position) {
+                                 const latitude = position.coords.latitude;
+                                 const longitude = position.coords.longitude;
+                                 const accuracy = position.coords.accuracy;
+
+                                 // document.getElementById('output').innerHTML = `
+                                 //     Latitude: ${latitude}<br>
+                                 //     Longitude: ${longitude}<br>
+                                 //     Accuracy: ${accuracy} meters
+                                 // `;
+
+                                $('#GpsLocation').val(latitude+', '+longitude);
+                                 
+
+                             },
+                             function (error) {
+                                 switch (error.code) {
+                                     case error.PERMISSION_DENIED:
+                                         alert("User denied the request for Geolocation.");
+                                         break;
+                                     case error.POSITION_UNAVAILABLE:
+                                         alert("Location information is unavailable.");
+                                         break;
+                                     case error.TIMEOUT:
+                                         alert("The request to get user location timed out.");
+                                         break;
+                                     case error.UNKNOWN_ERROR:
+                                         alert("An unknown error occurred.");
+                                         break;
+                                 }
+                             }
+                         );
+                     } else {
+                         alert("Geolocation is not supported by this browser.");
+                     }
+                 }
+
+
+
+    </script>
+}

@@ -1,0 +1,213 @@
+﻿@using Microsoft.AspNetCore.Identity.Data;
+@model OmSaiModels.Worker.WorkerProjectSiteModel
+
+@{
+    ViewData["Title"] = "WorkerProjectSide";
+    Layout = "/Views/Shared/_Layout.cshtml";
+    ViewData["AreaName"] = "Worker";
+    ViewData["ControllerName"] = "WorkerProjectSite";
+    int serialNumber = 0;
+}
+
+@section css {
+    <style>
+        .btnEdit:hover {
+            cursor: pointer;
+        }
+    </style>
+}
+
+
+<div class="app-content-header">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <!--begin::Row-->
+        <div class="row">
+            <div class="col-sm-6">
+                <h3 class="page-title">
+                    WorkerProjectSide
+                    <button class="btn btn-sm btn-primary" id="btnShowForm">Add New</button>
+                </h3>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">Master</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        WorkerProjectSite
+                    </li>
+                </ol>
+            </div>
+        </div> <!--end::Row-->
+    </div> <!--end::Container-->
+</div> <!--end::App Content Header--> <!--begin::App Content-->
+
+<div class="app-content">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <partial name="~/Views/shared/_alertpartial.cshtml" />
+        <div class="row">
+
+
+            <div class="col-lg-12 col-md-12 col-sm-12" id="leftCard">
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table card-table table-vcenter text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th class="w-1">No.</th>
+                                    <th>Worker Name</th>
+                                    <th>Project Name</th>
+                                    <th>Site Name</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in ViewBag.AllData)
+                                {
+                                    serialNumber++;
+                                    <tr class="align-middle">
+                                        <td>@serialNumber</td>
+                                        <td>@item.WorkerName</td>
+                                        <td>@item.ProjectName</td>
+                                        <td>@item.SiteName</td>
+                                        <td>
+                                            @if (item.Status == true)
+                                            {
+                                                <span class="status-icon bg-success"></span> <span>Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="status-icon bg-danger"></span> <span>Inactive</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <nav class="nav justify-content-center d-flex flex-nowrap">
+                                                <a class="nav-link badge shadow m-0 text-warning btn btnEdit"
+                                                   data-id="@item.WorkerProjectSitesId"
+                                                    data-worker-id="@item.WorkerId"
+                                                   data-project-id="@item.ProjectId"
+                                                   data-site-id="@item.SiteId" 
+                                                   data-status="@item.Status">
+                                                    <i class="fe fe-edit"></i>
+                                                </a>
+                                                <a class="nav-link badge shadow m-0 text-danger btn btn-delete"
+                                                   data-delete-id="@item.WorkerProjectSitesId">
+                                                    <i class="fe fe-trash"></i>
+                                                </a>
+                                            </nav>
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-4 col-sm-12" id="rightCard" style="display:none;">
+                <div class="card card-warning card-outline mb-4 ">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <form id="WorkerProjectSiteForm" method="post" asp-area="Worker" asp-controller="WorkerProjectSite" asp-action="Create" asp-antiforgery="true">
+                        <input type="hidden" asp-for="WorkerProjectSitesId" id="workerProjectSidesId" />
+                        <div class="card-body">
+                        
+
+                            <div class="mb-3">
+                                <label asp-for="WorkerId" class="col-form-label">Worker Name</label>
+                                <select asp-for="WorkerId" class="form-control" required>
+                                    @foreach(var worker in ViewBag.Workers){
+                                        <option value="@worker.WorkerId">@worker.FirstName @worker.MiddleName @worker.LastName</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="ProjectId" class="col-form-label">Project Name</label>
+                                <select asp-for="ProjectId" class="form-control" required>
+                                    @foreach (var project in ViewBag.Projects)
+                                    {
+                                        <option value="@project.ProjectId">@project.ProjectName</option>
+                                    }
+                                </select>
+                            </div>
+
+                            
+
+                            <div class="mb-3">
+                                <label asp-for="SiteId" class="col-form-label">Site Name</label>
+                                <select asp-for="SiteId" class="form-control" required>
+                                    @foreach (var site in ViewBag.Sites)
+                                    {
+                                        <option value="@site.SiteId">@site.SiteName</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" asp-for="Status" type="checkbox" id="status" checked>
+                                <label class="form-check-label" for="status">Is Active</label>
+                            </div>
+                        </div>
+                        <div class="card-footer text-center">
+                            <button type="submit" class="btn btn-outline-secondary" id="btnSubmit">Save</button>
+                            <button type="button" class="btn btn-outline-warning" id="btnCloseForm">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+@section modals {
+    <partial name="~/Views/shared/_DeleteModelPartial.cshtml" />
+}
+
+@section Scripts {
+    <script>
+        $('#btnShowForm').click(() => {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Save");
+
+            $('#WorkerProjectSiteForm').attr('action', '/Worker/WorkerProjectSite/Create');
+            $('#WorkerProjectSitesId').val("");
+        });
+
+        $('#btnCloseForm').click(() => {
+            $('#leftCard').addClass("col-lg-12 col-md-12").removeClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeOut();
+            $('#btnShowForm').fadeIn();
+        });
+
+        $('.btnEdit').click(function () {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Update");
+
+            let data = $(this).data();
+            $('#WorkerProjectSitesId').val(data.id);
+            $('#WorkerId').val(data.worker-id);
+            $('#ProjectId').val(data.project-name);
+            $('#SiteId').val(data.site-name);
+            $('#WorkerProjectSiteForm').attr('action', '/Worker/WorkerProjectSite/Edit');
+        });
+
+        $('.btn-delete').click(function () {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Delete");
+
+            let data = $(this).data();
+            $('#WorkerProjectSitesId').val(data.deleteId);
+            $('#WorkerProjectSiteForm').attr('action', '/Worker/WorkerProjectSite/Delete');
+        });
+    </script>
+}
