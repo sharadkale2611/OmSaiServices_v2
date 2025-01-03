@@ -28,6 +28,7 @@ namespace OmSaiModels.Worker
 		public int DepartmentId { get; set; }
 		
 		public string? DepartmentName { get; set; }
+		public string? SiteName { get; set; }
 
 		[Required]
 		public string MarritalStatus { get; set; }
