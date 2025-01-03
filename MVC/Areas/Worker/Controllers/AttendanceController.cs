@@ -66,7 +66,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 				}
 
 				// Save the selfie image
-				var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "selfies");
+				var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "media/selfies");
 				if (!Directory.Exists(uploadsFolder))
 				{
 					Directory.CreateDirectory(uploadsFolder);
@@ -81,7 +81,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 				}
 
 				// Set the selfie path in the model
-				model.SelfieImage = $"/selfies/{fileName}";
+				model.SelfieImage = $"/media/selfies/{fileName}";
 
 				// Call the service to manage attendance
 				_attendanceService.ManageAttendance(model);
