@@ -1,8 +1,6 @@
 # Ignore OmSaiEnvironment folder
-OmSaiEnvironment/
 
 # Ignore appsettings.json inside MVC
-MVC/appsettings.json
 
 # Ignore common ASP.NET Core and Visual Studio files
 *.user
@@ -25,7 +23,7 @@ obj/
 **/node_modules/
 **/bower_components/
 **/wwwroot/lib/
-**/wwwroot/media/
+**/wwwroot/lib/media
 
 
 # Ignore logs
@@ -55,6 +53,3 @@ obj/
 # Specifically ignore net8.0 folder inside bin/Debug for MVC
 MVC/bin/Debug/net8.0/
 OmSaiServices/obj/Debug/
-MVC/appsettings.Development.json
-MVC/appsettings.json
-OmSaiEnvironment/DBConnection.cs
