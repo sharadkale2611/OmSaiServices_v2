@@ -18,6 +18,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
  *
  * For details please refer to: https://www.datatables.net
+	---
  */
 
 (function( factory ) {
