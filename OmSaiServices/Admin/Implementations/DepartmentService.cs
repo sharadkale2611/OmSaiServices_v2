@@ -75,6 +75,7 @@ namespace OmSaiServices.Admin.Implementations
             {
                 new("@DepartmentId", DepartmentId),
                 new("@DepartmentName", model.DepartmentName),
+                new("@DepartmentShortName",model.DepartmentShortName),
                 new("@Status", model.Status)
             };
         }
@@ -89,12 +90,13 @@ namespace OmSaiServices.Admin.Implementations
 
         }
 
-        private SqlParameter[] GetParams(int? id = null, string? DepartmentName = null, bool? Status = null)
+        private SqlParameter[] GetParams(int? id = null, string? DepartmentName = null, string? DepartmentShortName = null, bool? Status = null)
         {
             return new SqlParameter[]
             {
                 new SqlParameter("@DepartmentId", id),
                 new SqlParameter("@DepartmentName", DepartmentName),
+                new SqlParameter("@DepartmentShortName",DepartmentShortName),
                 new SqlParameter("@Status", Status)
             };
         }

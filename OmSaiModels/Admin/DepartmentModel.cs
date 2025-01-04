@@ -16,6 +16,10 @@ namespace OmSaiModels.Admin
         public string DepartmentName { get; set; }
 
         [Required]
+        public string DepartmentShortName { get; set; }
+        
+
+        [Required]
         public bool Status { get; set; }
 
     }

@@ -1,11 +1,11 @@
 ﻿@using Microsoft.AspNetCore.Identity.Data;
-@model OmSaiModels.Admin.DepartmentModel
+@model OmSaiModels.Admin.HolidayModel
 
 @{
-    ViewData["Title"] = "Departments";
+    ViewData["Title"] = "Holidays";
     Layout = "/Views/Shared/_Layout.cshtml";
     ViewData["AreaName"] = "Admin";
-    ViewData["ControllerName"] = "Department";
+    ViewData["ControllerName"] = "Holiday";
     int serialNumber = 0;
 }
 
@@ -25,7 +25,7 @@
         <div class="row">
             <div class="col-sm-6">
                 <h3 class="page-title">
-                    Departments
+                    Holidays
                     <button class="btn btn-sm btn-primary" id="btnShowForm">Add New</button>
                 </h3>
             </div>
@@ -33,7 +33,7 @@
                 <ol class="breadcrumb float-sm-end">
                     <li class="breadcrumb-item"><a href="#">Master</a></li>
                     <li class="breadcrumb-item active" aria-current="page">
-                        Departments
+                        Holidays
                     </li>
                 </ol>
             </div>
@@ -56,10 +56,11 @@
                             <thead>
                                 <tr>
                                     <th class="w-1">No.</th>
-                                    <th>Department Name</th>
-                                    <th>DepartmentShortName</th>
+                                    <th>Holiday Name</th>
+                                    <th>Holiday Date</th>
+                                    <th>IsRecurring</th>
                                     <th>Status</th>
-                                 
+                                    
                                 </tr>
                             </thead>
                             <tbody>
@@ -68,9 +69,19 @@
                                     serialNumber++;
                                     <tr class="align-middle">
                                         <td>@serialNumber</td>
-                                        <td>@item.DepartmentName</td>
-                                        <td>@item.DepartmentShortName</td>
+                                        <td>@item.HolidayName</td>
+                                        <td>@item.HolidayDate</td>
 
+                                        <td>
+                                            @if (item.IsRecurring == true)
+                                            {
+                                                <span class="status-icon bg-success"></span> <span>Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="status-icon bg-danger"></span> <span>Inactive</span>
+                                            }
+                                        </td>
                                         <td>
                                             @if (item.Status == true)
                                             {
@@ -84,15 +95,16 @@
                                         <td>
                                             <nav class="nav justify-content-center">
                                                 <a class="nav-link badge shadow m-0 text-warning btn btnEdit"
-                                                   data-id="@item.DepartmentId"
-                                                   data-name="@item.DepartmentName"
-                                                   data-shortname="@item.DepartmentShortName"
+                                                   data-id="@item.HolidayId"
+                                                   data-name="@item.HolidayName"
+                                                   data-date="@item.HolidayDate"
+                                                   data-rec="@item.IsRecurring"
                                                    data-status="@item.Status">
                                                     <i class="fe fe-edit"></i>
                                                 </a>
                                                 <a class="nav-link badge shadow m-0 text-danger btn btn-delete"
-                                                   data-delete_id="@item.DepartmentId"
-                                                   data-delete_display="@item.DepartmentName">
+                                                   data-delete_id="@item.HolidayId"
+                                                   data-delete_display="@item.HolidayName">
                                                     <i class="fe fe-trash"></i>
                                                 </a>
                                             </nav>
@@ -110,16 +122,22 @@
             <div class="col-lg-4 col-md-4 col-sm-12" id="rightCard" style="display:none;">
                 <div class="card card-warning card-outline mb-4 ">
                     <div asp-validation-summary="All" class="text-danger"></div>
-                    <form id="DepartmentForm" method="post" asp-area="admin" asp-controller="Department" asp-action="Create" asp-antiforgery="true">
-                        <input type="hidden" asp-for="DepartmentId" id="DepartmentId" />
-                        <div class="card-body">
+                    <form id="HolidayForm" method="post" asp-area="admin" asp-controller="Holiday" asp-action="Create" asp-antiforgery="true">
+@*                         <input type="hidden" asp-for="HolidayId" id="HolidayId" />
+ *@                        <div class="card-body">
                             <div class="mb-3">
-                                <label asp-for="DepartmentName" class="col-form-label">Department Name</label>
-                                <input type="text" class="form-control" asp-for="DepartmentName" placeholder="Department Name" required>
+                                <label asp-for="HolidayName" class="col-form-label">Holiday Name</label>
+                                <input type="text" class="form-control" asp-for="HolidayName" placeholder="Holiday Name" required>
                             </div>
                             <div class="mb-3">
-                                <label asp-for="DepartmentShortName" class="col-form-label">Department Name</label>
-                                <input type="text" class="form-control" asp-for="DepartmentShortName" placeholder="DepartmentShortName " required>
+                                <label asp-for="HolidayDate" class="col-form-label">Holiday Date</label>
+                                <input type="date" class="form-control" asp-for="HolidayDate" placeholder="Holiday Date " required>
+                            </div>
+                            <div class="form-check mt-2">
+
+                                <input class="form-check-input" asp-for="IsRecurring" type="checkbox" id="IsRecurring" checked>
+                                <label asp-for="IsRecurring" class="form-check-label">IsRecurring</label>
+                               
                             </div>
                             <div class="form-check mt-2">
                                 <input class="form-check-input" asp-for="Status" type="checkbox" id="status" checked>
@@ -152,8 +170,8 @@
             $('#btnShowForm').fadeOut();
             $('#btnSubmit').text("Save");
 
-            $('#DepartmentForm').attr('action', '/admin/Department/Create');
-            $('#DepartmentId').val("");
+            $('#HolidayForm').attr('action', '/admin/Holiday/Create');
+            $('#HolidayId').val("");
         });
 
         $('#btnCloseForm').click(() => {
@@ -169,11 +187,13 @@
             $('#btnSubmit').text("Update");
 
             let data = $(this).data();
-            $('#DepartmentId').val(data.id);
-            $('#DepartmentName').val(data.name);
-            $('#DepartmentShortName').val(data.shortname);
+            $('#HolidayId').val(data.id);
+            $('#HolidayName').val(data.name);
+            $('#HolidayDate').val(data.date);
+            $('#IsRecurring').val(data.rec);
 
-            $('#DepartmentForm').attr('action', '/admin/Department/Edit');
+
+            $('#HolidayForm').attr('action', '/admin/Holiday/Edit');
         });
 
         $('.btn-delete').click(function () {
@@ -183,8 +203,8 @@
             $('#btnSubmit').text("Delete");
 
             let data = $(this).data();
-            $('#DepartmentId').val(data.delete_id);
-            $('#DepartmentForm').attr('action', '/admin/Department/Delete');
+            $('#HolidayId').val(data.delete_id);
+            $('#HolidayForm').attr('action', '/admin/Holiday/Delete');
         });
     </script>
 }

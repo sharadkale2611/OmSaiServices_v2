@@ -125,7 +125,43 @@ namespace GeneralTemplate.Areas.Worker.Controllers
             }
         }
 
-        public IActionResult Create()
+		[HttpPost]
+		[Route("api/Worker/ChangePassword")]
+		public IActionResult ChangePassword(int workerId, string oldPassword, string newPassword)
+		{
+			try
+			{
+				// Validate the input data
+				if (workerId == 0 || string.IsNullOrEmpty(oldPassword) || string.IsNullOrEmpty(newPassword))
+				{
+					return BadRequest(new
+					{
+						Success = false,
+						Message = "Invalid request data."
+					});
+				}
+
+				// Attempt to change the password using the service method
+				var result = _workerService.ChangePassword(workerId, oldPassword, newPassword);
+
+				return Ok(new
+				{
+					Success = true,
+					Message = "Password changed successfully.",
+					Data = result
+				});
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(new
+				{
+					Success = false,
+					Message = ex.Message
+				});
+			}
+		}
+
+		public IActionResult Create()
 		{
 			ViewBag.AllData = _workerService.GetAll();
 			ViewBag.Department = _departmentService.GetAll();

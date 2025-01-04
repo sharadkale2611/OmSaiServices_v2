@@ -47,7 +47,10 @@ namespace OmSaiModels.Worker
 		public DateTime DateofJoining { get; set; }
 
 		public bool? Status { get; set; } = false;
-		
-		List<DepartmentModel> list { get; set; }
+
+		public string? Password { get; set; }
+
+
+        List<DepartmentModel> list { get; set; }
 	}
 }

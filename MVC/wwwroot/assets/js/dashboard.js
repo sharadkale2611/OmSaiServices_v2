@@ -10,7 +10,8 @@ shim: {
 },
 paths: {
  'core': rootPath+'assets/js/core',
-'jquery': rootPath+'assets/js/vendors/jquery-3.2.1.min',
+'jquery': rootPath + 'DataTables/jquery-3.7.1',
+'datatable': rootPath + 'DataTables/datatables',
 'bootstrap': rootPath+'assets/js/vendors/bootstrap.bundle.min',
 'sparkline': rootPath+'assets/js/vendors/jquery.sparkline.min',
 'selectize': rootPath+'assets/js/vendors/selectize.min',

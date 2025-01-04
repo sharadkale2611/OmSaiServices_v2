@@ -115,8 +115,11 @@ namespace OmSaiServices.Worker.Implimentation
 				new("@Age", model.Age),
 				new("@Gender", model.Gender),
 				new("@SpouseName", model.SpouseName),
-				new("@DateofJoining", model.DateofJoining)
-			};
+				new("@DateofJoining", model.DateofJoining),
+		        new("@Password", model.Password)
+
+
+            };
 		}
 
 		private List<KeyValuePair<string, object>> DeleteRestore(int id)
@@ -148,8 +151,33 @@ namespace OmSaiServices.Worker.Implimentation
 			{
 				new SqlParameter("@WorkerId", id),
 				new SqlParameter("@WorkmanId", WorkmanId)
-			};
+
+            };
 		}
 
+		public bool ChangePassword(int WorkerId, string oldPassword, string newPassword)
+		{
+			// Fetch the worker details using the WorkerId
+			var worker = GetById(WorkerId);
+			if (worker == null)
+			{
+				throw new Exception("Worker not found."); // Handle worker not existing
+			}
+
+			// Check if the old password matches
+			if (worker.Password != oldPassword)
+			{
+				throw new Exception("Old password is incorrect.");
+			}
+
+
+			// Update the worker's password directly
+			worker.Password = newPassword;
+
+			// Call the existing update method to save changes
+			Update(worker);
+
+			return true; // Indicate successful password change
+		}
 	}
 }
