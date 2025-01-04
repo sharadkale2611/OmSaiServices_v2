@@ -24,6 +24,10 @@
     <title>@ViewData["Title"] - Om Sai Services</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
+
+    
+    <script src="~/DataTables/jquery-3.7.1.js"></script>
+    <script src="~/DataTables/datatables.js"></script>
     <script src="~/assets/js/require.min.js"></script>
 
     <script>
@@ -45,6 +49,8 @@
     <script src="~/assets/plugins/maps-google/plugin.js"></script>
     <!-- Input Mask Plugin -->
     <script src="~/assets/plugins/input-mask/plugin.js"></script>
+    
+
 
     @await RenderSectionAsync("css", required: false)
 
@@ -217,9 +223,9 @@
                                 @*     <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link text-danger"><i class="fe fe-pocket"></i>Uniform</a> *@
                                 @* </li> *@
 
-                                @* <li class="nav-item"> *@
-                                @*     <a asp-area="worker" asp-controller="Attendance" asp-action="Index" class="nav-link text-danger"><i class="fe fe-clock"></i>Attendance</a> *@
-                                @* </li> *@
+                                <li class="nav-item">
+                                    <a asp-area="worker" asp-controller="Attendance" asp-action="Index" class="nav-link"><i class="fe fe-clock"></i>Attendance</a>
+                                </li>
                                 
                                 @* <li class="nav-item"> *@
                                 @*     <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link text-danger"><i class="fe fe-briefcase"></i>Salary</a> *@
@@ -299,7 +305,6 @@
         </footer>
     </div>
 
-    <script src="~/assets/jquery/dist/jquery.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
 

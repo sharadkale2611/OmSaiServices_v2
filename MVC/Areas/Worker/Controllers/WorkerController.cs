@@ -59,71 +59,9 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			ViewBag.AttendanceHistory = _attendanceService.GetAll(id);
 			ViewBag.WorkerDocuments = _workerDocumentService.GetAll(id);
 
-
 			return View();
 		}
 
-        [HttpPost]
-        [Route("api/Worker/UploadDocument")]
-        public IActionResult UploadDocument([FromForm] IFormFile? file, [FromForm] int  WorkerId, int DocumentId, [FromForm] string? documentNumber="", string? documentImage=null)
-        {
-			var model = new WorkerDocumentModel { 
-				DocumentId = DocumentId,
-				DocumentNumber = documentNumber,
-				WorkerId = WorkerId
-				
-			};
-            try
-            {
-                if (file != null && file.Length > 0)
-                {
-                    
-                    var documentPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "documents");
-
-                    
-                    if (!Directory.Exists(documentPath))
-                        Directory.CreateDirectory(documentPath);
-
-                    
-                    var uniqueFileName = $"{Path.GetFileNameWithoutExtension(file.FileName)}_{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-                    var filePath = Path.Combine(documentPath, uniqueFileName);
-
-                    
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        file.CopyTo(stream);
-                    }
-					model.DocumentImage = $"/documents/{uniqueFileName}";
-                    _workerDocumentService.Update(model);
-
-                    return Ok(new
-                    {
-                        success = true,
-                        message = "Document uploaded successfully!",
-                        filePath = $"/documents/{uniqueFileName}" 
-                    });
-                }
-				else
-				{
-                    model.DocumentImage = documentImage;
-
-                    _workerDocumentService.Update(model);
-                    return Ok(new
-                    {
-                        success = true,
-                        message = "Document updated successfully!",
-                        filePath = documentImage
-                    });
-
-                }
-
-                return BadRequest(new { success = false, message = "No file uploaded." });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { success = false, message = $"An error occurred: {ex.Message}" });
-            }
-        }
 
 		[HttpPost]
 		[Route("api/Worker/ChangePassword")]
@@ -161,6 +99,72 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			}
 		}
 
+		[HttpPost]
+		[Route("api/Worker/UploadDocument")]
+		public IActionResult UploadDocument([FromForm] IFormFile? file, [FromForm] int WorkerId, int DocumentId, [FromForm] string? documentNumber = "", string? documentImage = null)
+		{
+			string uploadPath = "media/documents";
+
+			var model = new WorkerDocumentModel
+			{
+				DocumentId = DocumentId,
+				DocumentNumber = documentNumber,
+				WorkerId = WorkerId
+
+			};
+			try
+			{
+				if (file != null && file.Length > 0)
+				{
+
+					var documentPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", uploadPath);
+
+
+					if (!Directory.Exists(documentPath))
+						Directory.CreateDirectory(documentPath);
+
+
+					var uniqueFileName = $"{Path.GetFileNameWithoutExtension(file.FileName)}_{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+					var filePath = Path.Combine(documentPath, uniqueFileName);
+
+
+					using (var stream = new FileStream(filePath, FileMode.Create))
+					{
+						file.CopyTo(stream);
+					}
+					model.DocumentImage = $"{uploadPath}/{uniqueFileName}";
+					_workerDocumentService.Update(model);
+
+					return Ok(new
+					{
+						success = true,
+						message = "Document uploaded successfully!",
+						filePath = $"{uploadPath}/{uniqueFileName}"
+					});
+				}
+				else
+				{
+					model.DocumentImage = documentImage;
+
+					_workerDocumentService.Update(model);
+					return Ok(new
+					{
+						success = true,
+						message = "Document updated successfully!",
+						filePath = documentImage
+					});
+
+				}
+
+				return BadRequest(new { success = false, message = "No file uploaded." });
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { success = false, message = $"An error occurred: {ex.Message}" });
+
+			}
+		}
+
 		public IActionResult Create()
 		{
 			ViewBag.AllData = _workerService.GetAll();
@@ -177,7 +181,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public IActionResult Create(WorkerModel model, int ProjectId, int SiteId, int QualificationId, string MobileNumber, bool Status)
+		public IActionResult Create(WorkerModel model, int ProjectId, int SiteId, string SiteName, int QualificationId, string MobileNumber, bool Status)
 		{
 			try
 			{
@@ -186,7 +190,9 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 				if (ModelState.IsValid)
 				{
 					TempData["success"] = "Record added successfully!";
-					
+
+					model.SiteName = SiteName;
+
 					var lastWorkerId = _workerService.Create(model);
 					
 					WorkerProjectSiteModel model2 = new WorkerProjectSiteModel

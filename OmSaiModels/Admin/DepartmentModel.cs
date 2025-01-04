@@ -14,12 +14,10 @@ namespace OmSaiModels.Admin
 
         [Required]
         public string DepartmentName { get; set; }
+		[Required]
+		public string DepartmentShortName { get; set; }
 
-        [Required]
-        public string DepartmentShortName { get; set; }
-        
-
-        [Required]
+		[Required]
         public bool Status { get; set; }
 
     }

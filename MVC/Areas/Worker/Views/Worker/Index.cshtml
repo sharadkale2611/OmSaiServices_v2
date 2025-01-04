@@ -9,11 +9,17 @@
     int serialNumber = 1;
 }
 
+
 @section css {
+    <link href="~/datatables/datatables.datatables.css" rel="stylesheet" />
+
     <style>
         .btnEdit:hover {
             cursor: pointer;
         }
+
+
+
     </style>
 }
 
@@ -58,17 +64,17 @@
 
             <div class="col-lg-12 col-md-12 col-sm-12" id="leftCard">
                 <div class="card">
-                    <div class="table-responsive" >
-                        <table class="table card-table table-vcenter text-nowrap" style="min-height:200px">
+                    <div class="p-1" >
+                        <table id="table" class="table table-responsive card-table table-vcenter text-nowrap">
                             <thead>
                                 <tr>
                                     <th style="width: 10px">Sr No.</th>
                                     <th class="" scope="col">Workman Id</th>
                                     <th class="" scope="col">Name</th>
-                                    <th class="" scope="col">Department Name</th>
-                                    @* <th class="" scope="col">Marrital Status</th> *@
+                                    <th class="" scope="col">Department</th>
+                                    <th class="" scope="col">Site</th>
                                     @* <th class="text-center" scope="col">Date of Birth</th> *@
-                                    <th class="" scope="col">Age</th>
+                                    @* <th class="" scope="col">Age</th> *@
                                     <th class="" scope="col">Gender</th>
                                     @* <th class="text-center" scope="col">Spouse Name</th> *@
                                     <th class="" scope="col">Date of Joining</th>                                   
@@ -90,12 +96,12 @@
 
                                         <td>@worker.FirstName @worker.MiddleName @worker.LastName</td>
                                         <td>@worker.DepartmentName</td>
-                                        @* <td>@worker.MarritalStatus</td> *@
+                                        <td>@worker.SiteName</td>
                                         @* <td>@worker.DateofBirth</td> *@
-                                        <td>@worker.Age</td>
+                                        @* <td>@worker.Age</td> *@
                                         <td>@worker.Gender</td>
                                         @* <td>@worker.SpouseName</td> *@
-                                        <td>@worker.DateofJoining</td>
+                                        <td>@worker.DateofJoining?.ToString("dd MMM yy")</td>
                                         <td>
                                             @if (worker.Status == true)
                                             {
@@ -108,7 +114,7 @@
 
                                         </td>
                                         <td>
-                                            <nav class="nav justify-content-center">
+                                            <nav class="nav justify-content-center d-flex flex-nowrap">
                                                 <a asp-action="Edit" class="nav-link badge shadow m-1 text-warning btn btnEdit" asp-controller="Worker" asp-area="Worker" asp-route-id="@worker.WorkerId">
                                                     <i class="fe fe-edit"></i>
                                                 </a>
@@ -118,7 +124,7 @@
                                                     <i class="fe fe-trash"></i>
                                                 </a>
 
-                                                <a asp-area="worker" asp-controller="Attendance" asp-action="Index" asp-route-wokrman="@worker.WorkmanId" class="nav-link badge shadow m-1 text-info btn">
+                                                <a asp-area="worker" asp-controller="Attendance" asp-action="Create" asp-route-wokrman="@worker.WorkmanId" class="nav-link badge shadow m-1 text-info btn">
                                                     <i class="fe fe-user-check"></i>
                                                 </a>
 
@@ -146,7 +152,15 @@
 }
 
 @section Scripts{
+
+    @* <script src="~/datatables/datatables.js"></script> *@
+
+
     <script>
+
+        $(document).ready(function() {
+            $('#table').DataTable();
+        });
 
     </script>
 }

@@ -57,9 +57,9 @@
                                 <tr>
                                     <th class="w-1">No.</th>
                                     <th>Department Name</th>
-                                    <th>DepartmentShortName</th>
+                                    <th>Department Short Name</th>
                                     <th>Status</th>
-                                 
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -70,7 +70,6 @@
                                         <td>@serialNumber</td>
                                         <td>@item.DepartmentName</td>
                                         <td>@item.DepartmentShortName</td>
-
                                         <td>
                                             @if (item.Status == true)
                                             {
@@ -118,8 +117,8 @@
                                 <input type="text" class="form-control" asp-for="DepartmentName" placeholder="Department Name" required>
                             </div>
                             <div class="mb-3">
-                                <label asp-for="DepartmentShortName" class="col-form-label">Department Name</label>
-                                <input type="text" class="form-control" asp-for="DepartmentShortName" placeholder="DepartmentShortName " required>
+                                <label asp-for="DepartmentShortName" class="col-form-label">Department Short Name</label>
+                                <input type="text" class="form-control" asp-for="DepartmentShortName" placeholder="Department Short Name" required>
                             </div>
                             <div class="form-check mt-2">
                                 <input class="form-check-input" asp-for="Status" type="checkbox" id="status" checked>
@@ -172,7 +171,6 @@
             $('#DepartmentId').val(data.id);
             $('#DepartmentName').val(data.name);
             $('#DepartmentShortName').val(data.shortname);
-
             $('#DepartmentForm').attr('action', '/admin/Department/Edit');
         });
 
