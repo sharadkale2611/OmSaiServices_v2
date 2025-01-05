@@ -54,6 +54,8 @@
                                 <tr>
                                     <th class="w-1">No.</th>
                                     <th>Document Name</th>
+                                    <th>Is Document <br />Image Required?</th>
+                                    <th>Is Document <br />Number Required?</th>
                                     <th>Status</th>
                                     <th></th>
                                 </tr>
@@ -66,6 +68,35 @@
                                         <td>@serialNumber</td>
                                         <td>@item.DocumentName</td>
                                         <td>
+                                            @if (item.IsDocumentImage == true)
+                                            {
+                                                <b class="text-success">
+                                                    <span class="fe fe-check"></span>
+                                                </b>
+                                            }
+                                            else
+                                            {
+                                                <b class="text-danger">
+                                                    <span class="fe fe-x"></span>
+                                                </b>
+                                            }
+                                        </td>
+
+                                        <td>
+                                            @if (item.IsDocumentNumber == true)
+                                            {
+                                                <b class="text-success">
+                                                    <span class="fe fe-check"></span>
+                                                </b>
+                                            }
+                                            else
+                                            {
+                                                <b class="text-danger">
+                                                        <span class="fe fe-x"></span>
+                                                </b>
+                                            }
+                                        </td>
+                                        <td>
                                             @if (item.Status == true)
                                             {
                                                 <span class="status-icon bg-success"></span> <span>Active</span>
@@ -76,10 +107,12 @@
                                             }
                                         </td>
                                         <td>
-                                            <nav class="nav justify-content-center">
+                                            <nav class="nav justify-content-center flex-nowrap">
                                                 <a class="nav-link badge shadow m-0 text-warning btn btnEdit"
                                                    data-id="@item.DocumentId"
                                                    data-name="@item.DocumentName"
+                                                   data-is_document_number="@item.IsDocumentNumber"
+                                                   data-is_document_image="@item.IsDocumentImage"
                                                    data-status="@item.Status">
                                                     <i class="fe fe-edit"></i>
                                                 </a>
@@ -109,6 +142,16 @@
                             <div class="mb-3">
                                 <label asp-for="DocumentName" class="col-form-label">Document Name</label>
                                 <input type="text" class="form-control" asp-for="DocumentName" placeholder="Document Name" required>
+                            </div>
+                            
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" asp-for="IsDocumentImage" type="checkbox" id="IsDocumentImage" checked>
+                                <label class="form-check-label" for="IsDocumentImage">Is Document Image Required?</label>
+                            </div>
+
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" asp-for="IsDocumentNumber" type="checkbox" id="IsDocumentNumber" checked>
+                                <label class="form-check-label" for="IsDocumentNumber">Is Document Number Required?</label>
                             </div>
                             <div class="form-check mt-2">
                                 <input class="form-check-input" asp-for="Status" type="checkbox" id="status" checked>
@@ -158,6 +201,29 @@
             $('#btnSubmit').text("Update");
 
             let data = $(this).data();
+
+            if(data.is_document_number == "False"){
+                $('#IsDocumentNumber').prop('checked', false);
+            }else{
+                $('#IsDocumentNumber').prop('checked', true);
+            }
+
+            if(data.is_document_image == "False"){
+                $('#IsDocumentImage').prop('checked', false);
+            }else{
+                $('#IsDocumentImage').prop('checked', true);
+            }
+
+
+            
+
+            if(data.status == "False"){
+                $('#Status').prop('checked', false);
+            }else{
+                $('#Status').prop('checked', true);
+            }
+
+
             $('#DocumentId').val(data.id);
             $('#DocumentName').val(data.name);
             $('#DocumentForm').attr('action', '/admin/Document/Edit');

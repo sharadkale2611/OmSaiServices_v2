@@ -41,11 +41,6 @@
 							@* 		</select> *@
 							@* 	</div> *@
 
-							@* 	<div class="col-md-4  mb-3"> *@
-							@* 		<label asp-for="WorkmanId" class="col-form-label">Workman Id</label> *@
-							@* 		<input type="text" class="form-control" asp-for="WorkmanId" placeholder="Workman Id" required> *@
-							@* 		<span asp-validation-for="WorkmanId" class="text-danger"></span> *@
-							@* 	</div> *@
 
 								<div class="col-md-4  mb-3">
 									<label asp-for="DepartmentId" class="col-form-label">DepartmentName</label>
@@ -53,11 +48,15 @@
 										<option value="">Select Department</option>
 										@foreach (var department in ViewBag.Department)
 										{
-											<option value="@department.DepartmentId">@department.DepartmentName</option>
+											<option value="@department.DepartmentId" data-department_short_name="@department.DepartmentShortName">@department.DepartmentName (@department.DepartmentShortName)</option>
 										}
 									</select>
+									<input type="hidden" class="form-control" asp-for="DepartmentShortName" >
 									<span asp-validation-for="DepartmentName" class="text-danger"></span>
 								</div>
+
+
+
 							</div>
 
 							<div class="row ">
@@ -83,7 +82,7 @@
 								<div class="col-md-4  mb-3">
 									<label asp-for="DateofBirth" class="col-form-label">Date of Birth</label>
 									<input type="date" class="form-control" asp-for="DateofBirth" placeholder="Date of Birth" required>
-									<span asp-validation-for="DateofBirth" class="text-danger"></span>
+									<span asp-validation-for="DateofBirth" id="dobError" class="text-danger"></span>
 								</div>
 
 								<div class="col-md-4  mb-3">
@@ -127,10 +126,19 @@
 								<div class="col-md-4  mb-3">
 									<label asp-for="DateofJoining" class="col-form-label">Date of Joining</label>
 									<input type="date" class="form-control" asp-for="DateofJoining" placeholder="DateofJoining" required>
-									<span asp-validation-for="DateofJoining" class="text-danger"></span>
+									<span asp-validation-for="DateofJoining" id="joiningError" class="text-danger"></span>
 								</div>
-								
+							</div>
 
+							<div class="row">
+								<div class="col-md-6 mb-3">
+									<label for="ProjectId" class="col-form-label">Permament Address</label>
+									<textarea  class="form-control" name="Address1" placeholder="Permanent Address" required></textarea>
+								</div>
+								<div class="col-md-6 mb-3">
+									<label for="ProjectId" class="col-form-label">Current Address</label>
+									<textarea class="form-control" name="Address2"  placeholder="Current Address" ></textarea>
+								</div>
 							</div>
 
 							<div class="row">
@@ -172,6 +180,10 @@
 									<input type="text" class="form-control" name="MobileNumber" placeholder="Mobile Number" />
 								</div>
 								
+								<div class="col-md-4 form-group">
+									<label class="form-label">Alternate Mobile Number</label>
+									<input type="text" class="form-control" name="MobileNumber2" placeholder="Alternate Mobile Number" value="" />
+								</div>
 
 							</div>
 						
@@ -189,3 +201,103 @@
 
 </div>
 
+@section Scripts{
+	<script>
+		$("#DepartmentId").change(function(){
+
+			var selectedOption = $(this).find(':selected');
+			var shortName = selectedOption.data('department_short_name');
+			$('#DepartmentShortName').val(shortName);
+		});
+
+
+		$(document).ready(function () {
+		// Custom validation logic
+		function validateDOB(value) {
+			const dob = new Date(value);
+			const minDate = new Date("1975-01-01");
+			const maxDate = new Date();
+			maxDate.setFullYear(maxDate.getFullYear() - 16);
+
+			if (!value) {
+				return "Date of Birth is required.";
+			} else if (dob < minDate) {
+				return "Date of Birth must be on or after January 1, 1975.";
+			} else if (dob > maxDate) {
+				return "Date of Birth must be at least 16 years before today.";
+			}
+			return ""; // No error
+		}
+
+			function validateJoiningDate(value) {
+				const dob = new Date(value);
+				const minDate = new Date("2010-01-01");
+				const today = new Date();
+				const tomorrow = new Date();
+				tomorrow.setDate(today.getDate() + 1); // Calculate tomorrow's date
+
+				if (!value) {
+						return "Date of Joining is required.";
+				} else if (dob < minDate) {
+						return "Date of Joining must be on or after January 1, 2010.";
+				} else if (dob > tomorrow) {
+						return "Date of Joining must be less than tommorow.";
+				}
+				return ""; // No error
+			}
+
+
+
+		// Calculate age in years
+		function calculateAge(dob) {
+			const today = new Date();
+			let age = today.getFullYear() - dob.getFullYear();
+			const monthDiff = today.getMonth() - dob.getMonth();
+			const dayDiff = today.getDate() - dob.getDate();
+
+			// Adjust age if the birthday hasn't occurred yet this year
+			if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+				age--;
+			}
+			return age;
+		}
+
+		// Attach focusout event
+		$("#DateofBirth").on("focusout", function () {
+			const value = $(this).val();
+			const errorMessage = validateDOB(value);
+
+			if (errorMessage) {
+				$("#dobError").text(errorMessage);
+				$("#ageDisplay").text(""); // Clear age display
+				$(this).focus(); // Refocus on the input
+
+			} else {
+				$("#dobError").text(""); // Clear error message
+
+				// If valid, calculate and display age
+				const dob = new Date(value);
+				const age = calculateAge(dob);
+				$("#Age").val(age);
+			}
+		});
+
+				$("#DateofJoining").on("focusout", function () {
+				const value = $(this).val();
+					const errorMessage = validateJoiningDate(value);
+
+				if (errorMessage) {
+					$("#joiningError").text(errorMessage);
+					$(this).focus(); // Refocus on the input
+
+				} else {
+					$("#joiningError").text(""); // Clear error message
+				}
+			});
+
+
+	});
+
+
+	</script>
+}

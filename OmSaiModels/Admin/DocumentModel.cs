@@ -14,10 +14,12 @@ namespace OmSaiModels.Admin
 
         [Required(ErrorMessage = "DocumentName is required.")]
         [StringLength(100, ErrorMessage = "DocumentName cannot exceed 100 characters.")]
-        public string DocumentName { get; set; }
-
-        [Required]
-        public Boolean Status { get; set; } = true;
+		public string DocumentName { get; set; }
+        public bool IsDocumentNumber { get; set; } = false;
+        public bool IsDocumentImage { get; set; } = true;
+		
+		[Required]
+        public bool Status { get; set; } = true;
 
     }
 }

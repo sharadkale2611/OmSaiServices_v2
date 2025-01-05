@@ -26,8 +26,11 @@ namespace OmSaiModels.Worker
 
 		[Required]
 		public int DepartmentId { get; set; }
-		
+
+		public string? ProfileImage { get; set; }
+
 		public string? DepartmentName { get; set; }
+		public string? DepartmentShortName { get; set; }
 		public string? SiteName { get; set; }
 
 		[Required]

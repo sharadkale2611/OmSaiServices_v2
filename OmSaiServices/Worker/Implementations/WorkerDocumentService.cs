@@ -20,7 +20,6 @@ namespace OmSaiServices.Worker.Implementations
 		private readonly string sp_r;
 		private readonly Mapper _mapper;
 
-
 		public WorkerDocumentService()
 		{
 			sp_cud = "usp_CreateUpdate_WorkerDocuments";

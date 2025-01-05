@@ -27,6 +27,7 @@ namespace OmSaiModels.Worker
 
 		public int WorkerMobileNumberId { get; set; }
 		public string MobileNumber { get; set; }
+		public string? MobileNumbers { get; set; }
 		//public List<WorkerMobileNumbersModel> WorkerMobileNumbers { get; set; }
 
 		public int ProjectId { get; set; }
