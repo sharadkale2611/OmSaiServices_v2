@@ -40,8 +40,6 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			_workerAddressService = new WorkerAddressService();
 
 		}
-
-
 		public IActionResult Index()
 		{
 			ViewBag.AllData = _workerService.GetAll();
@@ -64,9 +62,24 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			ViewBag.WorkerDocuments = _workerDocumentService.GetAll(id);
 			ViewBag.Addresses = _workerAddressService.GetByWorkerId(id);
 
+			return View();
+		}
+
+
+		public IActionResult ProfilePrint(int id)
+		{
+			ViewBag.AllData = _workerService.GetProfileById(id, null);
+			if (ViewBag.AllData == null)
+			{
+				return RedirectToAction(nameof(Index));// nameof checks method compiletime to avoid errors
+			}
+			ViewBag.AttendanceHistory = _attendanceService.GetAll(id);
+			ViewBag.WorkerDocuments = _workerDocumentService.GetAll(id);
+			ViewBag.Addresses = _workerAddressService.GetByWorkerId(id);
 
 			return View();
 		}
+
 
 
 		[HttpPost]

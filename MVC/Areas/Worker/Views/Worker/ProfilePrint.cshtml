@@ -1,0 +1,355 @@
+﻿@{
+    Layout = null;
+    var worker = @ViewBag.AllData;
+    var fullName = worker.FirstName + " " + worker.MiddleName + " " + worker.LastName;
+    var attendanceHistory = ViewBag.AttendanceHistory; //test commentn
+    var address = ViewBag.Addresses;
+
+    var PermanentAddress = address[0]?.Address ?? "";
+    var CurrentAddress = address[1]?.Address ?? "";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A4 Size Content</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+
+        .data-pending{
+            background:#eee;
+            color:red;
+        }
+
+        .flbl{
+            font-weight:bold;
+            font-size:0.8rem;
+        }
+
+        .txt-note {
+            font-size: 0.7rem;
+        }
+
+        .sign-box{
+            height:15mm;
+        }
+        .uline{
+            border-bottom: 1px dotted #333;
+        }
+
+        .tline {
+            border-top: 1px dotted #333;
+        }
+
+        /* A4 size dimensions */
+        .a4 {
+            width: 210mm;
+            height: 297mm;
+            margin: auto;
+            background-color: #fff;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            padding: 5mm;
+            border:1px solid gray;
+        }
+
+        /* Optional: For Print Media */
+        @@media print {
+            body
+            {
+                margin: 0;
+                padding: 0;
+            }
+
+            .a4 {
+                box-shadow: none;
+                margin: 0;
+                width: 210mm;
+                height: 297mm;
+                page-break-after: always;
+            }
+
+            .page-break {
+              page-break-after: always;
+            }
+
+
+        }
+    </style>
+</head>
+<body >
+        @* Page 1 *@
+        <div class="a4">
+
+            <div class="row"  >
+                <div class="col-2 text-center justify-content-center align-items-center d-flex align-items-center">
+                         <img src="~/demo/brand/logo.png" class="header-brand-img" style="width:100%;" alt="tabler logo">                        
+                </div>
+                <div class="col-8 text-center" style="border-bottom:1px dotted #333;">
+                    <h2 class="text-danger">Om Sai Services</h2>
+                    <p class="bg-info">
+                        (Sr.No.207, Chourang Terrac, Pune Saswad Road, Tukai Darshan,<br />
+                        Fursungi, Pune-41232308 Contact no - 8182935858 / 939122229 )<br />
+                    <span class="text-danger">Email : omsai2017services@gmail.com</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="row uline" style="background:#e0e0e0;">
+                <div class="col-12 text-center justify-content-center align-items-center d-flex align-items-center p-2">
+                <b>JOINING FORM OF SERCURITY/BOUNCER AND ALL OTHER STAFF</b>
+                </div>
+            </div>
+
+            <div class="row" >
+                <div class="col-12 pt-2">
+                    <table class="table table-bordered">
+                        <tr>
+                            <td class="flbl">1) Name of Department:</td>
+                            <td colspan="2">@worker.DepartmentName</td>
+                            <td rowspan="4" class="photo-cell text-center justify-content-center align-items-center align-items-center">
+                                <img src="~/demo/brand/logo.png" class="header-brand-img" style="height:35mm;" alt="tabler logo">
+                                <br />
+                                Latest Photo
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="flbl">2) Date of Joining:</td>
+                            <td colspan="2">@worker.DateofJoining</td>
+                        </tr>
+                        <tr>
+                            <td class="flbl">3) Workman ID:</td>
+                            <td colspan="2">@worker.WorkmanId</td>
+                        </tr>
+                        <tr>
+                        <td class="flbl">4) Site Name:</td>
+                            <td colspan="2">@worker.SiteName</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 text-center tline" >
+                    (General Information to be filled in by All Staff)
+                </div>          
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-3 flbl">
+                    Name in full<hr style="margin:0px;"/>
+                    <small>(Capital Letters)</small>                
+                </div>
+                <div class="col-3 " >
+                    @worker.LastName<hr style="margin:0px;" />
+                    <small>(SURNAME)</small>
+                </div>
+                <div class="col-3 ">
+                    @worker.FirstName<hr style="margin:0px;" />
+                    <small>(FIRST NAME)</small>
+                
+                </div>
+                <div class="col-3 ">
+                    @worker.MiddleName<hr style="margin:0px;" />
+                    <small>(FATHER/HUSBAND NAME)</small>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-3 flbl">
+                    Aadhaar Number
+                </div>
+            <div class="col-9 data-pending uline" >
+                    345465342343
+                </div>
+            </div>
+
+        <div class="row mt-3">
+            <div class="col-3 flbl">
+                Marrital Status
+            </div>
+            <div class="col-1 uline">
+                @worker.MarritalStatus
+            </div>
+
+            <div class="col-2 text-center flbl">
+                Spouse
+            </div>
+            <div class="col-2 uline">
+                @worker.SpouseName
+            </div>
+
+
+            <div class="col-2 flbl">
+                Qualification
+            </div>
+            <div class="col-2 uline">
+                @worker.QualificationName
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-3 flbl">
+                Date of Birth
+            </div>
+            <div class="col-3 uline">
+                @worker.DateofBirth
+            </div>
+
+            <div class="col-2 text-center flbl">
+                Age
+            </div>
+            <div class="col-4 uline">
+                @worker.Age
+            </div>
+        </div>
+
+
+        <div class="row mt-3">
+            <div class="col-3 flbl">
+                Old PF/UAN No.
+            </div>
+            <div class="col-3 uline data-pending">
+                -----
+            </div>
+
+            <div class="col-2 text-center flbl">
+                Gender
+            </div>
+            <div class="col-4 uline">
+                @worker.Gender
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-3 flbl">
+                Old ESIC No.
+            </div>
+            <div class="col-3 uline data-pending">
+                -----
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-3 flbl">
+                Permanent Address
+            </div>
+            <div class="col-9 uline">
+                <small>
+                    @PermanentAddress
+                    @* <span style="float:right"><i class="lbl data-pending">Pincode: </i> -----</span> *@
+                </small>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-3 flbl">
+                Current Address
+            </div>
+            <div class="col-9 uline">
+                <small>
+                    @CurrentAddress
+                @* <span style="float:right"><i class="lbl data-pending">Pincode: </i> -----</span> *@
+                </small>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-3 flbl">
+                Staff Mobile No.
+            </div>
+            <div class="col-3 uline data-pending">
+                -----
+            </div>
+
+            <div class="col-2 text-center flbl">
+                Other Mobile No.
+            </div>
+            <div class="col-4 uline">
+                -----
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-3 flbl">
+                Present Salary
+            </div>
+            <div class="col-3 uline data-pending">
+                -----
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-12 txt-note">
+                <small>
+                    <ol>
+                        <li>
+                            This payment is agreed upon by me and I agree that I will not have any complaint now or in future.
+                        </li>
+                        <li>
+                            If I do not give police verification within 15 days of joining your company, It should be considered as my resignation. I will accept any punishment given by you and I have no complaint.
+                        </li>
+                        <li>
+                            This order is for one month after which this resignation will be considered.
+                        </li>
+                    </ol>
+                </small>
+            </div>
+        </div>
+
+        <div class="row mt-1 text-center">
+            <div class="col-12">
+                <table class="table table-bordered">
+                    <tr>
+                        <td class="sign-box"></td>
+                        <td class="sign-box"></td>
+                        <td class="sign-box"></td>
+                    </tr>
+                    <tr>
+                        <td class="flbl">Workman Signature</td>
+                        <td class="flbl">Left Thumb Impression</td>
+                        <td class="flbl">Right Thumb Impression</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="row mt-1">
+            <div class="col-12">
+                <span class="flbl">REQUIRED DOCUMENTS</span>
+                <table class="table">
+                    <tr>
+                        <td class="flbl">1. Aadhar Card Xerox</td>
+                        <td class="flbl">2. Pan Card Xerox</td>
+                        <td class="flbl">3. Educatoin Proof Xerox</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        </div>
+        @* <div class="page-break"></div> *@
+        @* <div class="a4"> *@
+        @*     Page 1 content... *@
+        @* </div> *@
+
+
+    <!-- Bootstrap 5 JS (optional) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Wait for the page to fully load
+        window.onload = function () {
+          // Open the print dialog
+          window.print();
+
+          // After the print dialog is closed, close the tab
+          window.onafterprint = function () {
+            window.close();
+          };
+        };
+    </script>
+</body>
+</html>

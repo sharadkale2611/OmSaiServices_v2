@@ -17,11 +17,18 @@ namespace OmSaiModels.Worker
 
 		public int DepartmentId { get; set; }
 		public string DepartmentName { get; set; }
+		public string? MarritalStatus { get; set; }
+		public string? SpouseName { get; set; }
+		public DateOnly? DateofBirth { get; set; }
+		public int? Age { get; set; }
+		public string? Gender { get; set; }
 
 		//public DepartmentModel Department { get; set; }
 
 		public int WorkerQualificationId { get; set; }
 		public string QualificationName { get; set; }
+		public DateOnly? DateofJoining { get; set; }
+		
 
 		//public List<WorkerQualificationModel> WorkerQualifications { get; set; }
 
