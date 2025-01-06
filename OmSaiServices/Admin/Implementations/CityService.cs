@@ -11,24 +11,24 @@ using System.Threading.Tasks;
 
 namespace OmSaiServices.Admin.Implementations
 {
-    public class DocumentService : Repository<DocumentModel>, IDocumentService
+    public  class CityService:Repository<CityModel>,ICityServices
     {
         private readonly string usp_cud;
         private readonly string usp_r;
         private readonly Mapper _mapper;
 
-        public DocumentService()
+        public CityService()
         {
-            usp_cud = "usp_CreateUpdateDeleteRestore_Documents";
-            usp_r = "usp_GetAll_Documents";
+            usp_cud = "usp_CreateUpdateDeleteRestore_Cities";
+            usp_r = "usp_GetAll_Cities";
             _mapper = new Mapper();
         }
-        public int Create(DocumentModel model)
+        public int Create(CityModel model)
         {
             return Create(model, usp_cud, CreateUpdate(model, "create"));
         }
 
-        public void Update(DocumentModel model)
+        public void Update(CityModel model)
         {
             Update(model, usp_cud, CreateUpdate(model, "update"));
         }
@@ -45,38 +45,36 @@ namespace OmSaiServices.Admin.Implementations
 
         }
 
-        public List<DocumentModel> GetAll()
+        public List<CityModel> GetAll()
         {
 
             // Define the mapping function
-            var mapEntity = new Func<IDataReader, DocumentModel>(reader => _mapper.MapEntity<DocumentModel>(reader));
+            var mapEntity = new Func<IDataReader, CityModel>(reader => _mapper.MapEntity<CityModel>(reader));
 
             return GetAll(usp_r, mapEntity, GetParams());
         }
 
-        public DocumentModel GetById(int id)
+        public CityModel GetById(int id)
         {
             // Define the mapping function
-            var mapEntity = new Func<IDataReader, DocumentModel>(reader => _mapper.MapEntity<DocumentModel>(reader));
+            var mapEntity = new Func<IDataReader, CityModel>(reader => _mapper.MapEntity<CityModel>(reader));
 
             return GetById(id, usp_r, mapEntity, GetParams(id));
         }
 
 
-        private List<KeyValuePair<string, object>> CreateUpdate(DocumentModel model, string type)
+        private List<KeyValuePair<string, object>> CreateUpdate(CityModel model, string type)
         {
 
-            var DocumentId = type == "create" ? 0 : model.DocumentId;
+            var CityId = type == "create" ? 0 : model.CityId;
 
 
 
             return new List<KeyValuePair<string, object>>
             {
-                new("@DocumentId", DocumentId),
-                new("@DocumentName", model.DocumentName),
-                new("@IsDocumentNumber", model.IsDocumentNumber),
-                new("@IsDocumentImage", model.IsDocumentImage),				
-				new("@Status", model.Status),
+                new("@CityId", CityId),
+                new("@CityName", model.CityName),
+                new("@StateId", model.StateId)
 
             };
         }
@@ -86,21 +84,21 @@ namespace OmSaiServices.Admin.Implementations
 
             return new List<KeyValuePair<string, object>>
             {
-                new("@DocumentId", id),
+                new("@CityId", id),
 
             };
 
         }
 
-        private SqlParameter[] GetParams(int? id = null, string? DocumentName = null, bool? Status = null)
+        private SqlParameter[] GetParams(int? id = null, string? CityName = null, int? StateId = null)
         {
             return new SqlParameter[]
             {
-                new SqlParameter("@DocumentId", id),
-                new SqlParameter("@DocumentName", DocumentName),
-                new SqlParameter("@Status", Status)
+                new SqlParameter("@CityId", id),
+                new SqlParameter("@CityName", CityName),
+                new SqlParameter("@StateId", StateId)
+
             };
         }
-
     }
 }

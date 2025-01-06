@@ -57,16 +57,25 @@
             margin-top: 20px;
         }
 
-            .id-card .barcode img {
-                width: 80%;
-            }
+        .id-card .barcode img {
+            width: 80%;
+        }
 
 </style>
 
 
-<nav class="navbar navbar-expand-sm navbar-dark bg-danger justify-content-center align-items-center ">
-    <a class="navbar-brand text-white" href="#">Om Sai Services</a>
-</nav>
+<div class="container mt-5">
+    <div class="card text-center shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h1 class="mb-0">Welcome, @ViewBag.WorkerName!</h1>
+        </div>
+        <div class="card-body">
+            <a href="/Worker/WorkerAuthentication/Attendance" class="btn btn-primary">Attendance</a>
+            <a href="/Worker/WorkerAuthentication/Profile" class="btn btn-info">Profile</a>
+            <a href="/Worker/WorkerAuthentication/Logout" class="btn btn-danger">Logout</a>
+        </div>
+    </div>
+</div>
 
 
 <div class="d-flex justify-content-center align-items-center vh-100 mt-4">
@@ -196,7 +205,6 @@
 
                 // Use the dynamic base URL
                 const apiUrl = `${baseUrl}/api/WorkerAttendance`;
-                alert(apiUrl);
                  $.ajax({
                      url: apiUrl,
                      method: 'POST',

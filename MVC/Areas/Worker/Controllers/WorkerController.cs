@@ -23,7 +23,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 		private readonly WorkerMobileNumbersService _workerMobileNumbersService;
 		private readonly WorkerAttendanceService _attendanceService;
 		private readonly WorkerDocumentService _workerDocumentService;
-
+		private readonly WorkerAddressService _workerAddressService;
 
 		public WorkerController()
 		{
@@ -37,11 +37,12 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			_workerMobileNumbersService = new WorkerMobileNumbersService();
 			_attendanceService = new WorkerAttendanceService();
 			_workerDocumentService = new WorkerDocumentService();
+			_workerAddressService = new WorkerAddressService();
 
 		}
-       
 
-        public IActionResult Index()
+
+		public IActionResult Index()
 		{
 			ViewBag.AllData = _workerService.GetAll();
 			ViewBag.Department=_departmentService.GetAll();
@@ -49,15 +50,20 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 
 			ViewBag.Projects = _projectService.GetAll();
 			ViewBag.Workers = _workerService.GetAll();
-
 			return View();
 		}
 
 		public IActionResult Profile(int id)
 		{
 			ViewBag.AllData = _workerService.GetProfileById(id, null);
+			if(ViewBag.AllData == null)
+			{
+				return RedirectToAction(nameof(Index));// nameof checks method compiletime to avoid errors
+			}
 			ViewBag.AttendanceHistory = _attendanceService.GetAll(id);
 			ViewBag.WorkerDocuments = _workerDocumentService.GetAll(id);
+			ViewBag.Addresses = _workerAddressService.GetByWorkerId(id);
+
 
 			return View();
 		}
@@ -181,7 +187,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public IActionResult Create(WorkerModel model, int ProjectId, int SiteId, string SiteName, int QualificationId, string MobileNumber, bool Status)
+		public IActionResult Create(WorkerModel model, int ProjectId, int SiteId, int QualificationId, string MobileNumber, bool Status, string? MobileNumber2="", string? Address1="", string? Address2="")
 		{
 			try
 			{
@@ -191,36 +197,67 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 				{
 					TempData["success"] = "Record added successfully!";
 
-					model.SiteName = SiteName;
-
 					var lastWorkerId = _workerService.Create(model);
 					
-					WorkerProjectSiteModel model2 = new WorkerProjectSiteModel
+					WorkerProjectSiteModel workerProjectSiteModel = new WorkerProjectSiteModel
 					{
 						WorkerId = lastWorkerId,
 						SiteId = SiteId,
 						ProjectId = ProjectId,
 						Status = true
 					};
-					_workerProjectSiteService.Create(model2);
+					_workerProjectSiteService.Create(workerProjectSiteModel);
 
 
-					WorkerQualificationModel model3 = new WorkerQualificationModel
+					WorkerQualificationModel workerQualificationModel = new WorkerQualificationModel
 					{
 						WorkerId = lastWorkerId,
 						QualificationId = QualificationId
 					};
-					_workerQualificationService.Create(model3);
+					_workerQualificationService.Create(workerQualificationModel);
 
-					WorkerMobileNumbersModel model4 = new WorkerMobileNumbersModel
+					WorkerMobileNumbersModel workerMobileNumbersModel = new WorkerMobileNumbersModel
 					{
 						WorkerId = lastWorkerId,
 						MobileNumber = MobileNumber
 					};
-					_workerMobileNumbersService.Create(model4);
+					_workerMobileNumbersService.Create(workerMobileNumbersModel);
 
+					if(MobileNumber2 == "")
+					{
+						MobileNumber2 = MobileNumber;
+					}
+					WorkerMobileNumbersModel workerMobileNumbersModel_2 = new WorkerMobileNumbersModel
+					{
+						WorkerId = lastWorkerId,
+						MobileNumber = MobileNumber2
+					};
+					_workerMobileNumbersService.Create(workerMobileNumbersModel_2);
 
-					var documentIds = new List<int> { 1, 2, 3, 4, 5, 6, 7 };
+					if (Address1 != "" && Address1 != null)
+					{
+						WorkerAddressModel workerAddressModel_1 = new WorkerAddressModel
+						{
+							WorkerId = lastWorkerId,
+							AddressType	= "Permanent",
+							Address = Address1
+						};
+						_workerAddressService.Create(workerAddressModel_1);
+
+					}
+
+					if (Address2 != "" && Address2 != null)
+					{
+						WorkerAddressModel workerAddressModel_2 = new WorkerAddressModel
+						{
+							WorkerId = lastWorkerId,
+							AddressType = "Current",
+							Address = Address2
+						};
+						_workerAddressService.Create(workerAddressModel_2);
+					}
+
+					var documentIds = new List<int> { 8, 9, 1, 2, 3, 4, 5, 6, 7 };
 
 					foreach (var docId in documentIds)
 					{

@@ -1,20 +1,37 @@
 ﻿@{
+    Layout = "_Layout2";
     var worker = @ViewBag.AllData;
     var fullName = worker.FirstName + " " + worker.MiddleName + " " + worker.LastName;
     var attendanceHistory = ViewBag.AttendanceHistory; //test commentn
     var address = ViewBag.Addresses;
-    
-    var PermanentAddress = address[0]?.Address??"";
+
+    var PermanentAddress = address[0]?.Address ?? "";
     var CurrentAddress = address[1]?.Address ?? "";
 }
+
+
+<div class="container mt-5">
+    <div class="card text-center shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h1 class="mb-0">Welcome, @ViewBag.WorkerName!</h1>
+        </div>
+        <div class="card-body">
+            <a href="/Worker/WorkerAuthentication/Attendance" class="btn btn-primary">Attendance</a>
+            <a href="/Worker/WorkerAuthentication/Profile" class="btn btn-info">Profile</a>
+            <a href="/Worker/WorkerAuthentication/Logout" class="btn btn-danger">Logout</a>
+        </div>
+    </div>
+</div>
+
+
 
 <style>
 
 
-    .selfie-image{
-        width:40px;
-        border:1px solid #eee;
-        border-radius:5px;
+    .selfie-image {
+        width: 40px;
+        border: 1px solid #eee;
+        border-radius: 5px;
         box-shadow: 1px 1px 3px gray;
     }
 
@@ -56,40 +73,40 @@
         margin-bottom: 10px;
     }
 
-    .calendar-header .col{
+        .calendar-header .col {
             width: 30px;
             height: 30px;
-            font-size:11px;
-            text-align:center;
+            font-size: 11px;
+            text-align: center;
         }
 
 </style>
 
-        <div class="my-3 my-md-5">
-          <div class="container">
-            <div class="row">
-              <div class="col-lg-4">
+<div class="my-3 my-md-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4">
                 <div class="card">
-                  <div class="card-body">
-                    <div class="media">
+                    <div class="card-body">
+                        <div class="media">
                             @* <span class="avatar avatar-xxl mr-5" style="background-image: url('@user.ImagePath')"></span> *@
 
-                      <span class="avatar avatar-xxl mr-5" style="background-image: url(demo/faces/male/21.jpg)">
-                        <i class="fe fe-camera"></i>    
-                      </span>
-                      <div class="media-body">
-                        <h4 class="m-0 mb-1">@fullName</h4>
+                            <span class="avatar avatar-xxl mr-5" style="background-image: url(demo/faces/male/21.jpg)">
+                                <i class="fe fe-camera"></i>
+                            </span>
+                            <div class="media-body">
+                                <h4 class="m-0 mb-1">@fullName</h4>
                                 <p class="text-muted mb-1"><b class="text-info">@worker.WorkmanId</b> [ <b>@worker.DepartmentName</b>]</p>
                                 <p class="text-muted mb-1">Qualification: <b>@worker.QualificationName</b></p>
 
-                        <ul class="social-links list-inline mb-0 mt-2">
-                          <li class="list-inline-item">
+                                <ul class="social-links list-inline mb-0 mt-2">
+                                    <li class="list-inline-item">
                                         <i class="fa fa-phone"></i> &nbsp;&nbsp; @worker.MobileNumbers
-                          </li>
-                        </ul>
-                      </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
-                  </div>
                 </div>
 
                 <div class="card">
@@ -124,7 +141,7 @@
                         </div>
                     </div>
                 </div>
-   
+
                 <div class="card">
                     <div class="card-body">
 
@@ -191,8 +208,8 @@
 
 
 
-              </div>
-              <div class="col-lg-8">
+            </div>
+            <div class="col-lg-8">
 
                 <div class="card">
                     <div class="card-header">
@@ -221,11 +238,11 @@
                                         <td>
                                             <img src="@attendance.InSelfiPath" class="selfie-image" />
                                             @attendance.InTime?.ToString("hh:mm tt")
-                                            </td>
+                                        </td>
                                         <td>
                                             <img src="@attendance.OutSelfiPath" class="selfie-image" />
                                             @attendance.OutTime?.ToString("hh:mm tt")
-                                            </td>
+                                        </td>
                                         <td>
 
                                             @if (attendance.Status == "Present")
@@ -239,7 +256,9 @@
                                             else if (attendance.Status == "Miss")
                                             {
                                                 <span class="badge bg-warning">I</span> @("In")
-                                            }else{
+                                            }
+                                            else
+                                            {
                                                 <span class="badge bg-dark">@attendance.Status</span>
                                             }
                                         </td>
@@ -274,7 +293,8 @@
                                         <td>@doc.DocumentId</td>
                                         <td>@doc.DocumentName</td>
                                         <td>
-                                            @if(@doc.IsDocumentImage == true){
+                                            @if (@doc.IsDocumentImage == true)
+                                            {
                                                 @if (!string.IsNullOrEmpty(doc.DocumentImage))
                                                 {
                                                     <a href="~/@doc.DocumentImage" target="_blank">
@@ -294,7 +314,7 @@
                                             {
                                                 @doc.DocumentNumber
                                             }
-                                            
+
                                         </td>
                                         @* <td>
                                             <div class="media-object avatar avatar-md mr-4" style="background-image: url(demo/faces/male/16.jpg)"></div>
@@ -318,8 +338,10 @@
                                                 {
                                                     <span class="status-icon bg-danger"></span> <span>Not Verified</span>
                                                 }
-                                            }else{
-                                                 <span>-</span>
+                                            }
+                                            else
+                                            {
+                                                <span>-</span>
                                             }
 
                                         </td>
@@ -344,10 +366,10 @@
                     </div>
                 </div>
 
-              </div>
             </div>
-          </div>
         </div>
+    </div>
+</div>
 
 
 <!-- Modal -->

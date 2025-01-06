@@ -39,6 +39,17 @@ builder.Services.AddRazorPages()
 	 });
 
 
+	// Add services to the container.
+	builder.Services.AddDistributedMemoryCache(); // Enables in-memory session storage
+	builder.Services.AddSession(options =>
+	{
+		options.IdleTimeout = TimeSpan.FromMinutes(30); // Session timeout
+		options.Cookie.HttpOnly = true; // Security setting
+		options.Cookie.IsEssential = true; // GDPR compliance
+	});
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -78,6 +89,9 @@ app.MapRazorPages();
 var rewriteOptions = new RewriteOptions()
 	.AddRedirect(@"^Identity/(.*)", "$1"); // Redirect "Identity/..." to root
 app.UseRewriter(rewriteOptions);
+
+app.UseSession(); // Enable session middleware
+
 
 app.UseAuthentication();
 app.UseAuthorization();

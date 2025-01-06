@@ -1,0 +1,23 @@
+﻿@{
+    Layout = "_Layout2";
+}
+
+@if (ViewBag.Message != null)
+{
+    <p class="text-danger text-center">@ViewBag.Message</p>
+}
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <form method="post" action="/Worker/WorkerAuthentication/Login" class="p-4 border rounded shadow-sm" style="width: 300px;">
+        <h2 class="text-center mb-4">Login Here</h2>
+        <div class="mb-3">
+            <label for="WorkmanId" class="form-label">Workman ID:</label>
+            <input type="text" id="WorkmanId" name="WorkmanId" class="form-control" required />
+        </div>
+        <div class="mb-4">
+            <label for="Password" class="form-label">Password:</label>
+            <input type="password" id="Password" name="Password" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+    </form>
+</div>

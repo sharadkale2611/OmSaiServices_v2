@@ -30,10 +30,13 @@ namespace OmSaiServices.Worker.Implimentation
 			return CommonService.RowCount("Workers");
 		}
 
-
 		public int Create(WorkerModel model)
 		{
-			string WorkerCode = $"W{(RowCount() + 1):000000}"; // Ensures leading zeros up to 6 digits
+			if(model.DepartmentShortName == "" || model.DepartmentShortName == null)
+			{
+				model.DepartmentShortName = "w";
+			}
+			string WorkerCode = $"{model.DepartmentShortName}{(RowCount() + 1):00000000}"; // Ensures leading zeros up to 6 digits
 			model.WorkmanId = WorkerCode;
 			return Create(model, sp_cud, CreateUpdate(model, "create"));
 		}
