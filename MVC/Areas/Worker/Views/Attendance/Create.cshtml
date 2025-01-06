@@ -7,10 +7,19 @@
 }
 
 @section css {
-    @* <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBA7kFrZTCtD1NkBfx0nO6qxznbqM1cr5o&callback=initialize" type="text/javascript" async defer></script> *@
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBA7kFrZTCtD1NkBfx0nO6qxznbqM1cr5o&callback=initialize" type="text/javascript" async defer></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
 }
 
 <style>
+
+    #map {
+        height: 110px;
+        width: 100%;
+        border: 2px solid red;
+    }
 
     #video, #canvas {
         border-radius: 10px;
@@ -27,7 +36,7 @@
 
     .id-card {
         width: 300px;
-        height: 450px;
+        height: 500px;
         border: 2px solid #007bff;
         border-radius: 10px;
         background: #f8f9fa;
@@ -38,7 +47,7 @@
 
         .id-card img.profile {
             width: 100px;
-            height: 100px;
+            height: 200px;
             border-radius: 50%;
             border: 2px solid #007bff;
         }
@@ -74,15 +83,14 @@
         <h2 class="text-center mb-4">Selfie Attendance</h2>
 
         <video id="video" autoplay playsinline class="border "></video>
-        <!-- Display Captured Image -->
         <canvas id="canvas" class="border"></canvas>
+        <div id="map" class="mt-3"></div>
 
-        <!-- Worker Information -->
         <h5>@fullName</h5>
         <p>Worker ID: @worker.WorkmanId</p>
         <p>Department: @worker.DepartmentName</p>
 
-        <hr />
+        @* <hr /> *@
         <div class="text-success" id="lbl-success" style="display:none;">
             <i class="fe fe-check-circle" style="font-size:48px;"></i><br />
             <small>Attendance Completed!</small>
@@ -92,7 +100,7 @@
             <p>Site: @worker.SiteName</p>
             <p id="result"></p>
         </div>
-        <!-- Barcode -->
+
         <div class="barcode">
             <button id="capture" class="btn btn-primary">Capture Selfie</button>
             <button id="retake" class="btn btn-secondary shadow" style="display: none;">Retake</button>
@@ -137,7 +145,6 @@
              const captureButton = document.getElementById('capture');
              const capturedImageInput = document.getElementById('captured-image');
 
-             // Request access to the camera
              navigator.mediaDevices.getUserMedia({ video: true })
                  .then(function (stream) {
                      video.srcObject = stream;
@@ -147,38 +154,62 @@
                  });
 
 
-                 // Capture the image when the button is clicked
-                 captureButton.addEventListener('click', function () {
-                     const context = canvas.getContext('2d');
-                     canvas.width = video.videoWidth;
-                     canvas.height = video.videoHeight;
-                     context.drawImage(video, 0, 0, canvas.width, canvas.height);
+          captureButton.addEventListener('click', function () {
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
 
-                     // Convert the image to a data URL and display it
-                     const imageData = canvas.toDataURL('image/jpeg');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-                    $('#canvas').show();
-                    $('#retake').show();
-                    $('#saveAttendance').show();
+            const currentDate = new Date();
+            const formattedDate = currentDate.toLocaleString();
 
-                    $('#capture').hide();
-                    $('#video').hide();
+            const location = $('#geo-location').val();
 
-                    // Save the image data URL
-                    $('#selfieData').val(imageData);
+            const { lat, lon } = parseCoordinates(location);
 
-                     // Set the hidden input value
-                     capturedImageInput.value = imageData;
+            getLocationName(lat, lon, function(locationName, lat, lon) {
+                context.font = "20px Arial";
+                context.fillStyle = "white";
+                context.fillText(locationName, 20, canvas.height - 40);
+                context.fillText(formattedDate, 20, canvas.height - 20);
 
-                    calculateDistance();
+                const imageData = canvas.toDataURL('image/jpeg');
 
-                 });
+                $('#canvas').show();
+                $('#retake').show();
+                $('#saveAttendance').show();
+
+                $('#capture').hide();
+                $('#video').hide();
+
+                $('#selfieData').val(imageData);
+
+                capturedImageInput.value = imageData;
+
+                displayMap(lat, lon);
+                calculateDistance();
+            });
+        });
+
+        function displayMap(lat, lon) {
+            var map = L.map('map').setView([lat, lon], 13);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            L.marker([lat, lon]).addTo(map)
+                .bindPopup("<b>Location:</b> " + lat.toFixed(4) + ", " + lon.toFixed(4))
+                .openPopup();
+        }
 
 
-             // Submit the form using AJAX
+
+
              $('#attendance-form').on('submit', function (e) {
                  e.preventDefault();
-                 
+
                 const formData = new FormData();
                 const blob = dataURItoBlob(capturedImageInput.value);
                 formData.append('SelfieImage', blob, 'selfie.png');
@@ -188,10 +219,8 @@
                  formData.append('ShiftId', $('#shift-id').val());
                  formData.append('GeoLocation', $('#geo-location').val());
 
-                // Get the base URL dynamically
                 const baseUrl = `${window.location.protocol}//${window.location.host}`;
 
-                // Use the dynamic base URL
                 const apiUrl = `${baseUrl}/api/WorkerAttendance`;
 
                  $.ajax({
@@ -209,7 +238,7 @@
                          if(response.success ==true){
                              $('#lbl-success').show();
                             $('#retake').hide();
-                            $('#project-details').hide();                            
+                            $('#project-details').hide();
                             $('#saveAttendance').hide();
                          }
                          else{
@@ -239,9 +268,7 @@
             return new Blob([ab], { type: mimeString });
         }
 
-
-            // Retake selfie
-            $('#retake').click(function () {
+        $('#retake').click(function () {
                 $('#canvas').hide();
                 $('#video').show();
                 $('#retake').hide();
@@ -252,24 +279,19 @@
             });
 
 
-        function getGeoLocation() {
+                function getGeoLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     function (position) {
                         const latitude = position.coords.latitude;
                         const longitude = position.coords.longitude;
-                        const accuracy = position.coords.accuracy;
 
-                        $('#txtCurrentLocation').val(latitude+", "+longitude);
-                        $('#geo-location').val(latitude+", "+longitude);
+                        $('#geo-location').val(`${latitude}, ${longitude}`);
 
-                        // document.getElementById('output').innerHTML = `
-                        //     Latitude: ${latitude}<br>
-                        //     Longitude: ${longitude}<br>
-                        //     Accuracy: ${accuracy} meters
-                        // `;
+                        displayMap(latitude, longitude);
                     },
                     function (error) {
+                        console.error("Error fetching geolocation:", error);
                         switch (error.code) {
                             case error.PERMISSION_DENIED:
                                 alert("User denied the request for Geolocation.");
@@ -280,7 +302,7 @@
                             case error.TIMEOUT:
                                 alert("The request to get user location timed out.");
                                 break;
-                            case error.UNKNOWN_ERROR:
+                            default:
                                 alert("An unknown error occurred.");
                                 break;
                         }
@@ -291,15 +313,28 @@
             }
         }
 
+        function displayMap(lat, lon) {
+            $('#map-container').html('<div id="map" style="height: 300px;"></div>');
+
+            var map = L.map('map').setView([lat, lon], 13);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            L.marker([lat, lon]).addTo(map)
+                .bindPopup("<b>Current Location</b><br>Lat: " + lat.toFixed(4) + "<br>Lon: " + lon.toFixed(4))
+                .openPopup();
+        }
+
+        $(document).ready(function () {
+            getGeoLocation();
+        });
+
+
 
         function getDistanceInMeters(lat1, lon1, lat2, lon2) {
-
-                    console.log(lat1);
-                    console.log(lon1);
-                    console.log(lat2);
-                    console.log(lon2);
-
-                    const R = 6371000; // Radius of Earth in meters
+                    const R = 6371000;
                     const toRadians = (degrees) => degrees * (Math.PI / 180);
 
                     const dLat = toRadians(lat2 - lat1);
@@ -313,7 +348,7 @@
 
                     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-                    return R * c; // Distance in meters
+                    return R * c;
                 }
 
                function parseCoordinates(input) {
@@ -323,41 +358,40 @@
 
 
                 function calculateDistance() {
-                    // Get input values
                      const point1 = document.getElementById("geo-location").value;
                      const point2 = document.getElementById("txtSiteLocation").value;
 
-                     alert("p1:"+point1)
-                     alert("p2:"+point2)
-
-                    // Parse input strings into latitude and longitude
                     const { lat: lat1, lon: lon1 } = parseCoordinates(point1);
-                    // for testing purpose site location hidden
                      const { lat: lat2, lon: lon2 } = parseCoordinates(point2);
-                     // const { lat: lat2, lon: lon2 } = parseCoordinates(point1);
 
-                    // Calculate the distance
                     const distance = getDistanceInMeters(lat1, lon1, lat2, lon2);
-
-                    alert(distance);
-                      if(!isNaN(distance)){
-                            $("#saveAttendance").show();
-                           // Display the result
-                             document.getElementById("result").innerHTML = `<span class="text-warning">Invalid site location</span>`;
-                      }
-
                      if(distance > 200){
                            let distance2 = distance - 200;
                            $("#saveAttendance").hide();
-                         // Display the result
                          document.getElementById("result").innerHTML = `<span class="text-danger">You are away from Site: ${distance2.toFixed(2)} meters</span>`;
                      }else{
                             $("#saveAttendance").show();
-                           // Display the result
                              document.getElementById("result").innerHTML = `<span class="text-success">Site Distance: ${distance.toFixed(2)} meters</span>`;
                      }
 
                 }
+
+                       function getLocationName(latitude, longitude, callback) {
+                      $.ajax({
+                                 url: `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`,
+                                 type: 'GET',
+                                 success: function (data) {
+                                  const locationName = data.address.road + ", " + data.address.city + ", " + data.address.country;
+                                  callback(locationName, latitude, longitude);
+                              },
+                error: function () {
+                    console.log("Error getting location name");
+                    callback("Unknown Location", latitude, longitude);
+                }
+            });
+        }
+
+
 
 
     </script>

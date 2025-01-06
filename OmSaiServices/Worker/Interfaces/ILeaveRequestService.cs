@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace OmSaiServices.Worker.Interfaces
 {
-	public interface IWorkerService : IRepository<WorkerModel>
+	public interface ILeaveRequestService : IRepository<LeaveRequestModel>
 	{
-		
+		//public void Approve(LeaveRequestModel model);
 	}
 }

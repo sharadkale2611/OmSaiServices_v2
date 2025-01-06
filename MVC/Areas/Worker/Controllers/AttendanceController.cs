@@ -18,7 +18,17 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			_attendanceService = new WorkerAttendanceService();
 		}
 
-		public IActionResult Index(string wokrman)
+		public IActionResult Index()
+		{
+
+			ViewBag.AttendanceHistory = _attendanceService.GetAll();
+
+			return View();
+		}
+
+
+
+		public IActionResult Create(string wokrman)
 		{
 
 			var attendanceHistory = _attendanceService.GetAll();
@@ -26,7 +36,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 
 			var worker = _workerService.GetProfileById(null, wokrman);
 
-			if (worker == null ||  wokrman == null)
+			if (worker == null || wokrman == null)
 			{
 				return RedirectToAction(nameof(Error));
 			}
@@ -35,7 +45,6 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 
 			return View();
 		}
-
 
 
 		[HttpPost]
@@ -120,4 +129,4 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 
 
 	}
-	}
+}
