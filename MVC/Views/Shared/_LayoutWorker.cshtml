@@ -1,0 +1,217 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using GeneralTemplate.Areas.Identity.Data
+
+@inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager
+
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Content-Language" content="en" />
+    <meta name="msapplication-TileColor" content="#2d89ef">
+    <meta name="theme-color" content="#4188c9">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <link rel="icon" href="./favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico" />
+
+    <title>@ViewData["Title"] - Om Sai Services</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
+
+    
+    <script src="~/DataTables/jquery-3.7.1.js"></script>
+    <script src="~/DataTables/datatables.js"></script>
+    <script src="~/assets/js/require.min.js"></script>
+
+    <script>
+        var rootPath = '@Url.Content("~/")';
+    </script>
+    <script>
+        requirejs.config({
+        baseUrl: '.'
+        });
+    </script>
+    <!-- Dashboard Core -->
+    <link href="~/assets/css/dashboard.css" rel="stylesheet" />
+    <script src="~/assets/js/dashboard.js"></script>
+    <!-- c3.js Charts Plugin -->
+    <link href="~/assets/plugins/charts-c3/plugin.css" rel="stylesheet" />
+    <script src="~/assets/plugins/charts-c3/plugin.js"></script>
+    <!-- Google Maps Plugin -->
+    <link href="~/assets/plugins/maps-google/plugin.css" rel="stylesheet" />
+    <script src="~/assets/plugins/maps-google/plugin.js"></script>
+    <!-- Input Mask Plugin -->
+    <script src="~/assets/plugins/input-mask/plugin.js"></script>
+    
+
+
+@await RenderSectionAsync("css", required: false)
+
+</head>
+<body class="">
+    <div class="page">
+        <div class="page-main">
+            <div class="header py-4">
+                <div class="container">
+                    <div class="d-flex">
+                        <a class="header-brand text-danger"  href="/">
+                            <img src="~/demo/brand/logo.png" class="header-brand-img" style="height:3rem;" alt="tabler logo">
+                            Om Sai Services
+                        </a>
+                        <div class="d-flex order-lg-2 ml-auto">
+                            <div class="dropdown d-none d-md-flex">
+                            </div>
+                            <div class="dropdown">
+
+                                @if (ViewBag.IsSignedIn == true)
+                                {
+                                    <a href="#" class="nav-link pr-0 leading-none" data-toggle="dropdown">
+                                        <span class="avatar" style="background-image: url('@Url.Content("~/demo/faces/female/25.jpg")')"></span>
+                                        <span class="ml-2 d-none d-lg-block">
+                                            <span class="text-default">@(ViewBag.WorkerName??"Guest")</span>
+                                            <small class="text-muted d-block mt-1">
+                                                Worker
+                                            </small>
+                                        </span>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                        <a asp-area="Worker" asp-controller="WorkerAuthentication" asp-action="Logout" class="dropdown-item"><i class="dropdown-icon fe fe-log-out"></i> Sign out</a>
+                                    </div>
+                            }else{
+                                    <nav class="d-flex">
+
+                                        <a href="/account/login" class="nav-link pr-0 leading-none">
+                                            @* <span class="avatar" style="background-image: url('@Url.Content("~/demo/faces/female/25.jpg")')"></span> *@
+                                            <span class="ml-2 d-none d-lg-block">
+                                                <span class="text-default"><i class="fe fe-user"></i>  Admin Login</span>
+                                            </span>
+                                        </a>
+
+                                        <a asp-area="worker" asp-controller="WorkerAuthentication" asp-action="Login" class="nav-link pr-0 leading-none">
+                                            @* <span class="avatar" style="background-image: url('@Url.Content("~/demo/faces/female/25.jpg")')"></span> *@
+                                            <span class="ml-2 d-none d-lg-block">
+                                                <span class="text-default"><i class="fe fe-users"></i> Worker Login</span>
+                                            </span>
+                                        </a>
+                                    </nav>
+
+                            }
+
+                            </div>
+                        </div>
+                        <a href="#" class="header-toggler d-lg-none ml-3 ml-lg-0" data-toggle="collapse" data-target="#headerMenuCollapse">
+                            <span class="header-toggler-icon"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @if (ViewBag.IsSignedIn == true)
+            {
+                <div class="header collapse d-lg-flex p-0" id="headerMenuCollapse">
+                    <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg order-lg-first">
+                            <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
+
+                                <li class="nav-item">
+                                    <a asp-area="worker" asp-controller="WorkerAuthentication" asp-action="Profile" class="nav-link"><i class="fe fe-user"></i>Profile</a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="worker" asp-controller="WorkerAuthentication" asp-action="Attendance" class="nav-link"><i class="fe fe-clock"></i>Attendance</a>
+                                </li>
+
+                                <li class="nav-item">
+                                        <a asp-area="worker" asp-controller="WorkerAuthentication" asp-action="LeaveRequest" class="nav-link"><i class="fe fe-calendar"></i>Leave Request</a>
+                                </li>
+
+                                <li class="nav-item">
+                                        <a asp-area="worker" asp-controller="worker" asp-action="ProfilePrint" asp-route-id="1" target="_blank" class="nav-link"><i class="fe fe-printer"></i>Print Profile</a>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+                <div class="container">
+                    <div class="my-3 my-md-5">
+                        @RenderBody()
+                    </div>
+            </div>
+        </div>
+        <div class="footer d-none">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="row">
+                            <div class="col-6 col-md-3">
+                                <ul class="list-unstyled mb-0">
+                                    <li><a href="#">First link</a></li>
+                                    <li><a href="#">Second link</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <ul class="list-unstyled mb-0">
+                                    <li><a href="#">Third link</a></li>
+                                    <li><a href="#">Fourth link</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <ul class="list-unstyled mb-0">
+                                    <li><a href="#">Fifth link</a></li>
+                                    <li><a href="#">Sixth link</a></li>
+                                </ul>
+                            </div>  
+                            <div class="col-6 col-md-3">
+                                <ul class="list-unstyled mb-0">
+                                    <li><a href="#">Other link</a></li>
+                                    <li><a href="#">Last link</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mt-4 mt-lg-0">
+                        Premium and Open Source dashboard template with responsive and high quality UI. For Free!
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+            <div class="container">
+                <div class="row align-items-center flex-row-reverse">
+                    <div class="col-auto ml-lg-auto">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <ul class="list-inline list-inline-dots mb-0">
+                                    <li class="list-inline-item"><a href="/">Terms And Privacy</a></li>
+                                    <li class="list-inline-item"><a href="/">FAQ</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-auto mt-3 mt-lg-0 text-center">
+                        Copyright © 2024 <a href=".">Om Sai Services</a>. Developed by <a href="/" target="_blank">Y-SAAS Infotech</a> All rights reserved.
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+
+    @await RenderSectionAsync("modals", required: false)
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

@@ -150,13 +150,23 @@
                                     </div>
 
                             }else{
+
+                                <nav class="d-flex">
+
                                     <a href="/account/login" class="nav-link pr-0 leading-none" >
-                                        <span class="avatar" style="background-image: url('@Url.Content("~/demo/faces/female/25.jpg")')"></span>
+                                        @* <span class="avatar" style="background-image: url('@Url.Content("~/demo/faces/female/25.jpg")')"></span> *@
                                         <span class="ml-2 d-none d-lg-block">
-                                            <span class="text-default">Login</span>
+                                                <span class="text-default"><i class="fe fe-user"></i>  Admin Login</span>
                                         </span>
                                     </a>
 
+                                        <a asp-area="worker" asp-controller="WorkerAuthentication" asp-action="Login" class="nav-link pr-0 leading-none">
+                                        @* <span class="avatar" style="background-image: url('@Url.Content("~/demo/faces/female/25.jpg")')"></span> *@
+                                        <span class="ml-2 d-none d-lg-block">
+                                            <span class="text-default"><i class="fe fe-users"></i> Worker Login</span>
+                                        </span>
+                                    </a>
+                                </nav>
 
                             }
 

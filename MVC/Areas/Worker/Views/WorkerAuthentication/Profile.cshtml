@@ -1,5 +1,5 @@
 ﻿@{
-    Layout = "_Layout2";
+    Layout = "_LayoutWorker";
     var worker = @ViewBag.AllData;
     var fullName = worker.FirstName + " " + worker.MiddleName + " " + worker.LastName;
     var attendanceHistory = ViewBag.AttendanceHistory; //test commentn
@@ -8,21 +8,6 @@
     var PermanentAddress = address[0]?.Address ?? "";
     var CurrentAddress = address[1]?.Address ?? "";
 }
-
-
-<div class="container mt-5">
-    <div class="card text-center shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h1 class="mb-0">Welcome, @ViewBag.WorkerName!</h1>
-        </div>
-        <div class="card-body">
-            <a href="/Worker/WorkerAuthentication/Attendance" class="btn btn-primary">Attendance</a>
-            <a href="/Worker/WorkerAuthentication/Profile" class="btn btn-info">Profile</a>
-            <a href="/Worker/WorkerAuthentication/Logout" class="btn btn-danger">Logout</a>
-        </div>
-    </div>
-</div>
-
 
 
 <style>
