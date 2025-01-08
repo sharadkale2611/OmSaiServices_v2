@@ -4,9 +4,7 @@ using OmSaiModels.Worker;
 using OmSaiServices.Worker.Implementations;
 using OmSaiServices.Admin.Implementations;
 using OmSaiServices.Worker.Implimentation;
-using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
-
 
 namespace GeneralTemplate.Areas.Worker.Controllers
 {
@@ -16,6 +14,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 		private readonly LeaveRequestService _leaveRequestService;
 		private readonly LeaveTypeService _leaveTypeservice;
 		private readonly WorkerService _workerservice;
+		//private readonly RoleService _roleService;
 
 
 		public LeaveRequestController()
@@ -23,13 +22,25 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			_leaveRequestService = new LeaveRequestService();
 			_workerservice = new WorkerService();
 			_leaveTypeservice = new LeaveTypeService();
+			//_roleService = new RoleService();
 		}
 		public IActionResult Index()
 		{
+			// Check Session for WorkerName
+			var workerName = HttpContext.Session.GetString("WorkerName");
+			var workerId = HttpContext.Session.GetInt32("WorkerId");
+
+			if (string.IsNullOrEmpty(workerName))
+			{
+				return RedirectToAction("Login", "WorkerAuthentication", new { area = "Worker" });
+				//return RedirectToAction("ActionName", "ControllerName", new { area = "AreaName" });
+			}
 
 			ViewBag.AllData = _leaveRequestService.GetAll();
 			ViewBag.LeaveType = _leaveTypeservice.GetAll();
 			ViewBag.Worker = _workerservice.GetAll();
+			ViewBag.IsSignedIn = true;
+			//ViewBag.Role = _roleService.GetAll();
 
 			return View();
 		}
@@ -71,9 +82,31 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 				return View("Index", model);
 			}
 		}
+
+
+
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+		public IActionResult Approve(int LeaveRequestId, string Remark, string Status)   //LeaveRequestApproveModel model
+		{
+			// Get the logged-in user's ID
+			string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			LeaveRequestApproveModel model = new LeaveRequestApproveModel
+			{
+				LeaveRequestId = LeaveRequestId,
+				Remark = Remark,
+				Status = Status,
+				ApproverId = userId
+			};
 
+			_leaveRequestService.Approve(model);
+			return RedirectToAction("Index");
+		}
+
+
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
 		public IActionResult Edit(LeaveRequestModel model)
 		{
 			try
@@ -108,31 +141,26 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-
 		public IActionResult Delete(int id)
-		{	
+		{
 			_leaveRequestService.Delete(id);
 			TempData["success"] = "Record deleted successfully!";
 
 			return RedirectToAction("Index");
 		}
 
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public IActionResult Approve(int LeaveRequestId, string Remark, string Status)   //LeaveRequestApproveModel model
-		{
-			// Get the logged-in user's ID
-			string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-			LeaveRequestApproveModel model = new LeaveRequestApproveModel
-			{
-				LeaveRequestId= LeaveRequestId,
-				Remark=Remark,
-				Status=Status,
-				ApproverId=userId
-			};
-			
-			_leaveRequestService.Approve(model);
-			return RedirectToAction("Index");
-		}
+		//[HttpPost]
+		//[ValidateAntiForgeryToken]
+		//public IActionResult Approve(LeaveRequestModel model)
+		//{
+		//	ViewBag.AllData = _leaveRequestService.GetAll();
+		//	ViewBag.LeaveType = _leaveTypeservice.GetAll();
+		//	ViewBag.Worker = _workerservice.GetAll();
+
+		//	_leaveRequestService.Create(model);
+
+
+		//	return View();
+		//}
 	}
 }

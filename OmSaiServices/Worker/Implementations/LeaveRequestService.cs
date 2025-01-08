@@ -58,12 +58,36 @@ namespace OmSaiServices.Worker.Implementations
 			return GetAll(sp_r, mapEntity, GetParams());
 		}
 
+		public List<LeaveRequestModel> GetAllByWorkerId(int id)
+		{
+
+			// Define the mapping function
+			var mapEntity = new Func<IDataReader, LeaveRequestModel>(reader => _mapper.MapEntity<LeaveRequestModel>(reader));
+
+			return GetAll(sp_r, mapEntity, GetParams(null, id));
+		}
+
+
 		public LeaveRequestModel GetById(int id)
 		{
 			// Define the mapping function
 			var mapEntity = new Func<IDataReader, LeaveRequestModel>(reader => _mapper.MapEntity<LeaveRequestModel>(reader));
 
 			return GetById(id, sp_r, mapEntity, GetParams(id));
+		}
+
+		public void Approve(LeaveRequestApproveModel model)
+		{
+			// Add a @type parameter manually
+			var parameters = new List<KeyValuePair<string, object>>
+			{
+				new("@Type", "APPROVE"),
+				new("@LeaveRequestId", model.LeaveRequestId),
+				new("@ApproverId", model.ApproverId),
+				new("@Remark", model.Remark),
+				new("@Status", model.Status),
+			};
+			QueryService.NonQuery(sp_cud, parameters, "@LastInsertedId");
 		}
 
 
@@ -106,19 +130,10 @@ namespace OmSaiServices.Worker.Implementations
 			};
 		}
 
-		public void Approve(LeaveRequestApproveModel model)
-		{
-			// Add a @type parameter manually
-			var parameters= new List<KeyValuePair<string, object>>
-			{
-				new("@Type", "APPROVE"),
-				new("@LeaveRequestId", model.LeaveRequestId),
-				new("@ApproverId", model.ApproverId),
-				new("@Remark", model.Remark),
-				new("@Status", model.Status),
-			};
-			QueryService.NonQuery(sp_cud, parameters, "@LastInsertedId");
-		}
+		//public int Approve(LeaveRequestModel model)
+		//{
+		//	return Approve(model, sp_cud, Approve(model, "approve"));
+		//}
 
 		//private List<KeyValuePair<string, object>> Approve(LeaveRequestModel model, string type)
 		//{
@@ -128,6 +143,7 @@ namespace OmSaiServices.Worker.Implementations
 		//	return new List<KeyValuePair<string, object>>
 		//	{
 		//		//new("@LeaveRequestId", LeaveRequestId),
+		//		//new("@WorkerId", model.WorkerId),
 		//		new("@ApproverId", model.ApproverId),
 
 		//		new("@Remark", model.Remark),
@@ -136,6 +152,6 @@ namespace OmSaiServices.Worker.Implementations
 		//	};
 		//}
 
-
+		
 	}
 }

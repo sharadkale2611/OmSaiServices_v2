@@ -13,7 +13,7 @@ namespace OmSaiModels.Admin
 		public int? LeaveTypeId { get; set; }
 
 		[Required(ErrorMessage = "Leave Name is required.")]
-		[StringLength(30, ErrorMessage = "Leave Name cannot exceed 30 characters.")]
+		[StringLength(30, ErrorMessage = "Asset Name cannot exceed 30 characters.")]
 		public string LeaveTypeName { get; set; }
 		[Required]
 		public bool Status { get; set; } = true;

@@ -10,5 +10,6 @@ namespace OmSaiServices.Admin.Interfaces
 {
 	public interface ILeaveTypeService : IRepository<LeaveTypeModel>
 	{
+		// Add your extra functions
 	}
 }

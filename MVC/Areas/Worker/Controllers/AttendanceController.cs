@@ -3,6 +3,7 @@ using OmSaiModels.Worker;
 using OmSaiServices.Admin.Implementations;
 using OmSaiServices.Worker.Implementations;
 using OmSaiServices.Worker.Implimentation;
+using LmsServices.Common;
 
 namespace GeneralTemplate.Areas.Worker.Controllers
 {
@@ -11,11 +12,12 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 	{
 		private readonly WorkerService _workerService;
 		private readonly WorkerAttendanceService _attendanceService;
-
+		private readonly MultiMediaService _mms;
 		public AttendanceController()
 		{
 			_workerService = new WorkerService();
 			_attendanceService = new WorkerAttendanceService();
+			_mms = new MultiMediaService();
 		}
 
 		public IActionResult Index()
@@ -51,6 +53,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 		[Route("api/WorkerAttendance")]
 		public async Task<IActionResult> WorkerAttendance([FromForm] WorkerAttendanceModel model, IFormFile SelfieImage)
 		{
+
 			try
 			{
 				// Validate the model
@@ -74,26 +77,35 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 					});
 				}
 
-				// Save the selfie image
-				var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "selfies");
-				if (!Directory.Exists(uploadsFolder))
+								try
 				{
-					Directory.CreateDirectory(uploadsFolder);
+					var uploadPath = "selfies"; // Define your folder path
+					var maxFileSizeKb = 30; // 30KB size limit
+					var quality = 20;
+					var filePath = await _mms.SaveAndCompressImageAsync(SelfieImage, uploadPath, maxFileSizeKb, quality);
+
+					// Set the selfie path in the model
+					model.SelfieImage = filePath;
+
+					// Call the service to manage attendance
+					_attendanceService.ManageAttendance(model);
+
+
+
+					//return Ok(new { FilePath = filePath, Message = "Image uploaded successfully." });
+				}
+				catch (Exception ex)
+				{
+
+					return Json(new
+					{
+						success = false,
+						message = "An error occurred while processing attendance.",
+						error = ex.Message
+					});
+
 				}
 
-				var fileName = $"{Guid.NewGuid()}_{SelfieImage.FileName}";
-				var filePath = Path.Combine(uploadsFolder, fileName);
-
-				using (var stream = new FileStream(filePath, FileMode.Create))
-				{
-					await SelfieImage.CopyToAsync(stream);
-				}
-
-				// Set the selfie path in the model
-				model.SelfieImage = $"/selfies/{fileName}";
-
-				// Call the service to manage attendance
-				_attendanceService.ManageAttendance(model);
 
 				// Return a success response
 				return Json(new

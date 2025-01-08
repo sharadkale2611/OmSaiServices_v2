@@ -1,0 +1,533 @@
+﻿@{
+    Layout = "_LayoutWorker";
+    var worker = @ViewBag.AllData;
+    var fullName = worker.FirstName + " " + worker.MiddleName + " " + worker.LastName;
+    var attendanceHistory = ViewBag.AttendanceHistory; //test commentn
+    var address = ViewBag.Addresses;
+
+    var PermanentAddress = address[0]?.Address ?? "";
+    var CurrentAddress = address[1]?.Address ?? "";
+}
+
+
+<style>
+
+
+    .selfie-image {
+        width: 40px;
+        border: 1px solid #eee;
+        border-radius: 5px;
+        box-shadow: 1px 1px 3px gray;
+    }
+
+    .calendar {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr); /* 7 columns for the days of the week */
+        gap: 5px;
+    }
+
+    .calendar-box {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+        .calendar-box.present {
+            background-color: #28a745; /* Green for Present */
+            color: #fff;
+        }
+
+        .calendar-box.absent {
+            background-color: #dc3545; /* Red for Absent */
+            color: #fff;
+        }
+
+        .calendar-box.empty {
+            background-color: #f8f9fa; /* Light gray for empty days */
+        }
+
+    .calendar-header {
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+        .calendar-header .col {
+            width: 30px;
+            height: 30px;
+            font-size: 11px;
+            text-align: center;
+        }
+
+</style>
+
+<div class="my-3 my-md-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="media">
+                            @* <span class="avatar avatar-xxl mr-5" style="background-image: url('@user.ImagePath')"></span> *@
+
+                            <span class="avatar avatar-xxl mr-5" style="background-image: url(demo/faces/male/21.jpg)">
+                                <i class="fe fe-camera"></i>
+                            </span>
+                            <div class="media-body">
+                                <h4 class="m-0 mb-1">@fullName</h4>
+                                <p class="text-muted mb-1"><b class="text-info">@worker.WorkmanId</b> [ <b>@worker.DepartmentName</b>]</p>
+                                <p class="text-muted mb-1">Qualification: <b>@worker.QualificationName</b></p>
+
+                                <ul class="social-links list-inline mb-0 mt-2">
+                                    <li class="list-inline-item">
+                                        <i class="fa fa-phone"></i> &nbsp;&nbsp; @worker.MobileNumbers
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Address</h3>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="media">
+                            <div class="media-body">
+                                <b>Permanent Address: </b>
+                                <p class="text-muted mb-0">@PermanentAddress</p>
+                                <hr />
+                                <b>Current Address: </b>
+                                <p class="text-muted mb-0">@CurrentAddress</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Project And Site</h3>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="media">
+                            <div class="media-body">
+                                <p class="m-0"><b>@worker.ProjectName</b></p>
+                                <p class="text-muted mb-0">Site: <b>@worker.SiteName, @worker.SiteLocation</b></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+
+                        <div class="container p-2">
+                            <h2 class="text-center mb-4">Current Month Attendace</h2>
+
+                            <!-- Calendar Header -->
+                            <div class="calendar-header row text-center">
+                                <div class="col">Sun</div>
+                                <div class="col">Mon</div>
+                                <div class="col">Tue</div>
+                                <div class="col">Wed</div>
+                                <div class="col">Thu</div>
+                                <div class="col">Fri</div>
+                                <div class="col">Sat</div>
+                            </div>
+
+                            <!-- Calendar Grid -->
+                            <div class="calendar">
+                                <!-- Empty Days (for alignment) -->
+                                <div class="calendar-box empty"></div>
+                                <div class="calendar-box empty"></div>
+                                <div class="calendar-box empty"></div>
+                                <div class="calendar-box empty"></div>
+
+                                <!-- Days with Present/Absent Status -->
+                                <div class="calendar-box present">1</div>
+                                <div class="calendar-box absent">2</div>
+                                <div class="calendar-box present">3</div>
+                                <div class="calendar-box absent">4</div>
+                                <div class="calendar-box present">5</div>
+                                <div class="calendar-box present">6</div>
+                                <div class="calendar-box absent">7</div>
+                                <div class="calendar-box present">8</div>
+                                <div class="calendar-box absent">9</div>
+                                <div class="calendar-box absent">10</div>
+                                <div class="calendar-box present">11</div>
+                                <div class="calendar-box present">12</div>
+                                <div class="calendar-box absent">13</div>
+                                <div class="calendar-box present">14</div>
+                                <div class="calendar-box present">15</div>
+                                <div class="calendar-box absent">16</div>
+                                <div class="calendar-box present">17</div>
+                                <div class="calendar-box absent">18</div>
+                                <div class="calendar-box absent">19</div>
+                                <div class="calendar-box present">20</div>
+                                <div class="calendar-box absent">21</div>
+                                <div class="calendar-box present">22</div>
+                                <div class="calendar-box absent">23</div>
+                                <div class="calendar-box present">24</div>
+                                <div class="calendar-box absent">25</div>
+                                <div class="calendar-box absent">26</div>
+                                <div class="calendar-box present">27</div>
+                                <div class="calendar-box present">28</div>
+                                <div class="calendar-box absent">29</div>
+                                <div class="calendar-box present">30</div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+
+
+
+            </div>
+            <div class="col-lg-8">
+
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Worker Attendance</h4>
+                    </div>
+                    <div class="table-responsive">
+
+                        <table class="table card-table table-vcenter text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th class="w-1">No.</th>
+                                    <th>Date</th>
+                                    <th>Site Name</th>
+                                    <th>In Time</th>
+                                    <th>Out Time</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var attendance in attendanceHistory)
+                                {
+                                    <tr>
+                                        <td>@attendance.WorkerAttendanceId</td>
+                                        <td>@attendance.CreatedAt?.ToString("ddd, dd MMM yy")</td>
+                                        <td>@attendance.SiteName</td>
+                                        <td>
+                                            <img src="@attendance.InSelfiPath" class="selfie-image" />
+                                            @attendance.InTime?.ToString("hh:mm tt")
+                                        </td>
+                                        <td>
+                                            <img src="@attendance.OutSelfiPath" class="selfie-image" />
+                                            @attendance.OutTime?.ToString("hh:mm tt")
+                                        </td>
+                                        <td>
+
+                                            @if (attendance.Status == "Present")
+                                            {
+                                                <span class="badge bg-success">P</span> @attendance.Status
+                                            }
+                                            else if (attendance.Status == "Absent")
+                                            {
+                                                <span class="badge bg-danger">A</span> @attendance.Status
+                                            }
+                                            else if (attendance.Status == "Miss")
+                                            {
+                                                <span class="badge bg-warning">I</span> @("In")
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-dark">@attendance.Status</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Worker Documents</h4>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table card-table table-vcenter text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th class="w-1">No.</th>
+                                    <th>Document Name</th>
+                                    <th>Uploads</th>
+                                    <th>Last Updated</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var doc in ViewBag.WorkerDocuments)
+                                {
+                                    <tr>
+                                        <td>@doc.DocumentId</td>
+                                        <td>@doc.DocumentName</td>
+                                        <td>
+                                            @if (@doc.IsDocumentImage == true)
+                                            {
+                                                @if (!string.IsNullOrEmpty(doc.DocumentImage))
+                                                {
+                                                    <a href="~/@doc.DocumentImage" target="_blank">
+                                                        <img src="~/@doc.DocumentImage" alt="Uploaded Document" class="media-object mr-4" style="max-height:50px;" />
+                                                    </a>
+                                                    <br />
+
+                                                }
+                                                else
+                                                {
+                                                    <div class="media-object avatar avatar-md mr-4" style="background-image: url(demo/faces/male/16.jpg)"></div>
+                                                    <br />
+
+                                                }
+                                            }
+                                            @if (@doc.IsDocumentNumber == true)
+                                            {
+                                                @doc.DocumentNumber
+                                            }
+
+                                        </td>
+                                        @* <td>
+                                            <div class="media-object avatar avatar-md mr-4" style="background-image: url(demo/faces/male/16.jpg)"></div>
+                                            @doc.DocumentImage<br />
+                                            @doc.DocumentNumber
+                                        </td> *@
+                                        <td>
+                                            @if (doc.DocumentNumber != null || doc.DocumentImage != null)
+                                            {
+                                                @doc.UpdatedAt
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (doc.DocumentNumber != null || doc.DocumentImage != null)
+                                            {
+                                                @if (doc.IsVerified == true)
+                                                {
+                                                    <span class="status-icon bg-success"></span> <span>Verified</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="status-icon bg-danger"></span> <span>Not Verified</span>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span>-</span>
+                                            }
+
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-info btn-upload"
+                                                    data-document_id="@doc.DocumentId"
+                                                    data-document_name="@doc.DocumentName"
+                                                    data-document_image="@doc.DocumentImage"
+                                                    data-document_number="@doc.DocumentNumber"
+                                                    data-is_document_number="@doc.IsDocumentNumber"
+                                                    data-is_document_image="@doc.IsDocumentImage"
+                                                    data-worker_id="@doc.WorkerId">
+                                                <i class="fe fe-upload"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="uploadImageModal" tabindex="-1" aria-labelledby="uploadImageModalLabel" aria-hidden="true" data-backdrop="false" style="background: rgba(0, 0, 0, 0.5).">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadImageModalLabel">Upload Document</h5>
+                <button type="button" class="btn btn-close btnCloseModal" data-bs-dismiss="modal" aria-label="Close">
+                    <b class="fe fe-x"></b>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="imageUploadForm">
+                    <input type="hidden" id="txtWorkerId">
+                    <input type="hidden" id="txtDocumentId">
+                    <div class="mb-3">
+                        <label for="imageInput" class="form-label">Document Name</label>
+                        <input class="form-control" type="text" id="txtDocumentName" value="Aadhar Card" disabled readonly>
+                    </div>
+                    <div class="mb-3 isDocumentNumber">
+                        <label for="imageInput" class="form-label">Document Number</label>
+                        <input class="form-control" type="text" id="txtDocumentNumber" value="285412541201">
+
+                    </div>
+                    <div class="mb-3 isDocumentImage">
+                        <label for="imageInput" class="form-label">Select Image</label>
+                        <input class="form-control" type="file" id="imageInput" accept="image/*">
+                        <input class="form-control" type="hidden" id="documentImage">
+
+                    </div>
+                    <div class="mb-3 isDocumentImage">
+                        @* <label class="form-label">Preview</label> *@
+                        <div>
+                            <img id="imagePreview" src="#" alt="Selected Image" class="img-fluid d-none" style="max-height: 200px;">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btnCloseModal" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" form="imageUploadForm">Upload</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+
+    <script>
+        $(document).ready(function () {
+            // Open modal when the button is clicked
+            $('.btn-upload').on('click', function () {
+                $('#uploadImageModal').modal('show');
+                let data = $(this).data();
+                $('#txtDocumentName').val(data.document_name);
+                $('#txtDocumentNumber').val(data.document_number);
+                $('#txtDocumentId').val(data.document_id);
+                $('#txtWorkerId').val(data.worker_id);
+
+                $('#documentImage').val(data.document_image);
+
+                if(data.is_document_number == "False")
+                {
+                    $('.isDocumentNumber').hide();
+
+                }else{
+                    $('.isDocumentNumber').show();
+                }
+
+
+                if(data.is_document_image== "False")
+                {
+                    $('.isDocumentImage').hide();
+
+                }else{
+                    $('.isDocumentImage').show();
+                }
+
+                $('#imageInput').val('');
+                $('#imagePreview').addClass('d-none');
+            });
+
+            $('.btnCloseModal').on('click', function () {
+                $('#uploadImageModal').modal('hide');
+            });
+
+            // JavaScript to handle image preview
+            document.getElementById('imageInput').addEventListener('change', function (event) {
+                const imageInput = event.target;
+                const preview = document.getElementById('imagePreview');
+
+                if (imageInput.files && imageInput.files[0]) {
+                    const reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        preview.src = e.target.result;
+                        preview.classList.remove('d-none'); // Show the preview image
+                    };
+
+                     reader.readAsDataURL(imageInput.files[0]);
+                } else {
+                    preview.src = '#';
+                    preview.classList.add('d-none'); // Hide the preview image
+                }
+            });
+
+            // Handle form submission via AJAX
+                  $('#imageUploadForm').on('submit', function (e) {
+            e.preventDefault();
+
+            var formData = new FormData();
+            const fileInput = document.getElementById('imageInput');
+
+            // // Ensure file is selected
+                      if (!fileInput.files || fileInput.files.length === 0) {
+                          // alert('You Have Not Selected Document File.');
+
+                          if(!confirm ('Are You Sure You Want To Continue Without Selecting File? '))
+                          {
+                              return;
+                          }
+                      }
+                      else
+                      {
+                         formData.append('file', fileInput.files[0]);
+
+                      }
+
+
+            // Add parameters
+            formData.append('WorkerId', $('#txtWorkerId').val());
+
+            formData.append('DocumentId', $('#txtDocumentId').val());
+                formData.append('DocumentNumber', $('#txtDocumentNumber').val());
+                formData.append('DocumentImage', $('#documentImage').val());
+
+
+
+            // Debugging: Log FormData keys and values
+            for (let [key, value] of formData.entries()) {
+                console.log(key, value);
+            }
+
+            // Send AJAX request
+            $.ajax({
+                url: '/api/Worker/UploadDocument',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    console.log(response);
+                    if (response.success) {
+                        alert('Document uploaded successfully!');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('AJAX Error Status:', status);
+                    console.error('AJAX Error Message:', error);
+                    console.error('AJAX Response Text:', xhr.responseText);
+                    alert('An error occurred while uploading the document.');
+                }
+            });
+        });
+
+
+
+
+
+        });
+    </script>
+
+}

@@ -74,7 +74,9 @@ namespace OmSaiServices.Admin.Implementations
             {
                 new("@DocumentId", DocumentId),
                 new("@DocumentName", model.DocumentName),
-                new("@Status", model.Status),
+                new("@IsDocumentNumber", model.IsDocumentNumber),
+                new("@IsDocumentImage", model.IsDocumentImage),				
+				new("@Status", model.Status),
 
             };
         }

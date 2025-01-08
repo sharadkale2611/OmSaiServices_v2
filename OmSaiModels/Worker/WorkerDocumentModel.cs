@@ -19,6 +19,8 @@ namespace OmSaiModels.Worker
 		[Required]
 		public int DocumentId { get; set; }
 		public string? DocumentName { get; set; }
+		public bool? IsDocumentImage { get; set; }
+		public bool? IsDocumentNumber { get; set; }
 
 		[StringLength(100)]
 		public string? DocumentNumber { get; set; }

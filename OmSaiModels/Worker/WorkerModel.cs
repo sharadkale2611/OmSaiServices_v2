@@ -26,8 +26,11 @@ namespace OmSaiModels.Worker
 
 		[Required]
 		public int DepartmentId { get; set; }
-		
+
+		public string? ProfileImage { get; set; }
+
 		public string? DepartmentName { get; set; }
+		public string? DepartmentShortName { get; set; }
 		public string? SiteName { get; set; }
 
 		[Required]
@@ -48,7 +51,10 @@ namespace OmSaiModels.Worker
 		public DateTime DateofJoining { get; set; }
 
 		public bool? Status { get; set; } = false;
-		
-		List<DepartmentModel> list { get; set; }
+
+		public string? Password { get; set; }
+
+
+        List<DepartmentModel> list { get; set; }
 	}
 }

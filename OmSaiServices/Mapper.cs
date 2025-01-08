@@ -58,13 +58,12 @@ namespace OmSaiServices
 					}
 					else if (propertyType == typeof(DateOnly))
 					{
-						// Convert DateTime to DateOnly
-						property.SetValue(entity, DateOnly.FromDateTime((DateTime)columnValue));
+						property.SetValue(entity, DateOnly.FromDateTime(Convert.ToDateTime(columnValue)));
 					}
 					else if (propertyType == typeof(DateOnly?))
 					{
-						// Convert nullable DateTime to nullable DateOnly
-						property.SetValue(entity, columnValue is DateTime dt ? new DateOnly?(DateOnly.FromDateTime(dt)) : null);
+						var dateValue = columnValue as DateTime?;
+						property.SetValue(entity, dateValue.HasValue ? DateOnly.FromDateTime(dateValue.Value) : null);
 					}
 					else if (propertyType == typeof(TimeSpan?))
 					{

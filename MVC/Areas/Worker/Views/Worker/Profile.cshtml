@@ -2,6 +2,10 @@
     var worker = @ViewBag.AllData;
     var fullName = worker.FirstName + " " + worker.MiddleName + " " + worker.LastName;
     var attendanceHistory = ViewBag.AttendanceHistory; //test commentn
+    var address = ViewBag.Addresses;
+    
+    var PermanentAddress = address[0]?.Address??"";
+    var CurrentAddress = address[1]?.Address ?? "";
 }
 
 <style>
@@ -79,12 +83,31 @@
 
                         <ul class="social-links list-inline mb-0 mt-2">
                           <li class="list-inline-item">
-                                        <i class="fa fa-phone"></i> &nbsp;&nbsp; @worker.MobileNumber
+                                        <i class="fa fa-phone"></i> &nbsp;&nbsp; @worker.MobileNumbers
                           </li>
                         </ul>
+                                <p><b>Joining Date: </b> @worker.DateofJoining </p>
                       </div>
                     </div>
                   </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Address</h3>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="media">
+                            <div class="media-body">
+                                <b>Permanent Address: </b>
+                                <p class="text-muted mb-0">@PermanentAddress</p>
+                                <hr />
+                                <b>Current Address: </b>
+                                <p class="text-muted mb-0">@CurrentAddress</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="card">
@@ -101,13 +124,12 @@
                         </div>
                     </div>
                 </div>
-
-    
+   
                 <div class="card">
                     <div class="card-body">
 
                         <div class="container p-2">
-                            <h2 class="text-center mb-4">Mini Grid Calendar</h2>
+                            <h2 class="text-center mb-4">Current Month Attendace</h2>
 
                             <!-- Calendar Header -->
                             <div class="calendar-header row text-center">
@@ -252,16 +274,27 @@
                                         <td>@doc.DocumentId</td>
                                         <td>@doc.DocumentName</td>
                                         <td>
-                                            @if (!string.IsNullOrEmpty(doc.DocumentImage))
-                                            {
-                                                <img src="~/@doc.DocumentImage" alt="Uploaded Document" class="media-object avatar avatar-md mr-4" />
+                                            @if(@doc.IsDocumentImage == true){
+                                                @if (!string.IsNullOrEmpty(doc.DocumentImage))
+                                                {
+                                                    <a href="~/@doc.DocumentImage" target="_blank">
+                                                        <img src="~/@doc.DocumentImage" alt="Uploaded Document" class="media-object mr-4" style="max-height:50px;" />
+                                                    </a>
+                                                    <br />
+
+                                                }
+                                                else
+                                                {
+                                                    <div class="media-object avatar avatar-md mr-4" style="background-image: url(demo/faces/male/16.jpg)"></div>
+                                                    <br />
+
+                                                }
                                             }
-                                            else
+                                            @if (@doc.IsDocumentNumber == true)
                                             {
-                                                <div class="media-object avatar avatar-md mr-4" style="background-image: url(demo/faces/male/16.jpg)"></div>
+                                                @doc.DocumentNumber
                                             }
-                                            <br />
-                                            @doc.DocumentNumber
+                                            
                                         </td>
                                         @* <td>
                                             <div class="media-object avatar avatar-md mr-4" style="background-image: url(demo/faces/male/16.jpg)"></div>
@@ -269,17 +302,26 @@
                                             @doc.DocumentNumber
                                         </td> *@
                                         <td>
-                                            @doc.UpdatedAt
+                                            @if (doc.DocumentNumber != null || doc.DocumentImage != null)
+                                            {
+                                                @doc.UpdatedAt
+                                            }
                                         </td>
                                         <td>
-                                            @if (doc.IsVerified == true)
+                                            @if (doc.DocumentNumber != null || doc.DocumentImage != null)
                                             {
-                                                <span class="status-icon bg-success"></span> <span>Verified</span>
+                                                @if (doc.IsVerified == true)
+                                                {
+                                                    <span class="status-icon bg-success"></span> <span>Verified</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="status-icon bg-danger"></span> <span>Not Verified</span>
+                                                }
+                                            }else{
+                                                 <span>-</span>
                                             }
-                                            else
-                                            {
-                                                <span class="status-icon bg-danger"></span> <span>Pending</span>
-                                            }
+
                                         </td>
                                         <td>
                                             <button class="btn btn-info btn-upload"
@@ -287,6 +329,8 @@
                                                     data-document_name="@doc.DocumentName"
                                                     data-document_image="@doc.DocumentImage"
                                                     data-document_number="@doc.DocumentNumber"
+                                                    data-is_document_number="@doc.IsDocumentNumber"
+                                                    data-is_document_image="@doc.IsDocumentImage"
                                                     data-worker_id="@doc.WorkerId">
                                                 <i class="fe fe-upload"></i>
                                             </button>
@@ -307,12 +351,14 @@
 
 
 <!-- Modal -->
-<div class="modal fade" id="uploadImageModal" tabindex="-1" aria-labelledby="uploadImageModalLabel" aria-hidden="true">
+<div class="modal fade" id="uploadImageModal" tabindex="-1" aria-labelledby="uploadImageModalLabel" aria-hidden="true" data-backdrop="false" style="background: rgba(0, 0, 0, 0.5).">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="uploadImageModalLabel">Upload Document</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn btn-close btnCloseModal" data-bs-dismiss="modal" aria-label="Close">
+                    <b class="fe fe-x"></b>
+                </button>
             </div>
             <div class="modal-body">
                 <form id="imageUploadForm">
@@ -322,19 +368,19 @@
                         <label for="imageInput" class="form-label">Document Name</label>
                         <input class="form-control" type="text" id="txtDocumentName" value="Aadhar Card" disabled readonly>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3 isDocumentNumber">
                         <label for="imageInput" class="form-label">Document Number</label>
                         <input class="form-control" type="text" id="txtDocumentNumber" value="285412541201">
 
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3 isDocumentImage">
                         <label for="imageInput" class="form-label">Select Image</label>
                         <input class="form-control" type="file" id="imageInput" accept="image/*">
-                        <input class="form-control" type="text" id="documentImage">
+                        <input class="form-control" type="hidden" id="documentImage">
 
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Preview</label>
+                    <div class="mb-3 isDocumentImage">
+                        @* <label class="form-label">Preview</label> *@
                         <div>
                             <img id="imagePreview" src="#" alt="Selected Image" class="img-fluid d-none" style="max-height: 200px;">
                         </div>
@@ -342,7 +388,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="btnCloseModal" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary btnCloseModal" data-bs-dismiss="modal">Close</button>
                 <button type="submit" class="btn btn-primary" form="imageUploadForm">Upload</button>
             </div>
         </div>
@@ -363,11 +409,28 @@
 
                 $('#documentImage').val(data.document_image);
 
+                if(data.is_document_number == "False")
+                {
+                    $('.isDocumentNumber').hide();
+
+                }else{
+                    $('.isDocumentNumber').show();
+                }
+
+
+                if(data.is_document_image== "False")
+                {
+                    $('.isDocumentImage').hide();
+
+                }else{
+                    $('.isDocumentImage').show();
+                }
+
                 $('#imageInput').val('');
                 $('#imagePreview').addClass('d-none');
             });
 
-            $('#btnCloseModal').on('click', function () {
+            $('.btnCloseModal').on('click', function () {
                 $('#uploadImageModal').modal('hide');
             });
 

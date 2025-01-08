@@ -1,0 +1,415 @@
+﻿@using OmSaiModels.Worker;
+@model WorkerAttendanceModel;
+@{
+    Layout = "_LayoutWorker";
+    var worker = @ViewBag.Worker;
+    var fullName = worker.FirstName + " " + worker.MiddleName + " " + worker.LastName;
+}
+
+@section css {
+    @* <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBA7kFrZTCtD1NkBfx0nO6qxznbqM1cr5o&callback=initialize" type="text/javascript" async defer></script> *@
+}
+
+<style>
+
+    #video, #canvas {
+        border-radius: 10px;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 2px solid #007bff;
+        box-shadow: 1px 1px 5px green;
+    }
+
+    #canvas {
+        display: none;
+    }
+
+    .id-card {
+        width: 300px;
+        height: 570px;
+        border: 2px solid #007bff;
+        border-radius: 10px;
+        background: #f8f9fa;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        text-align: center;
+    }
+
+        .id-card img.profile {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid #007bff;
+        }
+
+        .id-card h5 {
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .id-card p {
+            margin: 5px 0;
+            color: #6c757d;
+        }
+
+        .id-card .barcode {
+            margin-top: 20px;
+        }
+
+        .id-card .barcode img {
+            width: 80%;
+        }
+
+</style>
+
+
+<div class="container mt-5">
+    <div class="card text-center shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h1 class="mb-0">Welcome, @ViewBag.WorkerName!</h1>
+        </div>
+        <div class="card-body">
+            <a href="/Worker/WorkerAuthentication/Attendance" class="btn btn-primary">Attendance</a>
+            <a href="/Worker/WorkerAuthentication/Profile" class="btn btn-info">Profile</a>
+            <a href="/Worker/WorkerAuthentication/Logout" class="btn btn-danger">Logout</a>
+        </div>
+    </div>
+</div>
+
+
+<div class="d-flex justify-content-center align-items-center vh-100 mt-4">
+    <div class="id-card mt-4">
+        <h2 class="text-center mb-4">Selfie Attendance</h2>
+
+        <video id="video" autoplay playsinline class="border "></video>
+        <!-- Display Captured Image -->
+        <canvas id="canvas" class="border"></canvas>
+
+        <!-- Worker Information -->
+        <h5>@fullName</h5>
+        <p>Worker ID: @worker.WorkmanId</p>
+        <p>Department: @worker.DepartmentName</p>
+
+        <hr />
+        <div class="text-success" id="lbl-success" style="display:none;">
+            <i class="fe fe-check-circle" style="font-size:48px;"></i><br />
+            <small>Attendance Completed!</small>
+            <h5 id="current-time"></h5>
+        </div>
+        <div id="project-details">
+            @* <p>Project: @worker.ProjectName</p> *@
+            <p>Site: @worker.SiteName</p>
+            <p id="result"></p>
+            <p id="gps-area-name"></p>
+        </div>
+        <!-- Barcode -->
+        <div class="barcode">
+            <button id="capture" class="btn btn-primary">Capture Selfie</button>
+            <button id="retake" class="btn btn-secondary shadow" style="display: none;">Retake</button>
+            <button type="button" id="saveAttendance" class="btn btn-primary shadow" style="display: none;"> Submit Attendance</button>
+        </div>
+    </div>
+</div>
+
+<form method="post" id="attendance-form" class=" m-0 p-0" style="height:0px;">
+    <input type="hidden" id="captured-image" name="SelfieImage">
+    <input type="hidden" id="worker-id" name="WorkerId" placeholder="Worker ID" value="@worker.WorkerId" required><br>
+    <input type="hidden" id="site-id" name="SiteId" placeholder="Site ID" value="@worker.SiteId" required><br>
+    <input type="hidden" id="shift-id" name="ShiftId" placeholder="Shift ID" value="1" required><br>
+    <input type="hidden" id="geo-location" name="GeoLocation" placeholder="Geo Location" required><br>
+    <input type="hidden" id="txtSiteLocation" value="@worker.GpsLocation" />
+    <input type="submit" value="Save direct" id="btn-attendance-form" />
+</form>
+
+
+
+
+
+@section Scripts {
+
+    <script>
+
+          $('#saveAttendance').click(()=>{
+               // $('#attendance-form').submit();
+               $('#btn-attendance-form').trigger('click');
+               
+          });
+
+
+
+        $(document).ready(function () {
+
+            getGeoLocation();
+
+            const video = $('#video')[0];
+            const canvas = $('#canvas')[0];
+            const context = canvas.getContext('2d');
+
+             const preview = document.getElementById('preview');
+             const captureButton = document.getElementById('capture');
+             const capturedImageInput = document.getElementById('captured-image');
+
+             // Request access to the camera
+             navigator.mediaDevices.getUserMedia({ video: true })
+                 .then(function (stream) {
+                     video.srcObject = stream;
+                 })
+                 .catch(function (error) {
+                     console.error("Unable to access the camera", error);
+                 });
+
+
+                 // Capture the image when the button is clicked
+                 captureButton.addEventListener('click', function () {
+                     const context = canvas.getContext('2d');
+                     canvas.width = video.videoWidth;
+                     canvas.height = video.videoHeight;
+                     context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                     // Convert the image to a data URL and display it
+                     const imageData = canvas.toDataURL('image/jpeg');
+
+                    $('#canvas').show();
+                    $('#retake').show();
+                    $('#saveAttendance').show();
+
+                    $('#capture').hide();
+                    $('#video').hide();
+
+                    // Save the image data URL
+                    $('#selfieData').val(imageData);
+
+                     // Set the hidden input value
+                     capturedImageInput.value = imageData;
+
+                    calculateDistance();
+
+                 });
+
+
+             // Submit the form using AJAX
+             $('#attendance-form').on('submit', function (e) {
+                 e.preventDefault();
+                const formData = new FormData();
+                const blob = dataURItoBlob(capturedImageInput.value);
+                formData.append('SelfieImage', blob, 'selfie.png');
+                 // formData.append('SelfieImage', capturedImageInput.value);
+                 formData.append('WorkerId', $('#worker-id').val());
+                 formData.append('SiteId', $('#site-id').val());
+                 formData.append('ShiftId', $('#shift-id').val());
+                 formData.append('GeoLocation', $('#geo-location').val());
+
+                // Get the base URL dynamically
+                const baseUrl = `${window.location.protocol}//${window.location.host}`;
+
+                // Use the dynamic base URL
+                const apiUrl = `${baseUrl}/api/WorkerAttendance`;
+                 $.ajax({
+                     url: apiUrl,
+                     method: 'POST',
+                     headers: {
+                         mask: 'rugkg',
+                         hkh: 'vjgj'
+                     },
+                     processData: false,
+                     contentType: false,
+                     data: formData,
+                     success: function (response) {
+                         console.log(response);
+                         if(response.success ==true){
+                             $('#lbl-success').show();
+                             const currentDateTime = getFormattedDateTime();
+                             $('#current-time').html(currentDateTime);
+
+                            $('#retake').hide();
+                            $('#project-details').hide();                            
+                            $('#saveAttendance').hide();
+                         }
+                         else{
+                             $('#lbl-success').hide();
+                            alert('Attendance Failed!');
+                         }
+                     },
+                     error: function (xhr, status, error) {
+                         console.error(error);
+                         alert('An error occurred while submitting attendance.');
+                     }
+                 });
+             });
+
+
+
+         });
+
+        function dataURItoBlob(dataURI) {
+            const byteString = atob(dataURI.split(',')[1]);
+            const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+            return new Blob([ab], { type: mimeString });
+        }
+
+
+            // Retake selfie
+            $('#retake').click(function () {
+                $('#canvas').hide();
+                $('#video').show();
+                $('#retake').hide();
+                $('#saveAttendance').hide();
+                $('#capture').show();
+                $('#selfieData').val('');
+                $('#result').html('');
+                $('#gps-area-name').html('');
+                
+            });
+
+
+        function getGeoLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function (position) {
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
+                        const accuracy = position.coords.accuracy;
+
+                        $('#txtCurrentLocation').val(latitude+", "+longitude);
+                        $('#geo-location').val(latitude+", "+longitude);
+
+                        // document.getElementById('output').innerHTML = `
+                        //     Latitude: ${latitude}<br>
+                        //     Longitude: ${longitude}<br>
+                        //     Accuracy: ${accuracy} meters
+                        // `;
+                    },
+                    function (error) {
+                        switch (error.code) {
+                            case error.PERMISSION_DENIED:
+                                alert("User denied the request for Geolocation.");
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                alert("Location information is unavailable.");
+                                break;
+                            case error.TIMEOUT:
+                                alert("The request to get user location timed out.");
+                                break;
+                            case error.UNKNOWN_ERROR:
+                                alert("An unknown error occurred.");
+                                break;
+                        }
+                    }
+                );
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+
+        function getDistanceInMeters(lat1, lon1, lat2, lon2) {
+
+
+                    const R = 6371000; // Radius of Earth in meters
+                    const toRadians = (degrees) => degrees * (Math.PI / 180);
+
+                    const dLat = toRadians(lat2 - lat1);
+                    const dLon = toRadians(lon2 - lon1);
+
+                    const a =
+                        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                        Math.cos(toRadians(lat1)) *
+                        Math.cos(toRadians(lat2)) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+                    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+                    return R * c; // Distance in meters
+                }
+
+               function parseCoordinates(input) {
+                   const [lat, lon] = input.split(',').map(coord => parseFloat(coord.trim()));
+                   return { lat, lon };
+               }
+
+
+                function calculateDistance() {
+                    // Get input values
+                     const point1 = document.getElementById("geo-location").value;
+                     const point2 = document.getElementById("txtSiteLocation").value;
+
+                    // Parse input strings into latitude and longitude
+                    const { lat: lat1, lon: lon1 } = parseCoordinates(point1);
+                    // for testing purpose site location hidden
+                     const { lat: lat2, lon: lon2 } = parseCoordinates(point1);
+                     // const { lat: lat2, lon: lon2 } = parseCoordinates(point1);
+
+
+                    getAreaName(lat1, lon1);
+
+
+                    // Calculate the distance
+                    const distance = getDistanceInMeters(lat1, lon1, lat2, lon2);
+
+                      if(!isNaN(distance)){
+                            $("#saveAttendance").show();
+                           // Display the result
+                             document.getElementById("result").innerHTML = `<span class="text-warning">Invalid site location</span>`;
+                      }
+
+                     if(distance > 200){
+                           let distance2 = distance - 200;
+                           $("#saveAttendance").hide();
+                         // Display the result
+                         document.getElementById("result").innerHTML = `<span class="text-danger">You are away from Site: ${distance2.toFixed(2)} meters</span>`;
+                     }else{
+                            $("#saveAttendance").show();
+                           // Display the result
+                             document.getElementById("result").innerHTML = `<span class="text-success">Site Distance: ${distance.toFixed(2)} meters</span>`;
+                     }
+
+                }
+
+            function getAreaName(lat, lng) {
+                   const apiKey = 'AIzaSyBA7kFrZTCtD1NkBfx0nO6qxznbqM1cr5o'; // Replace with your API key
+                   const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`;
+
+                   fetch(geocodeUrl)
+                       .then(response => response.json())
+                       .then(data => {
+                           if (data.status === "OK" && data.results.length > 0) {
+                               const areaName = data.results[0].formatted_address;
+                               console.log("Area Name:", areaName);
+                               document.getElementById("gps-area-name").innerText = areaName;
+                           } else {
+                               console.error("No results found or invalid response.");
+                           }
+                       })
+                       .catch(error => console.error("Error fetching geocode data:", error));
+               }
+        function getFormattedDateTime() {
+            const now = new Date();
+
+            // Get date components
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+            const year = now.getFullYear();
+
+            // Get time components
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+
+            // Convert to 12-hour format
+            hours = hours % 12 || 12; // Convert 0 to 12 for midnight
+            hours = String(hours).padStart(2, '0');
+
+            // Combine into desired format
+            return `${day}/${month}/${year} ${hours}:${minutes} ${ampm}`;
+        }
+
+
+    </script>
+
+}

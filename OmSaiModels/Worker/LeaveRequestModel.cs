@@ -33,23 +33,22 @@ namespace OmSaiModels.Worker
 		public DateTime? CreatedAt { get; set; }
 		public DateTime? UpdatedAt { get; set; }
 
-
-
 	}
-
 	public class LeaveRequestApproveModel
 	{
 		[Key]
 		public int? LeaveRequestId { get; set; }
-		
+
 		[Required]
 		public string? Status { get; set; }
+
 		[Required]
 		public string? Remark { get; set; }
+
 		[Required]
 		public string? ApproverId { get; set; }
 
 
 	}
-}
 
+}
