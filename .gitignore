@@ -24,7 +24,7 @@ obj/
 **/bower_components/
 **/wwwroot/lib/
 **/wwwroot/lib/media
-
+**/MVC/Properties
 
 # Ignore logs
 *.log
