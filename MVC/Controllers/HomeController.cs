@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Security.Claims;
 using GeneralTemplate.Models;
 using Microsoft.AspNetCore.Mvc;
 using OmSaiModels.Admin;
@@ -15,7 +16,18 @@ namespace GeneralTemplate.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+		public IActionResult Index()
+		{
+			// Get the logged-in user's ID
+			string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+			// You can now use userId as needed
+			ViewBag.UserId = userId;
+
+			return View();
+		}
+
+		public IActionResult SetService()
         {
 /*
             var qService = new QualificationService();

@@ -10,6 +10,6 @@ namespace OmSaiServices.Worker.Interfaces
 {
 	public interface ILeaveRequestService : IRepository<LeaveRequestModel>
 	{
-		//public void Approve(LeaveRequestModel model);
+		public void Approve(LeaveRequestApproveModel model);
 	}
 }

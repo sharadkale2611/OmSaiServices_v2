@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using LmsServices.Common;
+using Microsoft.Data.SqlClient;
 using OmSaiModels.Admin;
 using OmSaiModels.Worker;
 using OmSaiServices.Common;
@@ -105,10 +106,19 @@ namespace OmSaiServices.Worker.Implementations
 			};
 		}
 
-		//public int Approve(LeaveRequestModel model)
-		//{
-		//	return Approve(model, sp_cud, Approve(model, "approve"));
-		//}
+		public void Approve(LeaveRequestApproveModel model)
+		{
+			// Add a @type parameter manually
+			var parameters= new List<KeyValuePair<string, object>>
+			{
+				new("@Type", "APPROVE"),
+				new("@LeaveRequestId", model.LeaveRequestId),
+				new("@ApproverId", model.ApproverId),
+				new("@Remark", model.Remark),
+				new("@Status", model.Status),
+			};
+			QueryService.NonQuery(sp_cud, parameters, "@LastInsertedId");
+		}
 
 		//private List<KeyValuePair<string, object>> Approve(LeaveRequestModel model, string type)
 		//{
@@ -118,7 +128,6 @@ namespace OmSaiServices.Worker.Implementations
 		//	return new List<KeyValuePair<string, object>>
 		//	{
 		//		//new("@LeaveRequestId", LeaveRequestId),
-		//		//new("@WorkerId", model.WorkerId),
 		//		new("@ApproverId", model.ApproverId),
 
 		//		new("@Remark", model.Remark),
@@ -127,6 +136,6 @@ namespace OmSaiServices.Worker.Implementations
 		//	};
 		//}
 
-		
+
 	}
 }
