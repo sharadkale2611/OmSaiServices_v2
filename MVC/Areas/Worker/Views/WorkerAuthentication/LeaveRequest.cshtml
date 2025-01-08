@@ -11,11 +11,11 @@
 }
 
 @section css {
-        <style>
-            .btnEdit:hover {
-                cursor: pointer;
-            }
-        </style>
+    <style>
+        .btnEdit:hover {
+            cursor: pointer;
+        }
+    </style>
 }
 
 <div class="app-content-header">
@@ -57,6 +57,7 @@
                             <thead>
                                 <tr>
                                     <th class="w-1">No.</th>
+                                    <th>WorkerName</th>
                                     <th>LeaveRequestName</th>
                                     <th>StartDate</th>
                                     <th>EndDate</th>
@@ -72,41 +73,56 @@
                                 @foreach (var item in ViewBag.AllData)
                                 {
                                     serialNumber++;
-                                        <tr class="align-middle">
-                                            <td>@serialNumber</td>
-                                            <td>@item.LeaveTypeName</td>
-                                            <td>@item.StartDate</td>
-                                            <td>@item.EndDate</td>
-                                            <td class="text-wrap text-truncate" 
+                                    <tr class="align-middle">
+                                        <td>@serialNumber</td>
+                                        <td>@item.WorkerName</td>
+                                        <td>@item.LeaveTypeName</td>
+                                        <td>@item.StartDate</td>
+                                        <td>@item.EndDate</td>
+                                        <td class="text-wrap text-truncate"
                                             style="max-width: 150px;"
                                             data-bs-toggle="tooltip" title="@item.Reason">
-                                                @item.Reason</td>
-                                            <td>@item.Status</td>
+                                            @item.Reason
+                                        </td>
+                                        <td>@item.Status</td>
                                         @* <td>@item.Remark</td> *@
-                                            <td>@item.CreatedAt</td>
+                                        <td>@item.CreatedAt</td>
                                         @* <td>@item.UpdatedAt</td> *@
 
-                                            <td>
-                                                <nav class="nav justify-content-center d-flex flex-nowrap">
-                                                    <a class="nav-link badge shadow m-0 text-warning btn btnEdit"
-                                                       data-id="@item.LeaveRequestId"
-                                                       data-leave_tpye_id="@item.LeaveTypeId"
-                                                       data-start_date="@item.StartDate"
-                                                       data-end_date="@item.EndDate"
-                                                       data-reason="@item.Reason"
-                                                       data-status="@item.Status">                                       
-                                                        <i class="fe fe-edit"></i>
-                                                    </a>
+                                        <td>
+                                            <nav class="nav justify-content-center d-flex flex-nowrap">
+                                                <a class="nav-link badge shadow m-0 text-warning btn btnEdit"
+                                                   data-id="@item.LeaveRequestId"
+                                                   data-workerid="@item.WorkerId"
+                                                   data-leavetpyename="@item.LeaveTypeName"
+                                                   data-startdate="@item.StartDate"
+                                                   data-enddate="@item.EndDate"
+                                                   data-reason="@item.Reason"
+                                                   data-status="@item.Status">
+                                                    <i class="fe fe-edit"></i>
+                                                </a>
 
-                                                    <a class="nav-link badge shadow m-0 text-danger btn btn-delete"
-                                                       data-delete_id="@item.LeaveRequestId"
-                                                       data-delete_display="@item.WorkerId">
-                                                        <i class="fe fe-trash"></i>
-                                                    </a>
-                                                </nav>
-                                            </td>
 
-                                        </tr>
+                                                <a class="nav-link badge shadow m-0 text-warning btn btnApprove"
+                                                   data-id="@item.LeaveRequestId"
+                                                   data-worker_name="@item.WorkerName"
+                                                   data-remark="@item.Remark"
+                                                   data-status="@item.Status">
+
+                                                    <i class="fe fe-feather"></i>
+                                                </a>
+
+
+
+                                                <a class="nav-link badge shadow m-0 text-danger btn btn-delete"
+                                                   data-delete_id="@item.LeaveRequestId"
+                                                   data-delete_display="@item.WorkerId">
+                                                    <i class="fe fe-trash"></i>
+                                                </a>
+                                            </nav>
+                                        </td>
+
+                                    </tr>
                                 }
 
                             </tbody>
@@ -118,18 +134,27 @@
             <div class="col-lg-4 col-md-4 col-sm-12" id="rightCard" style="display:none;">
                 <div class="card card-warning card-outline mb-4 ">
                     <div asp-validation-summary="All" class="text-danger"></div>
-                    <form id="LeaveRequestForm" method="post" asp-action="Create" asp-antiforgery="true">
+                    <form id="LeaveRequestForm" method="post" asp-area="Worker" asp-controller="LeaveRequest" asp-action="Create" asp-antiforgery="true">
                         <input type="hidden" asp-for="LeaveRequestId" id="LeaveRequestId" />
-                        <input type="hidden" asp-for="WorkerId" id="WorkerId" value="@ViewBag.WorkerId" />
-                        
                         <div class="card-body">
                             <div class="mb-3">
+                                <label asp-for="WorkerId" class="col-form-label">Worker Name</label>
+                                <select class="form-control" asp-for="WorkerId" id="WorkerId" required>
+                                    <option value="">Select Worker</option>
+                                    @foreach (var worker in ViewBag.Worker)
+                                    {
+                                        <option value="@worker.WorkerId">@worker.FirstName @worker.MiddleName @worker.LastName</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="WorkerId" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
                                 <label asp-for="LeaveTypeId" class="col-form-label">Leave Type Name</label>
-                                <select class="form-control" asp-for="LeaveTypeId" id="LeaveTypeId" required>
+                                <select class="form-control" asp-for="LeaveTypeId" id="LeaveTypeName" required>
                                     <option value="">Select Leave Type</option>
                                     @foreach (var worker in ViewBag.LeaveType)
                                     {
-                                            <option value="@worker.LeaveTypeId">@worker.LeaveTypeName</option>
+                                        <option value="@worker.LeaveTypeId">@worker.LeaveTypeName</option>
                                     }
                                 </select>
                                 <span asp-validation-for="LeaveTypeId" class="text-danger"></span>
@@ -146,7 +171,7 @@
                             </div>
                             <div class="mb-3">
                                 <label asp-for="Reason" class="col-form-label">Reason</label>
-                                <textarea rows="3" class="form-control" asp-for="Reason" id="Reason" placeholder="Reason" required></textarea>
+                                <input type="text" class="form-control" asp-for="Reason" id="Reason" placeholder="Reason" required>
                                 <span asp-validation-for="Reason" class="text-danger"></span>
                             </div>
 
@@ -170,6 +195,45 @@
                 </div>
             </div>
 
+            <div class="col-lg-4 col-md-4 col-sm-12" id="rightCardApprove" style="display:none;">
+                <div class="card card-warning card-outline mb-4 ">
+                    <div class="card-header">
+                        <h4>Approve Leave Request</h4>
+                     </div>
+                    <span asp-validation-summary="All" class="text-danger"></span>
+                    <form id="LeaveRequestFormApprove" method="post" asp-area="Worker" asp-controller="LeaveRequest" asp-action="Approve" asp-antiforgery="true">
+                        <input type="hidden" name="LeaveRequestId" id="LeaveRequestId2" />
+                        <div class="card-body" style="padding-top:5px;">
+                            <div class="mb-1">
+
+                                <label class="col-form-label">Worker Name: <b id="lblWorkerName"></b></label>
+                                
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Remark" class="col-form-label">Remark</label>
+                                <textarea class="form-control" name="Remark" id="Remark" placeholder="Remark" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Status" class="col-form-label">Status</label>
+                                <select class="form-control" name="Status" id="Status" required>
+                                    <option value="">Select Status</option>
+                                    @foreach (var status in StatusList)
+                                    {
+                                        <option value="@status">@status</option>
+                                    }
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="card-footer text-center">
+                            <button type="submit" class="btn btn-outline-secondary" id="btnSubmit">Save Changes</button>
+                            <button type="button" class="btn btn-outline-warning" id="btnCloseForm1">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
 
         </div>
     </div>
@@ -177,70 +241,80 @@
 
 
 @section modals {
-        <partial name="~/Views/shared/_DeleteModelPartial.cshtml" />
+    <partial name="~/Views/shared/_DeleteModelPartial.cshtml" />
 }
 
 @section Scripts {
+    <script>
+        $('#btnShowForm').click(() => {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Save");
+
+            $('#LeaveRequestForm').attr('action', '/worker/LeaveRequest/Create');
+            $('#LeaveRequestId').val("");
+        });
+
+        $('#btnCloseForm').click(() => {
+            $('#leftCard').addClass("col-lg-12 col-md-12").removeClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeOut();
+            $('#btnShowForm').fadeIn();
+        });
+
+        $('.btnEdit').click(function () {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Update");
+
+            let data = $(this).data();
+            $('#LeaveRequestId').val(data.id);
+            $('#WorkerId').val(data.workerid);
+            $('#LeaveTypeName').val(data.leavetpyename);
+            $('#StartDate').val(data.startdate);
+            $('#EndDate').val(data.enddate);
+            $('#Reason').val(data.reason);
+
+            $('#LeaveRequestForm').attr('action', '/worker/LeaveRequest/Edit');
+        });
 
 
-        <script>
-            $('#btnShowForm').click(() => {
-                $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
-                $('#rightCard').fadeIn();
-                $('#btnShowForm').fadeOut();
-                $('#btnSubmit').text("Save");
 
-        $('#LeaveRequestForm').attr('action', '/worker/WorkerAuthentication/LeaveRequest');
-                $('#LeaveRequestId').val("");
-            });
+        //Approve Button
+        $('.btnApprove').click(function () {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCardApprove').fadeIn();
+            $('#LeaveRequestFormApprove').fadeIn();
+            $('#btnSubmit').text("Approve");
 
-            $('#btnCloseForm').click(() => {
-                $('#leftCard').addClass("col-lg-12 col-md-12").removeClass("col-lg-8 col-md-8");
-                $('#rightCard').fadeOut();
-                $('#btnShowForm').fadeIn();
-            });
+            let data = $(this).data();
+            // console.log(data);
+            // alert(data.id);
 
-            $('.btnEdit').click(function () {
-                $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
-                $('#rightCard').fadeIn();
-                $('#btnShowForm').fadeOut();
-                $('#btnSubmit').text("Update");
+            $('#lblWorkerName').html(data.worker_name);
+            $('#LeaveRequestId2').val(data.id);
+            $('#Remark').val(data.remark)
+            $('#Status').val(data.status);
 
-                let data = $(this).data();
+            $('#LeaveRequestFormApprove').attr('action', '/worker/LeaveRequest/Approve');
+        });
 
-                // Parse the dates from the response
-                    const startDate = new Date(data.start_date);
-                    const endDate = new Date(data.end_date);
+        $('#btnCloseForm1').click(() => {
+            $('#leftCard').addClass("col-lg-12 col-md-12").removeClass("col-lg-8 col-md-8");
+            $('#rightCardApprove').fadeOut();
+            $('#btnShowForm').fadeIn();
+        });
 
-                // Format the dates as yyyy-MM-dd (required for input type="date")
-                   const formatDate = (date) => {
-                       const year = date.getFullYear();
-                       const month = String(date.getMonth() + 1).padStart(2, '0');
-                       const day = String(date.getDate()).padStart(2, '0');
-                       return `${year}-${month}-${day}`;
-                   };
+        $('.btn-delete').click(function () {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Delete");
 
-
-                $('#LeaveRequestId').val(data.id);
-                $('#LeaveTypeId').val(data.leave_tpye_id);
-                $('#StartDate').val(formatDate(startDate));
-                $('#EndDate').val(formatDate(endDate));
-                $('#Reason').val(data.reason);
-
-                $('#LeaveRequestForm').attr('action', '/worker/WorkerAuthentication/LeaveRequestEdit');
-            });
-
-
-            $('.btn-delete').click(function () {
-                $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
-                $('#rightCard').fadeIn();
-                $('#btnShowForm').fadeOut();
-                $('#btnSubmit').text("Delete");
-
-                let data = $(this).data();
-                $('#LeaveRequestId').val(data.delete_id);
-                $('#LeaveRequestForm').attr('action', '/worker/LeaveRequest/Delete');
-            });
-
-        </script>
+            let data = $(this).data();
+            $('#LeaveRequestId').val(data.delete_id);
+            $('#LeaveRequestForm').attr('action', '/worker/LeaveRequest/Delete');
+        });
+    </script>
 }

@@ -79,7 +79,11 @@
                                         <td>@item.LeaveTypeName</td>
                                         <td>@item.StartDate</td>
                                         <td>@item.EndDate</td>
-                                        <td>@item.Reason</td>
+                                        <td class="text-wrap text-truncate"
+                                            style="max-width: 150px;"
+                                            data-bs-toggle="tooltip" title="@item.Reason">
+                                            @item.Reason
+                                        </td>
                                         <td>@item.Status</td>
                                         @* <td>@item.Remark</td> *@
                                         <td>@item.CreatedAt</td>
@@ -98,13 +102,16 @@
                                                     <i class="fe fe-edit"></i>
                                                 </a>
 
-                                                @* <a class="nav-link badge shadow m-0 text-primary btn btnEdit2" *@
-                                                @*    data-id="@item.LeaveRequestId" *@
-                                                @*    data-approverid="@item.ApproverId"                                                  *@
-                                                @*    data-remark="@item.Remark" *@
-                                                @*    data-updatedAt="@item.UpdatedAt"> *@
-                                                @*     <i class="fe fe-feather"></i> *@
-                                                @* </a> *@
+
+                                                <a class="nav-link badge shadow m-0 text-warning btn btnApprove"
+                                                   data-id="@item.LeaveRequestId"
+                                                   data-remark="@item.Remark"
+                                                   data-status="@item.Status">
+
+                                                    <i class="fe fe-feather"></i>
+                                                </a>
+
+
 
                                                 <a class="nav-link badge shadow m-0 text-danger btn btn-delete"
                                                    data-delete_id="@item.LeaveRequestId"
@@ -187,6 +194,38 @@
                 </div>
             </div>
 
+            <div class="col-lg-4 col-md-4 col-sm-12" id="rightCardApprove" style="display:none;">
+                <div class="card card-warning card-outline mb-4 ">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <form id="LeaveRequestFormApprove" method="post" asp-area="Worker" asp-controller="LeaveRequest" asp-action="Approve" asp-antiforgery="true">
+                        <input type="hidden" name="LeaveRequestId" id="LeaveRequestId2" />
+                        <div class="card-body">
+
+                            <div class="mb-3">
+                                <label asp-for="Remark" class="col-form-label">Remark</label>
+                                <textarea class="form-control" name="Remark" id="Remark" placeholder="Remark" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Status" class="col-form-label">Status</label>
+                                <select class="form-control" name="Status" id="Status" required>
+                                    <option value="">Select Status</option>
+                                    @foreach (var status in StatusList)
+                                    {
+                                        <option value="@status">@status</option>
+                                    }
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="card-footer text-center">
+                            <button type="submit" class="btn btn-outline-secondary" id="btnSubmit">Approve</button>
+                            <button type="button" class="btn btn-outline-warning" id="btnCloseForm1">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
 
         </div>
     </div>
@@ -233,21 +272,29 @@
         });
 
 
-        //   $('#btnShowForm').click(() => {
-        //     $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
-        //     $('#rightCard').fadeIn();
-        //     $('#btnShowForm').fadeOut();
-        //     $('#btnSubmit').text("Approve");
 
-        //     $('#LeaveRequestForm').attr('action', '/worker/LeaveRequest/Approve');
-        //     $('#LeaveRequestId').val("");
-        // });
+        //Approve Button
+        $('.btnApprove').click(function () {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCardApprove').fadeIn();
+            $('#LeaveRequestFormApprove').fadeIn();
+            $('#btnSubmit').text("Approve");
 
-        // $('#btnCloseForm').click(() => {
-        //     $('#leftCard').addClass("col-lg-12 col-md-12").removeClass("col-lg-8 col-md-8");
-        //     $('#rightCard').fadeOut();
-        //     $('#btnShowForm').fadeIn();
-        // });
+            let data = $(this).data();
+            // console.log(data);
+            // alert(data.id);
+            $('#LeaveRequestId2').val(data.id);
+            $('#Remark').val(data.remark)
+            $('#Status').val(data.status);
+
+            $('#LeaveRequestFormApprove').attr('action', '/worker/LeaveRequest/Approve');
+        });
+
+        $('#btnCloseForm1').click(() => {
+            $('#leftCard').addClass("col-lg-12 col-md-12").removeClass("col-lg-8 col-md-8");
+            $('#rightCardApprove').fadeOut();
+            $('#btnShowForm').fadeIn();
+        });
 
         $('.btn-delete').click(function () {
             $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");

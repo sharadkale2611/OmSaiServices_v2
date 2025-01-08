@@ -106,12 +106,48 @@
 
                             </div>
                         </div>
-                        <a href="#" class="header-toggler d-lg-none ml-3 ml-lg-0" data-toggle="collapse" data-target="#headerMenuCollapse">
+
+                        @if (ViewBag.IsSignedIn == false || ViewBag.IsSignedIn == null)
+                        {
+                        <a href="#" class="header-toggler d-lg-none ml-3 ml-lg-0 text-info" data-toggle="collapse" data-target="#headerMenuCollapse2">
                             <span class="header-toggler-icon"></span>
                         </a>
+                        }else{
+                            <a href="#" class="header-toggler d-lg-none ml-3 ml-lg-0" data-toggle="collapse" data-target="#headerMenuCollapse">
+                                <span class="header-toggler-icon"></span>
+                            </a>
+                        }
+
+
                     </div>
                 </div>
             </div>
+
+            @if (ViewBag.IsSignedIn == false || ViewBag.IsSignedIn == null)
+            {
+            <div class="header collapse d-lg-none p-0" id="headerMenuCollapse2">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg order-lg-first">
+                            <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
+                                <li class="nav-item">
+                                    <a href="/account/login" class="nav-link pr-0 leading-none">
+                                        <span class="text-default"><i class="fe fe-user"></i>  Admin Login</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-area="worker" asp-controller="WorkerAuthentication" asp-action="Login" class="nav-link pr-0 leading-none">
+                                        <span class="text-default"><i class="fe fe-users"></i> Worker Login</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            }
+    
+
             @if (ViewBag.IsSignedIn == true)
             {
                 <div class="header collapse d-lg-flex p-0" id="headerMenuCollapse">

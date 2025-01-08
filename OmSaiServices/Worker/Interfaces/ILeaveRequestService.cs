@@ -11,5 +11,6 @@ namespace OmSaiServices.Worker.Interfaces
 	public interface ILeaveRequestService : IRepository<LeaveRequestModel>
 	{
 		// Add your extra functions
+		public void Approve(LeaveRequestApproveModel model);
 	}
 }

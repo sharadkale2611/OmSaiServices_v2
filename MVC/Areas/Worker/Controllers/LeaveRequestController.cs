@@ -4,6 +4,7 @@ using OmSaiModels.Worker;
 using OmSaiServices.Worker.Implementations;
 using OmSaiServices.Admin.Implementations;
 using OmSaiServices.Worker.Implimentation;
+using System.Security.Claims;
 
 namespace GeneralTemplate.Areas.Worker.Controllers
 {
@@ -82,9 +83,30 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			}
 		}
 
+
+
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+		public IActionResult Approve(int LeaveRequestId, string Remark, string Status)   //LeaveRequestApproveModel model
+		{
+			// Get the logged-in user's ID
+			string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			LeaveRequestApproveModel model = new LeaveRequestApproveModel
+			{
+				LeaveRequestId = LeaveRequestId,
+				Remark = Remark,
+				Status = Status,
+				ApproverId = userId
+			};
 
+			_leaveRequestService.Approve(model);
+			return RedirectToAction("Index");
+		}
+
+
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
 		public IActionResult Edit(LeaveRequestModel model)
 		{
 			try

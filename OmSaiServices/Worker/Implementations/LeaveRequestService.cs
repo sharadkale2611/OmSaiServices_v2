@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using LmsServices.Common;
+using Microsoft.Data.SqlClient;
 using OmSaiModels.Admin;
 using OmSaiModels.Worker;
 using OmSaiServices.Common;
@@ -73,6 +74,20 @@ namespace OmSaiServices.Worker.Implementations
 			var mapEntity = new Func<IDataReader, LeaveRequestModel>(reader => _mapper.MapEntity<LeaveRequestModel>(reader));
 
 			return GetById(id, sp_r, mapEntity, GetParams(id));
+		}
+
+		public void Approve(LeaveRequestApproveModel model)
+		{
+			// Add a @type parameter manually
+			var parameters = new List<KeyValuePair<string, object>>
+			{
+				new("@Type", "APPROVE"),
+				new("@LeaveRequestId", model.LeaveRequestId),
+				new("@ApproverId", model.ApproverId),
+				new("@Remark", model.Remark),
+				new("@Status", model.Status),
+			};
+			QueryService.NonQuery(sp_cud, parameters, "@LastInsertedId");
 		}
 
 
