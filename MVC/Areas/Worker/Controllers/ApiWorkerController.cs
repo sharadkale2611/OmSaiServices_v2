@@ -30,7 +30,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 		}
 
 		[HttpGet("profile/{id}")]
-		[Authorize]
+		[Authorize(AuthenticationSchemes = "Jwt")]
 		public IActionResult GetProfile(int id)
 		{
 			var worker = _workerService.GetProfileById(id, null);

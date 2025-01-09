@@ -325,42 +325,108 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			return View(p);
 		}
 
+
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public IActionResult Edit(WorkerModel model)
+		public IActionResult Edit(WorkerModel model, int ProjectId, int SiteId, int QualificationId, string MobileNumber, bool Status, int WorkerMobileNumberId1, int WorkerMobileNumberId2, int WorkerAddressId1, int WorkerAddressId2, string? MobileNumber2 = "", string? Address1 = "", string? Address2 = "")
 		{
-
 			try
 			{
+				if (!model.WorkerId.HasValue)
+				{
+					TempData["error"] = "WorkerId is required for updating.";
+					return View(model);
+				}
+
 				if (ModelState.IsValid)
 				{
 					TempData["success"] = "Record updated successfully!";
+
+					// Update main Worker details
 					_workerService.Update(model);
+
+					// Update project-site relationship
+					var workerProjectSite = _workerProjectSiteService.GetById(model.WorkerId.Value);
+					if (workerProjectSite != null)
+					{
+						workerProjectSite.SiteId = SiteId;
+						workerProjectSite.ProjectId = ProjectId;
+						workerProjectSite.Status = Status;
+						_workerProjectSiteService.Update(workerProjectSite);
+					}
+
+					// Update qualification
+					var workerQualification = _workerQualificationService.GetById(model.WorkerId.Value);
+					if (workerQualification != null)
+					{
+						workerQualification.QualificationId = QualificationId;
+						_workerQualificationService.Update(workerQualification);
+					}
+
+					// Update primary mobile number
+					WorkerMobileNumbersModel workerMobileNumbersModel = new WorkerMobileNumbersModel
+					{
+						WorkerMobileNumberId = WorkerMobileNumberId1,
+						WorkerId = model.WorkerId ?? 0,
+						MobileNumber = MobileNumber
+					};
+					_workerMobileNumbersService.Create(workerMobileNumbersModel);
+
+					if (MobileNumber2 == "")
+					{
+						MobileNumber2 = MobileNumber;
+					}
+					WorkerMobileNumbersModel workerMobileNumbersModel_2 = new WorkerMobileNumbersModel
+					{
+						WorkerMobileNumberId = WorkerMobileNumberId2,
+						WorkerId = model.WorkerId ?? 0,
+						MobileNumber = MobileNumber2
+					};
+					_workerMobileNumbersService.Create(workerMobileNumbersModel_2);
+					if (Address1 != "" && Address1 != null)
+					{
+						WorkerAddressModel workerAddressModel_1 = new WorkerAddressModel
+						{
+							WorkerAddressId = WorkerAddressId1,
+							WorkerId = model.WorkerId ?? 0,
+							AddressType = "Permanent",
+							Address = Address1
+						};
+						_workerAddressService.Update(workerAddressModel_1);
+
+					}
+
+					if (Address2 != "" && Address2 != null)
+					{
+						WorkerAddressModel workerAddressModel_2 = new WorkerAddressModel
+						{
+							WorkerAddressId = WorkerAddressId2,
+							WorkerId = model.WorkerId ?? 0,
+							AddressType = "Current",
+							Address = Address2
+						};
+						_workerAddressService.Update(workerAddressModel_2);
+					}
+
+					return RedirectToAction(nameof(Index));
 				}
 				else
 				{
-					var errorMessages = new List<string>();
-					foreach (var state in ModelState)
-					{
-						foreach (var error in state.Value.Errors)
-						{
-							errorMessages.Add(error.ErrorMessage);
-						}
-					}
+					// Handle model state errors
+					var errorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
 					TempData["errors"] = errorMessages;
 				}
-
-				return RedirectToAction(nameof(Index));             // nameof checks method compiletime to avoid errors
 			}
-			catch
+			catch (Exception ex)
 			{
-				TempData["error"] = "Something went wrong!";
-				return View("Index", model);
+				TempData["error"] = $"Something went wrong! {ex.Message}";
 			}
-			//_projectService.Update(model);
-			//TempData["success"] = "Project Updated successfully!";
-			//return View(model);
+
+			return View(model);
 		}
+
+
+
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]

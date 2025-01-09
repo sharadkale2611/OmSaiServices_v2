@@ -27,7 +27,8 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 
 
 		[HttpPost("worker-attendance-report")]
-		[Authorize]
+		[Authorize(AuthenticationSchemes = "Jwt")]
+
 		public async Task<IActionResult> WorkerAttendanceReport([FromQuery] int? WorkerId, [FromQuery] int? SiteId, [FromQuery] DateOnly? CurrentDate)
 		{
 			// Validate the parameters
@@ -76,7 +77,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 
 
 		[HttpPost("worker-selfie-attendance")]
-		[Authorize]
+		[Authorize(AuthenticationSchemes = "Jwt")]
 		public async Task<IActionResult> WorkerSelfieAttendance([FromForm] WorkerAttendanceModel model, IFormFile SelfieImage)
 		{
 			try

@@ -10,6 +10,24 @@
 	var MarriedList = new List<string>(){
 		"Married","Unmarried"
 	};
+	var address = ViewBag.Addresses;
+	var Worker = ViewBag.Worker;
+	var workerMobiles = ViewBag.MobilesNumbers;
+	var WorkerMobileNumberId1 = workerMobiles[0].WorkerMobileNumberId;
+	var WorkerMobileNumberId2 = workerMobiles[1].WorkerMobileNumberId;
+
+	var mobileNumbers = Worker.MobileNumbers;    //"9867789840, 7364043357" "split it with array"
+													//Split mobile numbers
+
+	var mobileNumbersArray = mobileNumbers?.Split(',') ?? new string[0];
+	var MobileNumber = mobileNumbersArray.Length > 0 ? mobileNumbersArray[0].Trim() : "";
+	var MobileNumber2 = mobileNumbersArray.Length > 1 ? mobileNumbersArray[1].Trim() : "";
+
+	var PermanentAddress = address[0]?.Address ?? "";
+	var CurrentAddress = address[1]?.Address ?? "";
+	var WorkerAddressId1 = address[0].WorkerAddressId;
+	var WorkerAddressId2 = address[1].WorkerAddressId;
+
 }
 
 
@@ -30,12 +48,6 @@
 
 							<div class="row border-bottom border-danger pb-2 mb-2">
 
-								<div class="col-md-4  mb-3 pe-none">
-									<label class="col-form-label">Workman ID</label>
-									<input type="text" class="form-control disabled" disabled value="@(Model?.WorkmanId ?? "N/A")" readonly>
-								</div>
-
-
 								@* 	<div class="col-md-4  mb-3"> *@
 								@* 		<label for="SiteId" class="col-form-label">Site Name</label> *@
 								@* 		<select class="form-control" id="SiteId" name="siteId" required> *@
@@ -47,11 +59,6 @@
 								@* 		</select> *@
 								@* 	</div> *@
 
-								@* 	<div class="col-md-4  mb-3"> *@
-								@* 		<label asp-for="WorkmanId" class="col-form-label">Workman Id</label> *@
-								@* 		<input type="text" class="form-control" asp-for="WorkmanId" placeholder="Workman Id" required> *@
-								@* 		<span asp-validation-for="WorkmanId" class="text-danger"></span> *@
-								@* 	</div> *@
 
 								<div class="col-md-4  mb-3">
 									<label asp-for="DepartmentId" class="col-form-label">DepartmentName</label>
@@ -59,11 +66,15 @@
 										<option value="">Select Department</option>
 										@foreach (var department in ViewBag.Department)
 										{
-											<option value="@department.DepartmentId">@department.DepartmentName</option>
+											<option value="@department.DepartmentId" data-department_short_name="@department.DepartmentShortName">@department.DepartmentName (@department.DepartmentShortName)</option>
 										}
 									</select>
+									<input type="hidden" class="form-control" asp-for="DepartmentShortName">
 									<span asp-validation-for="DepartmentName" class="text-danger"></span>
 								</div>
+
+
+
 							</div>
 
 							<div class="row ">
@@ -89,7 +100,7 @@
 								<div class="col-md-4  mb-3">
 									<label asp-for="DateofBirth" class="col-form-label">Date of Birth</label>
 									<input type="date" class="form-control" asp-for="DateofBirth" placeholder="Date of Birth" required>
-									<span asp-validation-for="DateofBirth" class="text-danger"></span>
+									<span asp-validation-for="DateofBirth" id="dobError" class="text-danger"></span>
 								</div>
 
 								<div class="col-md-4  mb-3">
@@ -111,8 +122,8 @@
 								</div>
 							</div>
 
-							<div class="row">
-								<div class="col-md-6  mb-3">
+							<div class="row border-bottom border-danger pb-2 mb-2">
+								<div class="col-md-4  mb-3">
 									<label asp-for="MarritalStatus" class="col-form-label">Marrital Status</label>
 									<select class="form-control" type="text" asp-for="MarritalStatus" placeholder="Marrital Status" required>
 										<option value="">Select Marrital Status</option>
@@ -124,34 +135,91 @@
 									<span asp-validation-for="MarritalStatus" class="text-danger"></span>
 								</div>
 
-								<div class="col-md-6  mb-3">
+								<div class="col-md-4  mb-3">
 									<label asp-for="SpouseName" class="col-form-label">Spouse Name</label>
 									<input type="text" class="form-control" asp-for="SpouseName" placeholder="Spouse Name(Partner Name)" required>
 									<span asp-validation-for="SpouseName" class="text-danger"></span>
 								</div>
+
+								<div class="col-md-4  mb-3">
+									<label asp-for="DateofJoining" class="col-form-label">Date of Joining</label>
+									<input type="date" class="form-control" asp-for="DateofJoining" placeholder="DateofJoining" required>
+									<span asp-validation-for="DateofJoining" id="joiningError" class="text-danger"></span>
+								</div>
 							</div>
 
 							<div class="row">
-								<div class="col-md-6  mb-3">
-									<label asp-for="DateofJoining" class="col-form-label">Date of Joining</label>
-									<input type="date" class="form-control" asp-for="DateofJoining" placeholder="DateofJoining" required>
-									<span asp-validation-for="DateofJoining" class="text-danger"></span>
+								<input type="text" name="WorkerAddressId1" value="@WorkerAddressId1" />
+								<div class="col-md-6 mb-3">
+									<label for="Address1" class="form-label">Permanent Address</label>
+									<textarea name="Address1" class="form-control">@PermanentAddress</textarea>
+								</div>
+								<div class="col-md-6 mb-3">
+									<input type="text" name="WorkerAddressId2" value="@WorkerAddressId2" />
+									<label for="Address2" class="form-label">Current Address</label>
+									<textarea name="Address2" class="form-control">@CurrentAddress</textarea>
+								</div>
+							</div>
+
+
+							<div class="row">
+								<div class="col-md-4 mb-3">
+									<label for="ProjectId" class="col-form-label">Project Name</label>
+									<select name="ProjectId" id="ProjectId" class="form-control" required>
+										<option value="">Select Option</option>
+										@foreach (var project in ViewBag.Projects)
+										{
+											<option value="@project.ProjectId">@project.ProjectName</option>
+
+										}
+									</select>
+									<input type="hidden" id="ProjectIdTemp" value="@Worker.ProjectId" />
 								</div>
 
-								
+								<div class="col-md-4 mb-3">
+									<label for="SiteId" class="col-form-label">Site Name</label>
+									<select name="SiteId" id="SiteId" class="form-control" required>
+										<option value="">Select Option</option>
+										@foreach (var site in ViewBag.Sites)
+										{
+											<option value="@site.SiteId">@site.SiteName</option>
+										}
+									</select>
+									<input type="hidden" id="SiteIdTemp" value="@Worker.SiteId" />
+								</div>
 
-								@* <div class="col-md-6  mb-3">
-									<label asp-for="ProjectEndDate" class="col-form-label">ProjectEndDate</label>
-									<input type="text" class="form-control" asp-for="ProjectEndDate" placeholder="ProjectEndDate" required>
-									<span asp-validation-for="ProjectEndDate" class="text-danger"></span>
-								</div> *@
+								<div class="col-md-4 mb-3">
+									<label for="Qualification" class="col-form-label">Qualification</label>
+									<select name="QualificationId" id="QualificationId" class="form-control" required>
+										<option value="" selected>Select Option</option>
+										@foreach (var q in ViewBag.Qualifications)
+										{
+											<option value="@q.QualificationId">@q.QualificationName</option>
+										}
 
-								
+									</select>
+									<input type="hidden" id="QualificationIdTemp" value="@Worker.WorkerQualificationId" />
+								</div>
+
+								<div class="col-md-4 form-group">
+									<input type="text" name="WorkerMobileNumberId1" value="@WorkerMobileNumberId1" />
+									<label class="form-label">Mobile Number</label>
+									<input type="text" class="form-control" name="MobileNumber" id="MobileNumber" placeholder="Mobile Number" value="@MobileNumber" />
+								</div>
+
+								<div class="col-md-4 form-group">
+									<input type="text" name="WorkerMobileNumberId2" value="@WorkerMobileNumberId2" />
+
+									<label class="form-label">Alternate Mobile Number</label>
+									<input type="text" class="form-control" name="MobileNumber2" id="MobileNumber2" placeholder="Alternate Mobile Number" value="@MobileNumber2" />
+								</div>
+
 							</div>
+
 						</div>
 
 						<div class="card-footer text-center">
-							<button type="submit" class="btn btn-outline-warning" id="btnSubmit">Update</button>
+							<button type="submit" class="btn btn-outline-warning" id="btnSubmit">Save</button>
 							<a class="btn btn-outline-danger" asp-area="worker" asp-controller="worker" asp-action="Index">Cancel</a>
 						</div>
 					</form>
@@ -161,4 +229,19 @@
 	</div>
 
 </div>
+@section Scripts {
+	<script>
+		$('document').ready(function(){
+				$('#ProjectId').val($('#ProjectIdTemp').val());
+				$('#SiteId').val($('#SiteIdTemp').val());
+			$('#QualificationId').val($('#QualificationIdTemp').val());
 
+			var MobileNumber = '@MobileNumber';
+			var MobileNumber2 = '@MobileNumber2';
+
+			$('#MobileNumber').val(MobileNumber);
+			$('#MobileNumber2').val(MobileNumber2);
+
+		});
+	</script>
+}

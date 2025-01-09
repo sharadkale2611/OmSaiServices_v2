@@ -6,33 +6,25 @@ using OmSaiEnvironment;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Net;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-//var connectionString = builder.Configuration.GetConnectionString("AppDbContextConnection") ?? throw new InvalidOperationException("Connection string 'AppDbContextConnection' not found.");
-
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(DBConnection.DefaultConnection));
 
-//builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<AppDbContext>();
 
-// Register Identity services (with role support)
-builder.Services.AddIdentity<AppUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
-	.AddEntityFrameworkStores<AppDbContext>()
-.AddDefaultUI()
-.AddDefaultTokenProviders();
 
-builder.Services.AddScoped<UserManager<AppUser>>();
-builder.Services.AddScoped<RoleManager<IdentityRole>>();
 
-// JWT Authentication setup
+//// JWT Authentication setup
 builder.Services.AddAuthentication(options =>
 {
-	options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-	options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+	// Set default scheme to Identity (if you use it in your app)
+	options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
+	options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
 })
-.AddJwtBearer(options =>
+.AddJwtBearer("Jwt", options =>
 {
 	options.TokenValidationParameters = new TokenValidationParameters
 	{
@@ -46,8 +38,20 @@ builder.Services.AddAuthentication(options =>
 	};
 });
 
-builder.Services.AddAuthorization();
+// Set default authentication scheme for Identity
+// Register Identity services (with role support)
+builder.Services.AddIdentity<AppUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
+	.AddEntityFrameworkStores<AppDbContext>()
+.AddDefaultUI()
+.AddDefaultTokenProviders();
 
+builder.Services.AddScoped<UserManager<AppUser>>();
+builder.Services.AddScoped<RoleManager<IdentityRole>>();
+
+
+
+
+builder.Services.AddAuthorization();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
