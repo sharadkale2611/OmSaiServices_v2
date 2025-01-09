@@ -67,7 +67,8 @@ namespace OmSaiServices.Worker.Implementations
         }
 
 
-        private List<KeyValuePair<string, object>> CreateUpdate(WorkerMobileNumbersModel model, string type)
+
+		private List<KeyValuePair<string, object>> CreateUpdate(WorkerMobileNumbersModel model, string type)
         {
             if (model == null)
                 throw new ArgumentNullException(nameof(model));

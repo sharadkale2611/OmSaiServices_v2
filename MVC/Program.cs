@@ -3,7 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using GeneralTemplate.Areas.Identity.Data;
 using Microsoft.AspNetCore.Rewrite;
 using OmSaiEnvironment;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
+
 var builder = WebApplication.CreateBuilder(args);
+
 
 //var connectionString = builder.Configuration.GetConnectionString("AppDbContextConnection") ?? throw new InvalidOperationException("Connection string 'AppDbContextConnection' not found.");
 
@@ -19,6 +25,28 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options => options.SignIn.Re
 
 builder.Services.AddScoped<UserManager<AppUser>>();
 builder.Services.AddScoped<RoleManager<IdentityRole>>();
+
+// JWT Authentication setup
+builder.Services.AddAuthentication(options =>
+{
+	options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+	options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+	options.TokenValidationParameters = new TokenValidationParameters
+	{
+		ValidateIssuer = true,
+		ValidateAudience = true,
+		ValidateLifetime = true,
+		ValidateIssuerSigningKey = true,
+		ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+		ValidAudience = builder.Configuration["JwtSettings:Audience"],
+		IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"])) // Use the key from appsettings.json
+	};
+});
+
+builder.Services.AddAuthorization();
 
 
 // Add services to the container.
@@ -48,6 +76,7 @@ builder.Services.AddRazorPages()
 		options.Cookie.HttpOnly = true; // Security setting
 		options.Cookie.IsEssential = true; // GDPR compliance
 	});
+
 
 
 

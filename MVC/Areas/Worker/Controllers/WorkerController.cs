@@ -20,9 +20,9 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 		private readonly WorkerProjectSiteService _workerProjectSiteService;
 		private readonly QualificationService _qualificationService;
 		private readonly WorkerQualificationService _workerQualificationService;
-		private readonly WorkerMobileNumbersService _workerMobileNumbersService;
 		private readonly WorkerAttendanceService _attendanceService;
 		private readonly WorkerDocumentService _workerDocumentService;
+		private readonly WorkerMobileNumbersService _workerMobileNumbersService;
 		private readonly WorkerAddressService _workerAddressService;
 
 		public WorkerController()
