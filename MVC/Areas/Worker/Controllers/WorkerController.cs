@@ -80,8 +80,6 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			return View();
 		}
 
-
-
 		[HttpPost]
 		[Route("api/Worker/ChangePassword")]
 		public IActionResult ChangePassword(int workerId, string oldPassword, string newPassword)
@@ -270,7 +268,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 						_workerAddressService.Create(workerAddressModel_2);
 					}
 
-					var documentIds = new List<int> { 8, 9, 1, 2, 3, 4, 5, 6, 7 };
+					var documentIds = new List<int> { 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 11 };
 
 					foreach (var docId in documentIds)
 					{

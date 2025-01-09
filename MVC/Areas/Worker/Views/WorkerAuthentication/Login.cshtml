@@ -8,17 +8,49 @@
     <p class="text-danger text-center">@ViewBag.Message</p>
 }
 
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <form method="post" action="/Worker/WorkerAuthentication/Login" class="p-4 border rounded shadow-sm" style="width: 300px;">
-        <h2 class="text-center mb-4">Login Here</h2>
-        <div class="mb-3">
-            <label for="WorkmanId" class="form-label">Workman ID:</label>
-            <input type="text" id="WorkmanId" name="WorkmanId" class="form-control" required />
-        </div>
-        <div class="mb-4">
-            <label for="Password" class="form-label">Password:</label>
-            <input type="password" id="Password" name="Password" class="form-control" required />
-        </div>
-        <button type="submit" class="btn btn-primary w-100">Login</button>
-    </form>
+@section css {
+
+        @* <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> *@
+
+}
+
+
+<div class="row bg-white p-4 rounded">
+
+    <div class="col-md-6 col-sm-12 d-none d-lg-flex">
+        <img src="~/assets/images/login/security-guard.jpg" class="w-100" style="transform:scale(0.8)"/>
+    </div>
+
+        <div class="col-md-4">
+        <section>
+
+            <div class="card shadow" style="box-shadow:2px 2px 10px gray !important;" >
+                <div class="card-header">
+                    <h1 class="card-title bold fs-3"><b> @ViewData["Title"]</b></h1>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-area="Worker" asp-controller="WorkerAuthentication" asp-action="Login">
+                        @* <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div> *@
+                        <div class="form-floating mb-3">
+                            <label for="WorkmanId" class="form-label">Workman ID:</label>
+                            <input name="WorkmanId" id="WorkmanId" class="form-control" autocomplete="username" aria-required="true" placeholder="WorkmanId" />
+                        </div>
+                        <div class="form-floating mb-3">
+                            <label for="Password" class="form-label">Password:</label>
+                            <input type="password" name="Password" id="Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Password" />
+                        </div>
+                        <div>
+                            <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary ">Log in</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+
 </div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
