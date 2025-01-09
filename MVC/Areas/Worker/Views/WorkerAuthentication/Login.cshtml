@@ -1,4 +1,4 @@
-﻿@{
+﻿ @{
     Layout = "_Layout2";
 }
 
@@ -21,3 +21,35 @@
         <button type="submit" class="btn btn-primary w-100">Login</button>
     </form>
 </div>
+ 
+@* @{
+    Layout = "_Layout2";
+}
+
+@if (ViewBag.Message != null)
+{
+    <p class="alert alert-danger text-center">@ViewBag.Message</p>
+}
+
+<div class="d-flex justify-content-center align-items-center vh-100 bg-light">
+    <form method="post" action="/Worker/WorkerAuthentication/Login"
+          class="p-4 border rounded-4 shadow-lg bg-white"
+          style="width: 350px; max-width: 90%;">
+        <h2 class="text-center mb-4 text-primary fw-bold">Welcome Back</h2>
+        <p class="text-center text-muted mb-4">Please log in to continue</p>
+
+        <div class="mb-3">
+            <label for="WorkmanId" class="form-label fw-semibold">Workman ID:</label>
+            <input type="text" id="WorkmanId" name="WorkmanId" class="form-control rounded-3" placeholder="Enter your Workman ID" required />
+        </div>
+        <div class="mb-4">
+            <label for="Password" class="form-label fw-semibold">Password:</label>
+            <input type="password" id="Password" name="Password" class="form-control rounded-3" placeholder="Enter your password" required />
+        </div>
+        <button type="submit" class="btn btn-primary w-100 rounded-3 fw-semibold py-2">Login</button>
+        <div class="text-center mt-3">
+            <a href="/Worker/WorkerAuthentication/ForgotPassword" class="text-decoration-none text-secondary small">Forgot Password?</a>
+        </div>
+    </form>
+</div>
+ *@
