@@ -56,6 +56,15 @@ namespace OmSaiServices
 					{
 						property.SetValue(entity, Convert.ToDateTime(columnValue));
 					}
+					else if (propertyType == typeof(DateOnly))
+					{
+						property.SetValue(entity, DateOnly.FromDateTime(Convert.ToDateTime(columnValue)));
+					}
+					else if (propertyType == typeof(DateOnly?))
+					{
+						var dateValue = columnValue as DateTime?;
+						property.SetValue(entity, dateValue.HasValue ? DateOnly.FromDateTime(dateValue.Value) : null);
+					}
 					else if (propertyType == typeof(TimeSpan?))
 					{
 						property.SetValue(entity, columnValue as TimeSpan?);

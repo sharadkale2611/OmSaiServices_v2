@@ -1,0 +1,320 @@
+﻿@model OmSaiModels.Worker.LeaveRequestModel;
+@{
+    Layout = "_LayoutWorker";
+    ViewData["Title"] = "LeaveRequests";
+    ViewData["AreaName"] = "Worker";
+    ViewData["ControllerName"] = "LeaveRequest";
+    int serialNumber = 0;
+
+    var StatusList = new List<string>(){
+        "Pending","Approved","Rejected" };
+}
+
+@section css {
+    <style>
+        .btnEdit:hover {
+            cursor: pointer;
+        }
+    </style>
+}
+
+<div class="app-content-header">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <!--begin::Row-->
+        <div class="row">
+            <div class="col-sm-6">
+                <h3 class="page-title">
+                    LeaveRequests
+                    <button class="btn btn-sm btn-primary" id="btnShowForm">Add New</button>
+                </h3>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">Master</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        LeaveRequest
+                    </li>
+                </ol>
+            </div>
+        </div> <!--end::Row-->
+    </div> <!--end::Container-->
+</div> <!--end::App Content Header--> <!--begin::App Content-->
+
+
+
+<div class="app-content">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <partial name="~/Views/shared/_alertpartial.cshtml" />
+        <div class="row">
+
+
+            <div class="col-lg-12 col-md-12 col-sm-12" id="leftCard">
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table card-table table-vcenter text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th class="w-1">No.</th>
+                                    <th>WorkerName</th>
+                                    <th>LeaveRequestName</th>
+                                    <th>StartDate</th>
+                                    <th>EndDate</th>
+                                    <th>Reason</th>
+                                    <th>Status</th>
+                                    @* <th>Remark</th> *@
+                                    <th>CreatedAt</th>
+                                    @* <th>UpdatedAt</th> *@
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in ViewBag.AllData)
+                                {
+                                    serialNumber++;
+                                    <tr class="align-middle">
+                                        <td>@serialNumber</td>
+                                        <td>@item.WorkerName</td>
+                                        <td>@item.LeaveTypeName</td>
+                                        <td>@item.StartDate</td>
+                                        <td>@item.EndDate</td>
+                                        <td class="text-wrap text-truncate"
+                                            style="max-width: 150px;"
+                                            data-bs-toggle="tooltip" title="@item.Reason">
+                                            @item.Reason
+                                        </td>
+                                        <td>@item.Status</td>
+                                        @* <td>@item.Remark</td> *@
+                                        <td>@item.CreatedAt</td>
+                                        @* <td>@item.UpdatedAt</td> *@
+
+                                        <td>
+                                            <nav class="nav justify-content-center d-flex flex-nowrap">
+                                                <a class="nav-link badge shadow m-0 text-warning btn btnEdit"
+                                                   data-id="@item.LeaveRequestId"
+                                                   data-workerid="@item.WorkerId"
+                                                   data-leavetpyename="@item.LeaveTypeName"
+                                                   data-startdate="@item.StartDate"
+                                                   data-enddate="@item.EndDate"
+                                                   data-reason="@item.Reason"
+                                                   data-status="@item.Status">
+                                                    <i class="fe fe-edit"></i>
+                                                </a>
+
+
+                                                <a class="nav-link badge shadow m-0 text-warning btn btnApprove"
+                                                   data-id="@item.LeaveRequestId"
+                                                   data-worker_name="@item.WorkerName"
+                                                   data-remark="@item.Remark"
+                                                   data-status="@item.Status">
+
+                                                    <i class="fe fe-feather"></i>
+                                                </a>
+
+
+
+                                                <a class="nav-link badge shadow m-0 text-danger btn btn-delete"
+                                                   data-delete_id="@item.LeaveRequestId"
+                                                   data-delete_display="@item.WorkerId">
+                                                    <i class="fe fe-trash"></i>
+                                                </a>
+                                            </nav>
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-4 col-sm-12" id="rightCard" style="display:none;">
+                <div class="card card-warning card-outline mb-4 ">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <form id="LeaveRequestForm" method="post" asp-area="Worker" asp-controller="LeaveRequest" asp-action="Create" asp-antiforgery="true">
+                        <input type="hidden" asp-for="LeaveRequestId" id="LeaveRequestId" />
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label asp-for="WorkerId" class="col-form-label">Worker Name</label>
+                                <select class="form-control" asp-for="WorkerId" id="WorkerId" required>
+                                    <option value="">Select Worker</option>
+                                    @foreach (var worker in ViewBag.Worker)
+                                    {
+                                        <option value="@worker.WorkerId">@worker.FirstName @worker.MiddleName @worker.LastName</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="WorkerId" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="LeaveTypeId" class="col-form-label">Leave Type Name</label>
+                                <select class="form-control" asp-for="LeaveTypeId" id="LeaveTypeName" required>
+                                    <option value="">Select Leave Type</option>
+                                    @foreach (var worker in ViewBag.LeaveType)
+                                    {
+                                        <option value="@worker.LeaveTypeId">@worker.LeaveTypeName</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="LeaveTypeId" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="StartDate" class="col-form-label">Start Date</label>
+                                <input type="date" class="form-control" asp-for="StartDate" id="StartDate" placeholder="Start Date" required>
+                                <span asp-validation-for="StartDate" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="EndDate" class="col-form-label">End Date</label>
+                                <input type="date" class="form-control" asp-for="EndDate" id="EndDate" placeholder="End Date" required>
+                                <span asp-validation-for="EndDate" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Reason" class="col-form-label">Reason</label>
+                                <input type="text" class="form-control" asp-for="Reason" id="Reason" placeholder="Reason" required>
+                                <span asp-validation-for="Reason" class="text-danger"></span>
+                            </div>
+
+
+
+                            @*   <div class="mb-3">
+                                <label asp-for="Remark" class="col-form-label">Remark</label>
+                                <input type="hidden" class="form-control" asp-for="Remark" id="Remark" placeholder="Remark" required>
+                                <span asp-validation-for="Remark" class="text-danger"></span>
+                            </div> *@
+
+
+
+
+                        </div>
+                        <div class="card-footer text-center">
+                            <button type="submit" class="btn btn-outline-secondary" id="btnSubmit">Save</button>
+                            <button type="button" class="btn btn-outline-warning" id="btnCloseForm">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-4 col-sm-12" id="rightCardApprove" style="display:none;">
+                <div class="card card-warning card-outline mb-4 ">
+                    <div class="card-header">
+                        <h4>Approve Leave Request</h4>
+                     </div>
+                    <span asp-validation-summary="All" class="text-danger"></span>
+                    <form id="LeaveRequestFormApprove" method="post" asp-area="Worker" asp-controller="LeaveRequest" asp-action="Approve" asp-antiforgery="true">
+                        <input type="hidden" name="LeaveRequestId" id="LeaveRequestId2" />
+                        <div class="card-body" style="padding-top:5px;">
+                            <div class="mb-1">
+
+                                <label class="col-form-label">Worker Name: <b id="lblWorkerName"></b></label>
+                                
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Remark" class="col-form-label">Remark</label>
+                                <textarea class="form-control" name="Remark" id="Remark" placeholder="Remark" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Status" class="col-form-label">Status</label>
+                                <select class="form-control" name="Status" id="Status" required>
+                                    <option value="">Select Status</option>
+                                    @foreach (var status in StatusList)
+                                    {
+                                        <option value="@status">@status</option>
+                                    }
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="card-footer text-center">
+                            <button type="submit" class="btn btn-outline-secondary" id="btnSubmit">Save Changes</button>
+                            <button type="button" class="btn btn-outline-warning" id="btnCloseForm1">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+
+@section modals {
+    <partial name="~/Views/shared/_DeleteModelPartial.cshtml" />
+}
+
+@section Scripts {
+    <script>
+        $('#btnShowForm').click(() => {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Save");
+
+            $('#LeaveRequestForm').attr('action', '/worker/LeaveRequest/Create');
+            $('#LeaveRequestId').val("");
+        });
+
+        $('#btnCloseForm').click(() => {
+            $('#leftCard').addClass("col-lg-12 col-md-12").removeClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeOut();
+            $('#btnShowForm').fadeIn();
+        });
+
+        $('.btnEdit').click(function () {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Update");
+
+            let data = $(this).data();
+            $('#LeaveRequestId').val(data.id);
+            $('#WorkerId').val(data.workerid);
+            $('#LeaveTypeName').val(data.leavetpyename);
+            $('#StartDate').val(data.startdate);
+            $('#EndDate').val(data.enddate);
+            $('#Reason').val(data.reason);
+
+            $('#LeaveRequestForm').attr('action', '/worker/LeaveRequest/Edit');
+        });
+
+
+
+        //Approve Button
+        $('.btnApprove').click(function () {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCardApprove').fadeIn();
+            $('#LeaveRequestFormApprove').fadeIn();
+            $('#btnSubmit').text("Approve");
+
+            let data = $(this).data();
+            // console.log(data);
+            // alert(data.id);
+
+            $('#lblWorkerName').html(data.worker_name);
+            $('#LeaveRequestId2').val(data.id);
+            $('#Remark').val(data.remark)
+            $('#Status').val(data.status);
+
+            $('#LeaveRequestFormApprove').attr('action', '/worker/LeaveRequest/Approve');
+        });
+
+        $('#btnCloseForm1').click(() => {
+            $('#leftCard').addClass("col-lg-12 col-md-12").removeClass("col-lg-8 col-md-8");
+            $('#rightCardApprove').fadeOut();
+            $('#btnShowForm').fadeIn();
+        });
+
+        $('.btn-delete').click(function () {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Delete");
+
+            let data = $(this).data();
+            $('#LeaveRequestId').val(data.delete_id);
+            $('#LeaveRequestForm').attr('action', '/worker/LeaveRequest/Delete');
+        });
+    </script>
+}

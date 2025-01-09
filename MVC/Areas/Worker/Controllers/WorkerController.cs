@@ -41,8 +41,6 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			_workerAddressService = new WorkerAddressService();
 
 		}
-
-
 		public IActionResult Index()
 		{
 			ViewBag.AllData = _workerService.GetAll();
@@ -65,10 +63,23 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			ViewBag.WorkerDocuments = _workerDocumentService.GetAll(id);
 			ViewBag.Addresses = _workerAddressService.GetByWorkerId(id);
 
-
 			return View();
 		}
 
+
+		public IActionResult ProfilePrint(int id)
+		{
+			ViewBag.AllData = _workerService.GetProfileById(id, null);
+			if (ViewBag.AllData == null)
+			{
+				return RedirectToAction(nameof(Index));// nameof checks method compiletime to avoid errors
+			}
+			ViewBag.AttendanceHistory = _attendanceService.GetAll(id);
+			ViewBag.WorkerDocuments = _workerDocumentService.GetAll(id);
+			ViewBag.Addresses = _workerAddressService.GetByWorkerId(id);
+
+			return View();
+		}
 
 		[HttpPost]
 		[Route("api/Worker/ChangePassword")]
@@ -258,7 +269,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 						_workerAddressService.Create(workerAddressModel_2);
 					}
 
-					var documentIds = new List<int> { 8, 9, 1, 2, 3, 4, 5, 6, 7 };
+					var documentIds = new List<int> { 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 11 };
 
 					foreach (var docId in documentIds)
 					{

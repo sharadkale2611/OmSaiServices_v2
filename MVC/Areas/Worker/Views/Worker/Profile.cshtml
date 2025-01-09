@@ -3,93 +3,94 @@
     var fullName = worker.FirstName + " " + worker.MiddleName + " " + worker.LastName;
     var attendanceHistory = ViewBag.AttendanceHistory; //test commentn
     var address = ViewBag.Addresses;
-    
+
     var PermanentAddress = address[0]?.Address??"";
     var CurrentAddress = address[1]?.Address ?? "";
+    int serialNumber = 0;
 }
 
 <style>
 
-
     .selfie-image{
-        width:40px;
-        border:1px solid #eee;
-        border-radius:5px;
-        box-shadow: 1px 1px 3px gray;
+    width:40px;
+    border:1px solid #eee;
+    border-radius:5px;
+    box-shadow: 1px 1px 3px gray;
     }
 
     .calendar {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr); /* 7 columns for the days of the week */
-        gap: 5px;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* 7 columns for the days of the week */
+    gap: 5px;
     }
 
     .calendar-box {
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        font-size: 14px;
-        font-weight: bold;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
     }
 
-        .calendar-box.present {
-            background-color: #28a745; /* Green for Present */
-            color: #fff;
-        }
+    .calendar-box.present {
+    background-color: #28a745; /* Green for Present */
+    color: #fff;
+    }
 
-        .calendar-box.absent {
-            background-color: #dc3545; /* Red for Absent */
-            color: #fff;
-        }
+    .calendar-box.absent {
+    background-color: #dc3545; /* Red for Absent */
+    color: #fff;
+    }
 
-        .calendar-box.empty {
-            background-color: #f8f9fa; /* Light gray for empty days */
-        }
+    .calendar-box.empty {
+    background-color: #f8f9fa; /* Light gray for empty days */
+    }
 
     .calendar-header {
-        text-align: center;
-        font-weight: bold;
-        margin-bottom: 10px;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
     }
 
     .calendar-header .col{
-            width: 30px;
-            height: 30px;
-            font-size:11px;
-            text-align:center;
-        }
+    width: 30px;
+    height: 30px;
+    font-size:11px;
+    text-align:center;
+    }
 
 </style>
 
-        <div class="my-3 my-md-5">
-          <div class="container">
-            <div class="row">
-              <div class="col-lg-4">
+<div class="my-3 my-md-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4">
                 <div class="card">
-                  <div class="card-body">
-                    <div class="media">
+                    <div class="card-body">
+                        <div class="media">
                             @* <span class="avatar avatar-xxl mr-5" style="background-image: url('@user.ImagePath')"></span> *@
 
-                      <span class="avatar avatar-xxl mr-5" style="background-image: url(demo/faces/male/21.jpg)">
-                        <i class="fe fe-camera"></i>    
-                      </span>
-                      <div class="media-body">
-                        <h4 class="m-0 mb-1">@fullName</h4>
+                            <span class="avatar avatar-xxl mr-5" style="background-image: url(demo/faces/male/21.jpg)">
+                                <i class="fe fe-camera"></i>    
+                            </span>
+                            <div class="media-body">
+                                <h4 class="m-0 mb-1">@fullName</h4>
                                 <p class="text-muted mb-1"><b class="text-info">@worker.WorkmanId</b> [ <b>@worker.DepartmentName</b>]</p>
                                 <p class="text-muted mb-1">Qualification: <b>@worker.QualificationName</b></p>
 
-                        <ul class="social-links list-inline mb-0 mt-2">
-                          <li class="list-inline-item">
+                                <ul class="social-links list-inline mb-0 mt-2">
+                                    <li class="list-inline-item">
                                         <i class="fa fa-phone"></i> &nbsp;&nbsp; @worker.MobileNumbers
-                          </li>
-                        </ul>
-                      </div>
+                                    </li>
+                                </ul>
+                                <p><b>Joining Date: </b> @worker.DateofJoining </p>
+                            </div>
+                        </div>
                     </div>
-                  </div>
                 </div>
 
                 <div class="card">
@@ -124,7 +125,7 @@
                         </div>
                     </div>
                 </div>
-   
+
                 <div class="card">
                     <div class="card-body">
 
@@ -191,8 +192,8 @@
 
 
 
-              </div>
-              <div class="col-lg-8">
+            </div>
+            <div class="col-lg-8">
 
                 <div class="card">
                     <div class="card-header">
@@ -214,18 +215,19 @@
                             <tbody>
                                 @foreach (var attendance in attendanceHistory)
                                 {
+                                    serialNumber++;
                                     <tr>
-                                        <td>@attendance.WorkerAttendanceId</td>
+                                        <td>@serialNumber</td>
                                         <td>@attendance.CreatedAt?.ToString("ddd, dd MMM yy")</td>
                                         <td>@attendance.SiteName</td>
                                         <td>
                                             <img src="@attendance.InSelfiPath" class="selfie-image" />
                                             @attendance.InTime?.ToString("hh:mm tt")
-                                            </td>
+                                        </td>
                                         <td>
                                             <img src="@attendance.OutSelfiPath" class="selfie-image" />
                                             @attendance.OutTime?.ToString("hh:mm tt")
-                                            </td>
+                                        </td>
                                         <td>
 
                                             @if (attendance.Status == "Present")
@@ -268,10 +270,15 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @{
+                                    serialNumber = 0;
+                                }
+
                                 @foreach (var doc in ViewBag.WorkerDocuments)
                                 {
+                                    serialNumber++;
                                     <tr>
-                                        <td>@doc.DocumentId</td>
+                                        <td>@serialNumber</td>
                                         <td>@doc.DocumentName</td>
                                         <td>
                                             @if(@doc.IsDocumentImage == true){
