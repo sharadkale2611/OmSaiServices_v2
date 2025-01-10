@@ -61,7 +61,7 @@ namespace OmSaiModels.Worker
 
 	public class WorkerLoginModel
 	{
-		public string WorkmanId { get; set; }
+		public string LoginIdentifier { get; set; }
 		public string Password { get; set; }
 
 	}

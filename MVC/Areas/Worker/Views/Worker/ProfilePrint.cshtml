@@ -58,6 +58,18 @@
             border:1px solid gray;
         }
 
+        .text-right{
+            text-align:right;
+        }
+
+        .letter
+        {
+            line-height: 40px;
+        }
+        .letter-body{
+            text-align:justify;
+        }
+
         /* Optional: For Print Media */
         @@media print {
             body
@@ -88,12 +100,12 @@
 
             <div class="row"  >
                 <div class="col-2 text-center justify-content-center align-items-center d-flex align-items-center">
-                         <img src="~/demo/brand/logo.png" class="header-brand-img" style="width:100%;" alt="tabler logo">                        
+                         <img src="~/demo/brand/logo.png" class="header-brand-img" style="width:100%;" alt="Om Sai Serivices logo">                        
                 </div>
                 <div class="col-8 text-center" style="border-bottom:1px dotted #333;">
                     <h2 class="text-danger">Om Sai Services</h2>
                 
-                    <p class="bg-info">
+                    <p class="">
                         (Sr.No.207, Chourang Terrac, Pune Saswad Road, Tukai Darshan,<br />
                         Fursungi, Pune-41232308 Contact no - 8182935858 / 939122229 )<br />
                     <span class="text-danger">Email : omsai2017services@gmail.com</span>
@@ -115,9 +127,9 @@
                             <td colspan="2">@worker.DepartmentName</td>
                             <td rowspan="4" class="photo-cell text-center justify-content-center align-items-center align-items-center">
                             @if (docs[2].DocumentImage != ""){
-                                <img src="~/@(docs[3].DocumentImage ?? "")" class="header-brand-img" style="height:35mm;" alt="tabler logo">
+                                <img src="~/@(docs[3].DocumentImage ?? "")" class="header-brand-img" style="height:35mm;" alt="@worker.DepartmentName">
                             }else{
-                                <img src="~/demo/brand/logo.png" class="header-brand-img" style="height:35mm;" alt="tabler logo">
+                                <img src="~/demo/brand/logo.png" class="header-brand-img" style="height:35mm;" alt="@worker.DepartmentName">
                             }
 
                                 <br />
@@ -340,9 +352,67 @@
 
         </div>
         @* <div class="page-break"></div> *@
-        @* <div class="a4"> *@
-        @*     Page 1 content... *@
-        @* </div> *@
+    <div class="a4 ">
+        <div class="row">
+            <div class="col-2 text-center justify-content-center align-items-center d-flex align-items-center">
+                <img src="~/demo/brand/logo.png" class="header-brand-img" style="width:100%;" alt="Om Sai Services Logo">
+            </div>
+            <div class="col-8 text-center" style="border-bottom:1px dotted #333;">
+                <h2 class="text-danger">Om Sai Services</h2>
+
+                <p class="">
+                    (Sr.No.207, Chourang Terrac, Pune Saswad Road, Tukai Darshan,<br />
+                    Fursungi, Pune-41232308 Contact no - 8182935858 / 939122229 )<br />
+                    <span class="text-danger">Email : omsai2017services@gmail.com</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="row letter">
+                <p class="text-right pr-3"><b>Date</b> :- &nbsp;&nbsp;&nbsp; / &nbsp;&nbsp;&nbsp;&nbsp;  / 20 &nbsp;&nbsp;&nbsp;</p>
+                <p>
+                    <b>To</b>,<br />
+                    Om Sai Services,<br />
+                    Pune Saswad Road,<br />
+                    Fursungi Pune,<br />
+
+                </p>
+                <p class="text-center">
+                    <b>Subject</b> :-</b> About to resign me
+                </p>
+
+                <p  style="margin-left:30px;">
+                 <b>Name :-.</b>_________________________________
+                </p>
+
+                <p>
+
+                <b>R/ Sir,</b>
+                </p>
+
+                <p class="letter-body">
+                I was working in your company Om Sai Services. But I am resigning
+
+                due to my personal reason. I have no complaint regarding Om Sai Services.
+
+                While working in your company till date. I have received the full Payment of
+
+                days worked each month. I have no complaint about this. Will not make any
+
+                complaint in future. I will not complaint against the company in any
+
+                government or private office in future. If you find so, you can file a criminal or
+
+                any other complaint against me.
+                </p>
+                <br />
+                <p class="text-right">
+                    Yours Faithfully,
+                </p>
+
+
+        </div>
+        </div>
 
 
     <!-- Bootstrap 5 JS (optional) -->
@@ -352,11 +422,11 @@
         // Wait for the page to fully load
         window.onload = function () {
           // Open the print dialog
-          window.print();
+          // window.print();
 
           // After the print dialog is closed, close the tab
           window.onafterprint = function () {
-            window.close();
+            // window.close();
           };
         };
     </script>

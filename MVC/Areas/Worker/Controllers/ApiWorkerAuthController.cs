@@ -35,26 +35,26 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 		[HttpPost("login")]
 		public async Task<IActionResult> Login([FromBody] WorkerLoginModel model)
 		{
-			if (model == null || string.IsNullOrEmpty(model.WorkmanId) || string.IsNullOrEmpty(model.Password))
+			if (model == null || string.IsNullOrEmpty(model.LoginIdentifier) || string.IsNullOrEmpty(model.Password))
 			{
 				// Return failure with validation errors
 				var errors = new
 				{
-					WorkmanId = string.IsNullOrEmpty(model?.WorkmanId) ? new[] { "The WorkmanId field is required." } : null,
+					LoginIdentifier = string.IsNullOrEmpty(model?.LoginIdentifier) ? new[] { "The WorkmanId OR Mobile Number field is required." } : null,
 					Password = string.IsNullOrEmpty(model?.Password) ? new[] { "The Password field is required." } : null
 				};
 				return BadRequest(new ApiResponseModel<object>(false, null, errors)); 
 			}
 
 			// Attempt to log in using the service
-			var worker = await _workerService.Login(model.WorkmanId, model.Password);
+			var worker = await _workerService.Login(model.LoginIdentifier, model.Password);
 
 			if (worker == null)
 			{
 				// Return failure for invalid credentials
 				var errors = new
 				{
-					WorkmanId = new[] { "Invalid WorkmanId or Password." }
+					WorkmanId = new[] { "Invalid WorkmanId OR Mobile-Number OR Password." }
 				};
 				return Unauthorized(new ApiResponseModel<object>(false, null, errors));
 			}
