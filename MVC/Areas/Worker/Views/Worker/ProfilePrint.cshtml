@@ -115,7 +115,7 @@
                             <td colspan="2">@worker.DepartmentName</td>
                             <td rowspan="4" class="photo-cell text-center justify-content-center align-items-center align-items-center">
                             @if (docs[2].DocumentImage != ""){
-                                <img src="~/@(docs[2].DocumentImage ?? "")" class="header-brand-img" style="height:35mm;" alt="tabler logo">
+                                <img src="~/@(docs[3].DocumentImage ?? "")" class="header-brand-img" style="height:35mm;" alt="tabler logo">
                             }else{
                                 <img src="~/demo/brand/logo.png" class="header-brand-img" style="height:35mm;" alt="tabler logo">
                             }
@@ -171,7 +171,7 @@
                     Aadhaar Number
                 </div>
             <div class="col-9 uline" >
-                @(docs[3].DocumentNumber ?? "")
+                @(docs[4].DocumentNumber ?? "")
                 </div>
             </div>
 
@@ -204,7 +204,7 @@
                 Date of Birth
             </div>
             <div class="col-3 uline">
-                @worker.DateofBirth
+                @worker.DateofBirth.ToString("dd MMMM yyyy")
             </div>
 
             <div class="col-2 text-center flbl">
@@ -220,14 +220,14 @@
             <div class="col-3 flbl">
                 Old PF/UAN No.
             </div>
-            <div class="col-3 uline">
+            <div class="col-5 uline">
                 @(docs[0].DocumentNumber ?? "")
             </div>
 
             <div class="col-2 text-center flbl">
                 Gender
             </div>
-            <div class="col-4 uline">
+            <div class="col-2 uline">
                 @worker.Gender
             </div>
         </div>
@@ -236,7 +236,7 @@
             <div class="col-3 flbl">
                 Old ESIC No.
             </div>
-            <div class="col-3 uline">
+            <div class="col-5 uline">
                 @(docs[1].DocumentNumber ?? "")
             </div>
         </div>
@@ -285,8 +285,8 @@
             <div class="col-3 flbl">
                 Present Salary
             </div>
-            <div class="col-3 uline data-pending">
-                -----
+            <div class="col-3 uline">
+                &#8377; @(docs[2].DocumentNumber ?? "")
             </div>
         </div>
 

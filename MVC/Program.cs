@@ -2,14 +2,43 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using GeneralTemplate.Areas.Identity.Data;
 using Microsoft.AspNetCore.Rewrite;
+using OmSaiEnvironment;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Net;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("AppDbContextConnection") ?? throw new InvalidOperationException("Connection string 'AppDbContextConnection' not found.");
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(DBConnection.DefaultConnection));
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 
-//builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<AppDbContext>();
 
+
+//// JWT Authentication setup
+builder.Services.AddAuthentication(options =>
+{
+	// Set default scheme to Identity (if you use it in your app)
+	options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
+	options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
+})
+.AddJwtBearer("Jwt", options =>
+{
+	options.TokenValidationParameters = new TokenValidationParameters
+	{
+		ValidateIssuer = true,
+		ValidateAudience = true,
+		ValidateLifetime = true,
+		ValidateIssuerSigningKey = true,
+		ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+		ValidAudience = builder.Configuration["JwtSettings:Audience"],
+		IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"])) // Use the key from appsettings.json
+	};
+});
+
+// Set default authentication scheme for Identity
 // Register Identity services (with role support)
 builder.Services.AddIdentity<AppUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
 	.AddEntityFrameworkStores<AppDbContext>()
@@ -19,6 +48,10 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options => options.SignIn.Re
 builder.Services.AddScoped<UserManager<AppUser>>();
 builder.Services.AddScoped<RoleManager<IdentityRole>>();
 
+
+
+
+builder.Services.AddAuthorization();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
@@ -47,6 +80,7 @@ builder.Services.AddRazorPages()
 		options.Cookie.HttpOnly = true; // Security setting
 		options.Cookie.IsEssential = true; // GDPR compliance
 	});
+
 
 
 

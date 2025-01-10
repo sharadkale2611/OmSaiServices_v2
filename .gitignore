@@ -25,6 +25,7 @@ obj/
 **/wwwroot/lib/
 **/wwwroot/lib/media
 **/MVC/Properties
+MVC/wwwroot/media/
 
 # Ignore logs
 *.log

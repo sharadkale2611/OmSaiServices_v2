@@ -66,8 +66,17 @@ namespace OmSaiServices.Worker.Implementations
             return GetById(id, sp_r, mapEntity, GetParams(id));
         }
 
+		public List<WorkerMobileNumbersModel> GetByWorkerId(int id)
+		{
 
-        private List<KeyValuePair<string, object>> CreateUpdate(WorkerMobileNumbersModel model, string type)
+			// Define the mapping function
+			var mapEntity = new Func<IDataReader, WorkerMobileNumbersModel>(reader => _mapper.MapEntity<WorkerMobileNumbersModel>(reader));
+
+			return GetAll(sp_r, mapEntity, GetParams(null, id));
+		}
+
+
+		private List<KeyValuePair<string, object>> CreateUpdate(WorkerMobileNumbersModel model, string type)
         {
             if (model == null)
                 throw new ArgumentNullException(nameof(model));

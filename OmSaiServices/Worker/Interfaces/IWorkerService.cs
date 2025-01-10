@@ -10,6 +10,7 @@ namespace OmSaiServices.Worker.Interfaces
 {
 	public interface IWorkerService : IRepository<WorkerModel>
 	{
+		public Task<WorkerModel> Login(string workmanId, string password);
 		bool ChangePassword(int WorkerId, string oldPassword, string newPassword);
 
 	}

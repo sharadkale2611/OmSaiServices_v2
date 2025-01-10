@@ -57,4 +57,14 @@ namespace OmSaiModels.Worker
 
         List<DepartmentModel> list { get; set; }
 	}
+
+
+	public class WorkerLoginModel
+	{
+		public string WorkmanId { get; set; }
+		public string Password { get; set; }
+
+	}
+
+
 }
