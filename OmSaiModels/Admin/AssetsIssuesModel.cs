@@ -10,36 +10,49 @@ namespace OmSaiModels.Admin
     public class AssetsIssuesModel
     {
         [Key]
-        public int AssetsIssuesId { get; set; }
+        public int? AssetIssueId { get; set; }
+
         [Required]
-        public int EmployeeId { get; set; }
+        public int WorkerId { get; set; }
+
+        public string? WorkerName { get; set; }
+
         [Required]
         public int AssetId { get; set; }
-        [Required]
-        public int IssuesBy { get; set; }
-        [Required]
-        public DateTime IssuesAt { get; set; }
-        [Required]
-        public int ReturnTo { get; set; }
-         [Required]
-        public DateTime ReturnAt { get; set; }
-         [Required]
-        public bool IsReturnAble { get; set; }
-         [Required]
-        public DateTime CreatedAt { get; set; }
-         [Required]
-        public int CreatedBy { get; set; }
-         [Required]
-        public DateTime UpdatedAt { get; set; }
-         [Required]
-        public int UpdatedBy { get; set; }
-        [Required]
-        public DateTime DeletedAt { get; set; }
-        [Required]
-        public int DeletedBy { get; set; }
-         [Required]
-        public string Remark { get; set; }
-        [Required]
-        public bool Status { get; set; }
+
+        public string? AssetName { get; set; }
+
+       
+        public string? IssueBy { get; set; }
+
+        public string? IssueByName {  get; set; }
+
+
+        public DateTime? IssueAt { get; set; }
+
+      
+        public int? ReturnTo { get; set; }
+
+         
+        public DateTime? ReturnAt { get; set; }
+
+
+        public bool IsReturnable { get; set; } 
+        
+        public DateTime? CreatedAt { get; set; }
+
+       
+        public int? CreatedBy { get; set; }
+
+         
+        public DateTime? UpdatedAt { get; set; }
+
+        
+        public int? UpdatedBy { get; set; }
+
+        public string? Remark { get; set; }
+
+
+        public bool Status { get; set; } = true;
     }
 }
