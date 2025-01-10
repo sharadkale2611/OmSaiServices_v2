@@ -2,7 +2,7 @@
 @model LoginModel
 
 @{
-    ViewData["Title"] = "Log in";
+    ViewData["Title"] = "Admin Log in";
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -13,18 +13,18 @@
                 <hr />
                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                 <div class="form-floating mb-3">
-                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
                     <label asp-for="Input.Email" class="form-label">Email</label>
+                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
                     <span asp-validation-for="Input.Email" class="text-danger"></span>
                 </div>
                 <div class="form-floating mb-3">
-                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
                     <label asp-for="Input.Password" class="form-label">Password</label>
+                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
                     <span asp-validation-for="Input.Password" class="text-danger"></span>
                 </div>
                 <div class="checkbox mb-3">
-                    <label asp-for="Input.RememberMe" class="form-label">
-                        <input class="form-check-input" asp-for="Input.RememberMe" />
+                    <label asp-for="Input.RememberMe" class="form-label" style="margin-left:20px">
+                        <input class="form-check-input" asp-for="Input.RememberMe"  />
                         @Html.DisplayNameFor(m => m.Input.RememberMe)
                     </label>
                 </div>
@@ -45,7 +45,9 @@
             </form>
         </section>
     </div>
-    <div class="col-md-6 col-md-offset-2">
+    <div class="col-md-6 col-md-offset-2 col-sm-12 mx-auto d-flex justify-content-center ml-5">
+        @* <img src="~/demo/LoginImg/Admin.png" style="height:400px; margin-inline-start:140px" /> *@
+        <img src="~/demo/LoginImg/Admin.png" style="height:400px;width: 350px; " />
 
     </div>
 </div>
