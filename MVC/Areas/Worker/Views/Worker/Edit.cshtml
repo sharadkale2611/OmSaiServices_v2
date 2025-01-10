@@ -2,7 +2,7 @@
 
 
 @{
-	ViewData["Title"] = "Update Worker";
+	ViewData["Title"] = "Update Worker data";
 	// Layout = "/Views/Shared/_Layout.cshtml";
 	var GenderList = new List<string>(){
 		"Male","Female","Other"
@@ -22,12 +22,12 @@
 	var mobileNumbersArray = mobileNumbers?.Split(',') ?? new string[0];
 	var MobileNumber = mobileNumbersArray.Length > 0 ? mobileNumbersArray[0].Trim() : "";
 	var MobileNumber2 = mobileNumbersArray.Length > 1 ? mobileNumbersArray[1].Trim() : "";
-	
+
 	var PermanentAddress = address[0]?.Address ?? "";
 	var CurrentAddress = address[1]?.Address ?? "";
 	var WorkerAddressId1 = address[0].WorkerAddressId;
 	var WorkerAddressId2 = address[1].WorkerAddressId;
-	
+
 }
 
 
@@ -147,29 +147,29 @@
 									<span asp-validation-for="DateofJoining" id="joiningError" class="text-danger"></span>
 								</div>
 							</div>
-							
+
 							<div class="row">
-								<input type="text" name="WorkerAddressId1" value="@WorkerAddressId1"/>
+								<input type="hidden" name="WorkerAddressId1" value="@WorkerAddressId1" />
 								<div class="col-md-6 mb-3">
 									<label for="Address1" class="form-label">Permanent Address</label>
 									<textarea name="Address1" class="form-control">@PermanentAddress</textarea>
 								</div>
 								<div class="col-md-6 mb-3">
-									<input type="text" name="WorkerAddressId2" value="@WorkerAddressId2" />
+									<input type="hidden" name="WorkerAddressId2" value="@WorkerAddressId2" />
 									<label for="Address2" class="form-label">Current Address</label>
 									<textarea name="Address2" class="form-control">@CurrentAddress</textarea>
 								</div>
 							</div>
 
-							
+
 							<div class="row">
 								<div class="col-md-4 mb-3">
 									<label for="ProjectId" class="col-form-label">Project Name</label>
 									<select name="ProjectId" id="ProjectId" class="form-control" required>
-										<option value="" >Select Option</option>
+										<option value="">Select Option</option>
 										@foreach (var project in ViewBag.Projects)
 										{
-											<option value="@project.ProjectId" >@project.ProjectName</option>
+											<option value="@project.ProjectId">@project.ProjectName</option>
 
 										}
 									</select>
@@ -179,7 +179,7 @@
 								<div class="col-md-4 mb-3">
 									<label for="SiteId" class="col-form-label">Site Name</label>
 									<select name="SiteId" id="SiteId" class="form-control" required>
-										<option value="" >Select Option</option>
+										<option value="">Select Option</option>
 										@foreach (var site in ViewBag.Sites)
 										{
 											<option value="@site.SiteId">@site.SiteName</option>
@@ -196,19 +196,19 @@
 										{
 											<option value="@q.QualificationId">@q.QualificationName</option>
 										}
-										
+
 									</select>
 									<input type="hidden" id="QualificationIdTemp" value="@Worker.WorkerQualificationId" />
 								</div>
 
 								<div class="col-md-4 form-group">
-									<input type="text" name="WorkerMobileNumberId1" value="@WorkerMobileNumberId1" />
+									<input type="hidden" name="WorkerMobileNumberId1" value="@WorkerMobileNumberId1" />
 									<label class="form-label">Mobile Number</label>
 									<input type="text" class="form-control" name="MobileNumber" id="MobileNumber" placeholder="Mobile Number" value="@MobileNumber" />
 								</div>
 
 								<div class="col-md-4 form-group">
-									<input type="text" name="WorkerMobileNumberId2" value="@WorkerMobileNumberId2" />
+									<input type="hidden" name="WorkerMobileNumberId2" value="@WorkerMobileNumberId2" />
 
 									<label class="form-label">Alternate Mobile Number</label>
 									<input type="text" class="form-control" name="MobileNumber2" id="MobileNumber2" placeholder="Alternate Mobile Number" value="@MobileNumber2" />
@@ -233,7 +233,7 @@
 	<script>
 		$('document').ready(function(){
 				$('#ProjectId').val($('#ProjectIdTemp').val());
-			    $('#SiteId').val($('#SiteIdTemp').val());
+				$('#SiteId').val($('#SiteIdTemp').val());
 			$('#QualificationId').val($('#QualificationIdTemp').val());
 
 			var MobileNumber = '@MobileNumber';

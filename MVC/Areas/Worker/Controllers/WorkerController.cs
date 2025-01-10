@@ -20,11 +20,10 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 		private readonly WorkerProjectSiteService _workerProjectSiteService;
 		private readonly QualificationService _qualificationService;
 		private readonly WorkerQualificationService _workerQualificationService;
-		private readonly WorkerMobileNumbersService _workerMobileNumbersService;
 		private readonly WorkerAttendanceService _attendanceService;
 		private readonly WorkerDocumentService _workerDocumentService;
+		private readonly WorkerMobileNumbersService _workerMobileNumbersService;
 		private readonly WorkerAddressService _workerAddressService;
-
 
 		public WorkerController()
 		{
@@ -44,8 +43,8 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 		public IActionResult Index()
 		{
 			ViewBag.AllData = _workerService.GetAll();
-			ViewBag.Department = _departmentService.GetAll();
-			ViewBag.Sites = _siteService.GetAll();
+			ViewBag.Department=_departmentService.GetAll();
+			ViewBag.Sites= _siteService.GetAll();
 
 			ViewBag.Projects = _projectService.GetAll();
 			ViewBag.Workers = _workerService.GetAll();
@@ -55,7 +54,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 		public IActionResult Profile(int id)
 		{
 			ViewBag.AllData = _workerService.GetProfileById(id, null);
-			if (ViewBag.AllData == null)
+			if(ViewBag.AllData == null)
 			{
 				return RedirectToAction(nameof(Index));// nameof checks method compiletime to avoid errors
 			}
@@ -199,7 +198,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public IActionResult Create(WorkerModel model, int ProjectId, int SiteId, int QualificationId, string MobileNumber, bool Status, string? MobileNumber2 = "", string? Address1 = "", string? Address2 = "")
+		public IActionResult Create(WorkerModel model, int ProjectId, int SiteId, int QualificationId, string MobileNumber, bool Status, string? MobileNumber2="", string? Address1="", string? Address2="")
 		{
 			try
 			{
@@ -210,7 +209,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 					TempData["success"] = "Record added successfully!";
 
 					var lastWorkerId = _workerService.Create(model);
-
+					
 					WorkerProjectSiteModel workerProjectSiteModel = new WorkerProjectSiteModel
 					{
 						WorkerId = lastWorkerId,
@@ -235,7 +234,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 					};
 					_workerMobileNumbersService.Create(workerMobileNumbersModel);
 
-					if (MobileNumber2 == "")
+					if(MobileNumber2 == "")
 					{
 						MobileNumber2 = MobileNumber;
 					}
@@ -251,7 +250,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 						WorkerAddressModel workerAddressModel_1 = new WorkerAddressModel
 						{
 							WorkerId = lastWorkerId,
-							AddressType = "Permanent",
+							AddressType	= "Permanent",
 							Address = Address1
 						};
 						_workerAddressService.Create(workerAddressModel_1);
@@ -308,36 +307,34 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 		}
 
 
-
-
 		public IActionResult Edit(int id)
 		{
 
-			var worker = _workerService.GetById(id);
 
-			if (worker == null)
-			{
-				return NotFound();
-			}
-
-
-			ViewBag.AllData = _workerService.GetAll();
+			// masters
 			ViewBag.Department = _departmentService.GetAll();
 			ViewBag.Sites = _siteService.GetAll();
 			ViewBag.Projects = _projectService.GetAll();
-			ViewBag.Worker = _workerService.GetProfileById(id);
 			ViewBag.Qualifications = _qualificationService.GetAll();
+
+			var p = _workerService.GetById(id);
+
+			ViewBag.Worker = _workerService.GetProfileById(id, null);
+			if (ViewBag.Worker == null)
+			{
+				return RedirectToAction(nameof(Index));// nameof checks method compiletime to avoid errors
+			}
+
 			ViewBag.Addresses = _workerAddressService.GetByWorkerId(id);
 			ViewBag.MobilesNumbers = _workerMobileNumbersService.GetByWorkerId(id);
 
-
-
-			return View(worker);
+			return View(p);
 		}
+
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public IActionResult Edit(WorkerModel model, int ProjectId, int SiteId, int QualificationId, string MobileNumber, bool Status, int WorkerMobileNumberId1, int WorkerMobileNumberId2, int WorkerAddressId1 , int WorkerAddressId2, string? MobileNumber2 = "", string? Address1 = "", string? Address2 = "")
+		public IActionResult Edit(WorkerModel model, int ProjectId, int SiteId, int QualificationId, string MobileNumber, bool Status, int WorkerMobileNumberId1, int WorkerMobileNumberId2, int WorkerAddressId1, int WorkerAddressId2, string? MobileNumber2 = "", string? Address1 = "", string? Address2 = "")
 		{
 			try
 			{
@@ -354,18 +351,31 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 					// Update main Worker details
 					_workerService.Update(model);
 
-					// Update project-site relationship
-					var workerProjectSite = _workerProjectSiteService.GetById(model.WorkerId.Value);
-					if (workerProjectSite != null)
+					// Update project-sites
+					var workerProjectSite = _workerProjectSiteService.GetByWorkerId(model.WorkerId.Value);
+
+					WorkerProjectSiteModel workerProjectSiteModel = new WorkerProjectSiteModel
 					{
-						workerProjectSite.SiteId = SiteId;
-						workerProjectSite.ProjectId = ProjectId;
-						workerProjectSite.Status = Status;
-						_workerProjectSiteService.Update(workerProjectSite);
-					}
+						WorkerProjectSitesId = workerProjectSite.WorkerProjectSitesId,
+						WorkerId = model.WorkerId ?? 0,
+						ProjectId = ProjectId,
+						SiteId = SiteId,
+						Status = true
+					};
+					_workerProjectSiteService.Update(workerProjectSiteModel);
+
 
 					// Update qualification
-					var workerQualification = _workerQualificationService.GetById(model.WorkerId.Value);
+					var workerQualification = _workerQualificationService.GetByWorkerId(model.WorkerId.Value);
+					WorkerQualificationModel workerQualificationModel = new WorkerQualificationModel
+					{
+						WorkerQualificationId = QualificationId,
+						WorkerId = model.WorkerId ?? 0,
+						QualificationId = QualificationId
+					};
+					_workerQualificationService.Create(workerQualificationModel);
+
+
 					if (workerQualification != null)
 					{
 						workerQualification.QualificationId = QualificationId;
@@ -376,10 +386,10 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 					WorkerMobileNumbersModel workerMobileNumbersModel = new WorkerMobileNumbersModel
 					{
 						WorkerMobileNumberId = WorkerMobileNumberId1,
-						WorkerId = model.WorkerId?? 0,
+						WorkerId = model.WorkerId ?? 0,
 						MobileNumber = MobileNumber
 					};
-					_workerMobileNumbersService.Create(workerMobileNumbersModel);
+					_workerMobileNumbersService.Update(workerMobileNumbersModel);
 
 					if (MobileNumber2 == "")
 					{
@@ -391,13 +401,13 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 						WorkerId = model.WorkerId ?? 0,
 						MobileNumber = MobileNumber2
 					};
-					_workerMobileNumbersService.Create(workerMobileNumbersModel_2);
+					_workerMobileNumbersService.Update(workerMobileNumbersModel_2);
 					if (Address1 != "" && Address1 != null)
 					{
 						WorkerAddressModel workerAddressModel_1 = new WorkerAddressModel
 						{
-							WorkerAddressId= WorkerAddressId1,
-							WorkerId = model.WorkerId?? 0,
+							WorkerAddressId = WorkerAddressId1,
+							WorkerId = model.WorkerId ?? 0,
 							AddressType = "Permanent",
 							Address = Address1
 						};
@@ -417,27 +427,6 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 						_workerAddressService.Update(workerAddressModel_2);
 					}
 
-					// Update Permanent address
-					//var permanentAddress = 
-					//if (permanentAddress != null && !string.IsNullOrEmpty(Address1))
-					//{
-
-					//	permanentAddress.AddressType = "Permanent";
-					//	permanentAddress.Address = Address1;
-					//	_workerAddressService.Update(permanentAddress);
-					//}
-
-					// Update Current address
-					//var currentAddress = _workerAddressService.GetById(WorkerAddressId);
-					//if (currentAddress != null && !string.IsNullOrEmpty(Address2))
-					//{
-					//	currentAddress.AddressType = "Current";
-					//	currentAddress.Address = Address2;
-					//	_workerAddressService.Update(currentAddress);
-					//}
-
-
-
 					return RedirectToAction(nameof(Index));
 				}
 				else
@@ -454,7 +443,6 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 
 			return View(model);
 		}
-
 
 
 

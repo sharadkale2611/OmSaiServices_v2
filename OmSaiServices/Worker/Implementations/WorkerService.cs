@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection.Metadata;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,6 +27,34 @@ namespace OmSaiServices.Worker.Implimentation
 			_mapper = new Mapper();
 		}
 
+		public async Task<WorkerModel> Login(string workmanId, string password)
+		{
+			WorkerModel worker = null;
+
+			var mapEntity = new Func<IDataReader, WorkerModel>(reader =>
+			{
+				return new WorkerModel
+				{
+					WorkerId = Convert.ToInt32(reader["WorkerId"]),
+					WorkmanId = reader["WorkmanId"] as string,
+					ProfileImage = reader["ProfileImage"] as string,
+					FirstName = reader["FirstName"] as string,
+					MiddleName = reader["MiddleName"] as string,
+					LastName = reader["LastName"] as string
+				};
+			});
+			var parameters = new SqlParameter[]
+			{
+				new SqlParameter("@WorkmanId", workmanId),
+				new SqlParameter("@Password", password)
+			};
+			var result = QueryService.Query("usp_LoginWorker", mapEntity, parameters);
+
+			worker = result.FirstOrDefault();
+
+			return worker;
+		}
+
 		public int RowCount()
 		{
 			return CommonService.RowCount("Workers");
@@ -34,7 +64,7 @@ namespace OmSaiServices.Worker.Implimentation
 		{
 			if(model.DepartmentShortName == "" || model.DepartmentShortName == null)
 			{
-				model.DepartmentShortName = "w";
+				model.DepartmentShortName = "W";
 			}
 			string WorkerCode = $"{model.DepartmentShortName}{(RowCount() + 1):00000000}"; // Ensures leading zeros up to 6 digits
 			model.WorkmanId = WorkerCode;
@@ -135,6 +165,18 @@ namespace OmSaiServices.Worker.Implimentation
 			};
 
 		}
+		
+
+		private SqlParameter[] GetParamsLogin(string WorkmanId, string Password)
+		{
+			return new SqlParameter[]
+			{
+				new SqlParameter("@WorkmanId", WorkmanId),
+				new SqlParameter("@DepartmentId", Password)
+
+			};
+		}
+
 
 		private SqlParameter[] GetParams(int? id = null, string? WorkmanId = null, int? DepartmentId = null)
 		{

@@ -67,7 +67,16 @@ namespace OmSaiServices.Worker.Implementations
         }
 
 
-        private List<KeyValuePair<string, object>> CreateUpdate(WorkerProjectSiteModel model, string type)
+		public WorkerProjectSiteModel GetByWorkerId(int id)
+		{
+			// Define the mapping function
+			var mapEntity = new Func<IDataReader, WorkerProjectSiteModel>(reader => _mapper.MapEntity<WorkerProjectSiteModel>(reader));
+
+			return GetById(id, sp_r, mapEntity, GetParams(null,id));
+		}
+
+
+		private List<KeyValuePair<string, object>> CreateUpdate(WorkerProjectSiteModel model, string type)
         {
             if (model == null)
                 throw new ArgumentNullException(nameof(model));

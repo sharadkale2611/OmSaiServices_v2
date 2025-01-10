@@ -3,14 +3,73 @@ using Microsoft.EntityFrameworkCore;
 using GeneralTemplate.Areas.Identity.Data;
 using Microsoft.AspNetCore.Rewrite;
 using OmSaiEnvironment;
-var builder = WebApplication.CreateBuilder(args);
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Net;
+using LmsServices.Common;
+using OmSaiServices.Worker.Implementations;
+using OmSaiServices.Worker.Implimentation;
+using Microsoft.AspNetCore.Mvc;
 
-//var connectionString = builder.Configuration.GetConnectionString("AppDbContextConnection") ?? throw new InvalidOperationException("Connection string 'AppDbContextConnection' not found.");
+
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(DBConnection.DefaultConnection));
 
-//builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<AppDbContext>();
 
+//// JWT Authentication setup
+builder.Services.AddAuthentication(options =>
+{
+	// Set default scheme to Identity (if you use it in your app)
+	options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
+	options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
+})
+.AddJwtBearer("Jwt", options =>
+{
+	options.TokenValidationParameters = new TokenValidationParameters
+	{
+		ValidateIssuer = true,
+		ValidateAudience = true,
+		ValidateLifetime = true,
+		ValidateIssuerSigningKey = true,
+		ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+		ValidAudience = builder.Configuration["JwtSettings:Audience"],
+		IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"])) // Use the key from appsettings.json
+	};
+});
+
+builder.Services.AddControllers(options =>
+{
+	options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true; // Suppress automatic validation
+});
+
+
+// Default API Model validation response customized
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+	options.InvalidModelStateResponseFactory = context =>
+	{
+		var errors = context.ModelState
+			.Where(x => x.Value.Errors.Count > 0)
+			.ToDictionary(
+				kvp => kvp.Key,
+				kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+			);
+
+		return new BadRequestObjectResult(new
+		{
+			success = false,
+			data = (object)null,
+			errors = errors
+		});
+	};
+});
+
+
+
+// Set default authentication scheme for Identity
 // Register Identity services (with role support)
 builder.Services.AddIdentity<AppUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
 	.AddEntityFrameworkStores<AppDbContext>()
@@ -20,6 +79,10 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options => options.SignIn.Re
 builder.Services.AddScoped<UserManager<AppUser>>();
 builder.Services.AddScoped<RoleManager<IdentityRole>>();
 
+
+
+
+builder.Services.AddAuthorization();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
@@ -51,6 +114,7 @@ builder.Services.AddRazorPages()
 
 
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -64,7 +128,6 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseRouting();
 
 // Seed roles and users
 /*
@@ -93,6 +156,7 @@ app.UseRewriter(rewriteOptions);
 
 app.UseSession(); // Enable session middleware
 
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
