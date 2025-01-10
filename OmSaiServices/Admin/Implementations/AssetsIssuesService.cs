@@ -19,8 +19,8 @@ namespace OmSaiServices.Admin.Implementations
 
         public AssetsIssuesService()
         {
-            sp_cud = "usp_CreateUpdateDeleteRestore_AssetsIssues";
-            sp_r = "usp_GelAll_AssetsIssues";
+            sp_cud = "usp_CreateUpdateDeleteRestore_AssetIssue";
+            sp_r = "usp_GetAll_AssetIssues";
             _mapper = new Mapper();
         }
 
@@ -68,18 +68,16 @@ namespace OmSaiServices.Admin.Implementations
         private List<KeyValuePair<string, object>> CreateUpdate(AssetsIssuesModel model, string type)
         {
 
-            var AssetsIssuesId = type == "create" ? 0 : model.AssetsIssuesId;
+            var AssetIssueId = type == "create" ? 0 : model.AssetIssueId;
 
             return new List<KeyValuePair<string, object>>
             {
-                new("@AssetsIssuesId", AssetsIssuesId),
-                new("@EmployeeId", model.EmployeeId),
+                new("@AssetIssueId", AssetIssueId),
+                new("@WorkerId", model.WorkerId),
                 new("@AssetId", model.AssetId),
-                new("@IssuesBy", model.IssuesBy),
-                new("@IssuesAt", model.IssuesAt),
+                new("@IssueBy", model.IssueBy),
                 new("@ReturnTo", model.ReturnTo),
-                new("@ReturnAt", model.ReturnAt),
-                new("@IsReturnAble", model.IsReturnAble),
+                new("@IsReturnable", model.IsReturnable),
                 new("@Remark", model.Remark),
                 new("@Status", model.Status)
             };
@@ -90,25 +88,19 @@ namespace OmSaiServices.Admin.Implementations
 
             return new List<KeyValuePair<string, object>>
             {
-                new("@AssetsIssuesId", id)
+                new("@AssetIssueId", id)
             };
 
         }
 
-        private SqlParameter[] GetParams(int? id = null, int? EmployeeId = null, string? AssetId = null, string? IssuesBy = null, string? IssuesAt = null, string? ReturnTo = null, string? ReturnAt = null, string? IsReturnAble = null, string? Remark = null, bool? Status = null)
+        private SqlParameter[] GetParams(int? id = null, int? WorkerId = null, string? AssetId = null, bool? Status = null)
         {
             return new SqlParameter[]
             {
-                new SqlParameter("@AssetsIssuesId", id),
-                new SqlParameter("@EmployeeId", EmployeeId),
-                new SqlParameter("@AssetId", AssetId),
-                new SqlParameter("@IssuesBy", IssuesBy),
-                new SqlParameter("@IssuesAt", IssuesAt),
-                new SqlParameter("@ReturnTo", ReturnTo),
-                new SqlParameter("@ReturnAt", ReturnAt),
-                new SqlParameter("@IsReturnAble", IsReturnAble),
-                new SqlParameter("@Remark", Remark),
-                new SqlParameter("@Status", Status)
+                new SqlParameter("@AssetIssueId", id?? (object)DBNull.Value),
+                new SqlParameter("@WorkerId", WorkerId?? (object)DBNull.Value),
+                new SqlParameter("@AssetId", AssetId?? (object)DBNull.Value),
+                new SqlParameter("@Status", Status?? (object)DBNull.Value)
             };
         }
     }
