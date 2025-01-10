@@ -8,13 +8,15 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Net;
+using LmsServices.Common;
+using OmSaiServices.Worker.Implementations;
+using OmSaiServices.Worker.Implimentation;
+using Microsoft.AspNetCore.Mvc;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(DBConnection.DefaultConnection));
-
-
 
 
 //// JWT Authentication setup
@@ -37,6 +39,35 @@ builder.Services.AddAuthentication(options =>
 		IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"])) // Use the key from appsettings.json
 	};
 });
+
+builder.Services.AddControllers(options =>
+{
+	options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true; // Suppress automatic validation
+});
+
+
+// Default API Model validation response customized
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+	options.InvalidModelStateResponseFactory = context =>
+	{
+		var errors = context.ModelState
+			.Where(x => x.Value.Errors.Count > 0)
+			.ToDictionary(
+				kvp => kvp.Key,
+				kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+			);
+
+		return new BadRequestObjectResult(new
+		{
+			success = false,
+			data = (object)null,
+			errors = errors
+		});
+	};
+});
+
+
 
 // Set default authentication scheme for Identity
 // Register Identity services (with role support)
@@ -97,7 +128,6 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseRouting();
 
 // Seed roles and users
 /*
@@ -126,6 +156,7 @@ app.UseRewriter(rewriteOptions);
 
 app.UseSession(); // Enable session middleware
 
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();

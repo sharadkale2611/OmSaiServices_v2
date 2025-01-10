@@ -64,7 +64,7 @@ namespace OmSaiServices.Worker.Implimentation
 		{
 			if(model.DepartmentShortName == "" || model.DepartmentShortName == null)
 			{
-				model.DepartmentShortName = "w";
+				model.DepartmentShortName = "W";
 			}
 			string WorkerCode = $"{model.DepartmentShortName}{(RowCount() + 1):00000000}"; // Ensures leading zeros up to 6 digits
 			model.WorkmanId = WorkerCode;

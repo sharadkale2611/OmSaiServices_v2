@@ -55,7 +55,16 @@ namespace OmSaiServices.Worker.Implementations
             return GetAll(usp_r, mapEntity, GetParams());
         }
 
-        public WorkerQualificationModel GetById(int id)
+
+		public WorkerQualificationModel GetByWorkerId(int id)
+		{
+			// Define the mapping function
+			var mapEntity = new Func<IDataReader, WorkerQualificationModel>(reader => _mapper.MapEntity<WorkerQualificationModel>(reader));
+
+			return GetById(id, usp_r, mapEntity, GetParams(null,id));
+		}
+
+		public WorkerQualificationModel GetById(int id)
         {
             // Define the mapping function
             var mapEntity = new Func<IDataReader, WorkerQualificationModel>(reader => _mapper.MapEntity<WorkerQualificationModel>(reader));

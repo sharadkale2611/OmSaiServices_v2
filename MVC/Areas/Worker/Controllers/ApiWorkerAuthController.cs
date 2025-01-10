@@ -18,7 +18,7 @@ using System.Text;
 namespace GeneralTemplate.Areas.Worker.Controllers
 {
 	[Route("api/[controller]")]
-	//[ApiController]
+	[ApiController]
 	public class ApiWorkerAuthController : ControllerBase
 	{
 		private readonly WorkerService _workerService;

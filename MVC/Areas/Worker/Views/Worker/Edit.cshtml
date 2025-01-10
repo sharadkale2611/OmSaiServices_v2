@@ -2,7 +2,7 @@
 
 
 @{
-	ViewData["Title"] = "Update Worker";
+	ViewData["Title"] = "Update Worker data";
 	// Layout = "/Views/Shared/_Layout.cshtml";
 	var GenderList = new List<string>(){
 		"Male","Female","Other"
@@ -149,13 +149,13 @@
 							</div>
 
 							<div class="row">
-								<input type="text" name="WorkerAddressId1" value="@WorkerAddressId1" />
+								<input type="hidden" name="WorkerAddressId1" value="@WorkerAddressId1" />
 								<div class="col-md-6 mb-3">
 									<label for="Address1" class="form-label">Permanent Address</label>
 									<textarea name="Address1" class="form-control">@PermanentAddress</textarea>
 								</div>
 								<div class="col-md-6 mb-3">
-									<input type="text" name="WorkerAddressId2" value="@WorkerAddressId2" />
+									<input type="hidden" name="WorkerAddressId2" value="@WorkerAddressId2" />
 									<label for="Address2" class="form-label">Current Address</label>
 									<textarea name="Address2" class="form-control">@CurrentAddress</textarea>
 								</div>
@@ -202,13 +202,13 @@
 								</div>
 
 								<div class="col-md-4 form-group">
-									<input type="text" name="WorkerMobileNumberId1" value="@WorkerMobileNumberId1" />
+									<input type="hidden" name="WorkerMobileNumberId1" value="@WorkerMobileNumberId1" />
 									<label class="form-label">Mobile Number</label>
 									<input type="text" class="form-control" name="MobileNumber" id="MobileNumber" placeholder="Mobile Number" value="@MobileNumber" />
 								</div>
 
 								<div class="col-md-4 form-group">
-									<input type="text" name="WorkerMobileNumberId2" value="@WorkerMobileNumberId2" />
+									<input type="hidden" name="WorkerMobileNumberId2" value="@WorkerMobileNumberId2" />
 
 									<label class="form-label">Alternate Mobile Number</label>
 									<input type="text" class="form-control" name="MobileNumber2" id="MobileNumber2" placeholder="Alternate Mobile Number" value="@MobileNumber2" />

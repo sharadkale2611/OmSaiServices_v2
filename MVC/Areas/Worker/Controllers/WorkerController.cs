@@ -309,19 +309,25 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 
 		public IActionResult Edit(int id)
 		{
-			ViewBag.AllData = _workerService.GetAll();
-			ViewBag.Department = _departmentService.GetAll();
 
 
 			// masters
+			ViewBag.Department = _departmentService.GetAll();
 			ViewBag.Sites = _siteService.GetAll();
 			ViewBag.Projects = _projectService.GetAll();
-			ViewBag.Workers = _workerService.GetAll();
 			ViewBag.Qualifications = _qualificationService.GetAll();
 
-
-
 			var p = _workerService.GetById(id);
+
+			ViewBag.Worker = _workerService.GetProfileById(id, null);
+			if (ViewBag.Worker == null)
+			{
+				return RedirectToAction(nameof(Index));// nameof checks method compiletime to avoid errors
+			}
+
+			ViewBag.Addresses = _workerAddressService.GetByWorkerId(id);
+			ViewBag.MobilesNumbers = _workerMobileNumbersService.GetByWorkerId(id);
+
 			return View(p);
 		}
 
@@ -345,18 +351,31 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 					// Update main Worker details
 					_workerService.Update(model);
 
-					// Update project-site relationship
-					var workerProjectSite = _workerProjectSiteService.GetById(model.WorkerId.Value);
-					if (workerProjectSite != null)
+					// Update project-sites
+					var workerProjectSite = _workerProjectSiteService.GetByWorkerId(model.WorkerId.Value);
+
+					WorkerProjectSiteModel workerProjectSiteModel = new WorkerProjectSiteModel
 					{
-						workerProjectSite.SiteId = SiteId;
-						workerProjectSite.ProjectId = ProjectId;
-						workerProjectSite.Status = Status;
-						_workerProjectSiteService.Update(workerProjectSite);
-					}
+						WorkerProjectSitesId = workerProjectSite.WorkerProjectSitesId,
+						WorkerId = model.WorkerId ?? 0,
+						ProjectId = ProjectId,
+						SiteId = SiteId,
+						Status = true
+					};
+					_workerProjectSiteService.Update(workerProjectSiteModel);
+
 
 					// Update qualification
-					var workerQualification = _workerQualificationService.GetById(model.WorkerId.Value);
+					var workerQualification = _workerQualificationService.GetByWorkerId(model.WorkerId.Value);
+					WorkerQualificationModel workerQualificationModel = new WorkerQualificationModel
+					{
+						WorkerQualificationId = QualificationId,
+						WorkerId = model.WorkerId ?? 0,
+						QualificationId = QualificationId
+					};
+					_workerQualificationService.Create(workerQualificationModel);
+
+
 					if (workerQualification != null)
 					{
 						workerQualification.QualificationId = QualificationId;
@@ -370,7 +389,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 						WorkerId = model.WorkerId ?? 0,
 						MobileNumber = MobileNumber
 					};
-					_workerMobileNumbersService.Create(workerMobileNumbersModel);
+					_workerMobileNumbersService.Update(workerMobileNumbersModel);
 
 					if (MobileNumber2 == "")
 					{
@@ -382,7 +401,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 						WorkerId = model.WorkerId ?? 0,
 						MobileNumber = MobileNumber2
 					};
-					_workerMobileNumbersService.Create(workerMobileNumbersModel_2);
+					_workerMobileNumbersService.Update(workerMobileNumbersModel_2);
 					if (Address1 != "" && Address1 != null)
 					{
 						WorkerAddressModel workerAddressModel_1 = new WorkerAddressModel
