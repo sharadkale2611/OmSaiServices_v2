@@ -107,31 +107,39 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 				TempData["errors"] = errorMessages;
 
 			}
-			
-			var result = _workerService.ChangePassword(workerId.Value, model.OldPassword, model.NewPassword);
-
-			if (!result)
+			try
 			{
-				ModelState.AddModelError(string.Empty, "Old password is incorrect.");
 
-				var errorMessages = new List<string>();
-				foreach (var state in ModelState)
+				var result = _workerService.ChangePassword(workerId.Value, model.OldPassword, model.NewPassword);
+
+				if (!result)
 				{
-					foreach (var error in state.Value.Errors)
+					//ModelState.AddModelError(string.Empty, "Old password is incorrect.");
+
+					var errorMessages = new List<string>();
+					foreach (var state in ModelState)
 					{
-						errorMessages.Add(error.ErrorMessage);
+						foreach (var error in state.Value.Errors)
+						{
+							errorMessages.Add(error.ErrorMessage);
+						}
 					}
+					TempData["errors"] = errorMessages;
+					return View(model);
 				}
-				TempData["errors"] = errorMessages;
-				return View(model);
+
+				//HttpContext.Session.Clear();
+				TempData["success"] = "Your password has been changed successfully. Please log in with your new password.";
+				return View();
+			}
+			catch (Exception ex)
+			{
+				TempData["errors"] = null;
+				TempData["error"] = ex.Message;
+				return View();
 			}
 
-			//HttpContext.Session.Clear();
-			TempData["success"] = "Your password has been changed successfully. Please log in with your new password.";
-			return View();
 		}
-		
-
 
 
 		public IActionResult LeaveRequest()
