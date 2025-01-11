@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using OmSaiModels.Worker;
 using OmSaiServices.Admin.Implementations;
 using OmSaiServices.Worker.Implementations;
@@ -73,6 +75,64 @@ namespace GeneralTemplate.Areas.Worker.Controllers
             ViewBag.Message = "Invalid Workman ID or Password.";
             return View();
         }
+
+		public IActionResult ChangePassword()
+		{
+			var workerId = HttpContext.Session.GetInt32("WorkerId");
+			{
+				return View();
+			}
+
+		}
+
+	
+
+		[HttpPost]
+		//[ValidateAntiForgeryToken]
+		public IActionResult ChangePassword(WorkerChangePasswordModel model)
+		{
+			var workerId = HttpContext.Session.GetInt32("WorkerId");
+
+			if (!ModelState.IsValid)
+			{
+
+				var errorMessages = new List<string>();
+				foreach (var state in ModelState)
+				{
+					foreach (var error in state.Value.Errors)
+					{
+						errorMessages.Add(error.ErrorMessage);
+					}
+				}
+				TempData["errors"] = errorMessages;
+
+			}
+			
+			var result = _workerService.ChangePassword(workerId.Value, model.OldPassword, model.NewPassword);
+
+			if (!result)
+			{
+				ModelState.AddModelError(string.Empty, "Old password is incorrect.");
+
+				var errorMessages = new List<string>();
+				foreach (var state in ModelState)
+				{
+					foreach (var error in state.Value.Errors)
+					{
+						errorMessages.Add(error.ErrorMessage);
+					}
+				}
+				TempData["errors"] = errorMessages;
+				return View(model);
+			}
+
+			//HttpContext.Session.Clear();
+			TempData["success"] = "Your password has been changed successfully. Please log in with your new password.";
+			return View();
+		}
+		
+
+
 
 		public IActionResult LeaveRequest()
 		{
@@ -274,7 +334,10 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			return View();
         }
 
-        public IActionResult Logout()
+		
+	
+
+		public IActionResult Logout()
         {
             // Clear all session data
             HttpContext.Session.Clear();
