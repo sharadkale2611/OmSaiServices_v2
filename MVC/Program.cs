@@ -12,6 +12,7 @@ using LmsServices.Common;
 using OmSaiServices.Worker.Implementations;
 using OmSaiServices.Worker.Implimentation;
 using Microsoft.AspNetCore.Mvc;
+using GeneralTemplate.Filter;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -79,7 +80,10 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options => options.SignIn.Re
 builder.Services.AddScoped<UserManager<AppUser>>();
 builder.Services.AddScoped<RoleManager<IdentityRole>>();
 
-
+//builder.Services.AddControllersWithViews(options =>
+//{
+//	options.Filters.Add<WorkerAuthorizeFilter>();
+//}).AddRazorRuntimeCompilation();
 
 
 builder.Services.AddAuthorization();

@@ -40,6 +40,9 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			_workerAddressService = new WorkerAddressService();
 
 		}
+
+
+
 		public IActionResult Index()
 		{
 			ViewBag.AllData = _workerService.GetAll();
