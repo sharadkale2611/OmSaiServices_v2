@@ -26,6 +26,7 @@ namespace OmSaiModels.Worker
 		//public DepartmentModel Department { get; set; }
 
 		public int WorkerQualificationId { get; set; }
+		public int QualificationId { get; set; }
 		public string QualificationName { get; set; }
 		public DateOnly? DateofJoining { get; set; }
 		

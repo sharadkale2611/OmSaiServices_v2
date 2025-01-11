@@ -234,10 +234,10 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 					};
 					_workerMobileNumbersService.Create(workerMobileNumbersModel);
 
-					if(MobileNumber2 == "")
-					{
-						MobileNumber2 = MobileNumber;
-					}
+					//if(MobileNumber2 == "")
+					//{
+					//	MobileNumber2 = MobileNumber;
+					//}
 					WorkerMobileNumbersModel workerMobileNumbersModel_2 = new WorkerMobileNumbersModel
 					{
 						WorkerId = lastWorkerId,
@@ -245,8 +245,8 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 					};
 					_workerMobileNumbersService.Create(workerMobileNumbersModel_2);
 
-					if (Address1 != "" && Address1 != null)
-					{
+					//if (Address1 != "" && Address1 != null)
+					//{
 						WorkerAddressModel workerAddressModel_1 = new WorkerAddressModel
 						{
 							WorkerId = lastWorkerId,
@@ -255,10 +255,10 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 						};
 						_workerAddressService.Create(workerAddressModel_1);
 
-					}
+					//}
 
-					if (Address2 != "" && Address2 != null)
-					{
+					//if (Address2 != "" && Address2 != null)
+					//{
 						WorkerAddressModel workerAddressModel_2 = new WorkerAddressModel
 						{
 							WorkerId = lastWorkerId,
@@ -266,7 +266,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 							Address = Address2
 						};
 						_workerAddressService.Create(workerAddressModel_2);
-					}
+					//}
 
 					var documentIds = new List<int> { 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 11 };
 
@@ -373,7 +373,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 						WorkerId = model.WorkerId ?? 0,
 						QualificationId = QualificationId
 					};
-					_workerQualificationService.Create(workerQualificationModel);
+					_workerQualificationService.Update(workerQualificationModel);
 
 
 					if (workerQualification != null)
