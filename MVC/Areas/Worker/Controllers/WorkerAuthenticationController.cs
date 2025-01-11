@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using OmSaiModels.Worker;
 using OmSaiServices.Admin.Implementations;
 using OmSaiServices.Worker.Implementations;
@@ -84,105 +85,52 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 
 		}
 
-		//[HttpPost]
-		//[ValidateAntiForgeryToken]
-		//public IActionResult ChangePassword(int WorkerId, string oldPassword, string NewPassword, string ConfirmNewPassword)
-		//{
-		//	// Check if any of the inputs are empty
-		//	if (string.IsNullOrWhiteSpace(oldPassword) || 
-		//		string.IsNullOrWhiteSpace(NewPassword) || 
-		//		string.IsNullOrWhiteSpace(ConfirmNewPassword))
-		//	{
-		//		ModelState.AddModelError(string.Empty, "All fields are required.");
-		//		return View();
-		//	}
-
-		//	// Validate if NewPassword matches ConfirmNewPassword
-		//	if (NewPassword != ConfirmNewPassword)
-		//	{
-		//		ModelState.AddModelError(string.Empty, "The new password and confirmation password do not match.");
-		//		return View();
-		//	}
-
-		//	// Retrieve WorkerId from Session
-		//	var workerId = HttpContext.Session.GetInt32("WorkerId");
-		//	if (!workerId.HasValue)
-		//	{
-		//		// Redirect to Login if session expired or not logged in
-		//		return RedirectToAction("Login");
-		//	}
-
-		//	// Fetch worker data from the database using WorkerService
-		//	var worker = _workerService.GetById(workerId.Value);
-		//	if (worker == null)
-		//	{
-		//		// If the worker is not found, redirect to Login
-		//		return RedirectToAction("Login");
-		//	}
-
-		//	//// Validate OldPassword
-		//	if (worker.Password != oldPassword)
-		//	{
-		//		ModelState.AddModelError(string.Empty, "The old password is incorrect.");
-		//		return View();
-		//	}
-
-		//	// Update the password
-		//	worker.Password = NewPassword;
-
-		//	// Save the changes in the database
-		//	var result = _workerService.ChangePassword(WorkerId, oldPassword, NewPassword);
-
-
-		//	if (!result)
-		//	{
-		//		ModelState.AddModelError(string.Empty, "An error occurred while updating the password.");
-		//		return View();
-		//	}
-
-		//	// Invalidate the current session and log the user out
-		//	HttpContext.Session.Clear();
-
-		//	TempData["SuccessMessage"] = "Your password has been changed successfully. Please log in with your new password.";
-		//	return RedirectToAction("Login");
-		//}
+	
 
 		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public IActionResult ChangePassword(string oldPassword, string NewPassword, string ConfirmNewPassword)
+		//[ValidateAntiForgeryToken]
+		public IActionResult ChangePassword(WorkerChangePasswordModel model)
 		{
-			if (string.IsNullOrWhiteSpace(oldPassword) ||
-				string.IsNullOrWhiteSpace(NewPassword) ||
-				string.IsNullOrWhiteSpace(ConfirmNewPassword))
-			{
-				ModelState.AddModelError(string.Empty, "All fields are required.");
-				return View();
-			}
-
-			if (NewPassword != ConfirmNewPassword)
-			{
-				ModelState.AddModelError(string.Empty, "The new password and confirmation password do not match.");
-				return View();
-			}
-
 			var workerId = HttpContext.Session.GetInt32("WorkerId");
-			if (!workerId.HasValue)
-			{
-				return RedirectToAction("Login");
-			}
 
-			var result = _workerService.ChangePassword(workerId.Value, oldPassword, NewPassword);
+			if (!ModelState.IsValid)
+			{
+
+				var errorMessages = new List<string>();
+				foreach (var state in ModelState)
+				{
+					foreach (var error in state.Value.Errors)
+					{
+						errorMessages.Add(error.ErrorMessage);
+					}
+				}
+				TempData["errors"] = errorMessages;
+
+			}
+			
+			var result = _workerService.ChangePassword(workerId.Value, model.OldPassword, model.NewPassword);
 
 			if (!result)
 			{
-				ModelState.AddModelError(string.Empty, "Old password is incorrect or an error occurred while updating the password.");
-				return View();
+				ModelState.AddModelError(string.Empty, "Old password is incorrect.");
+
+				var errorMessages = new List<string>();
+				foreach (var state in ModelState)
+				{
+					foreach (var error in state.Value.Errors)
+					{
+						errorMessages.Add(error.ErrorMessage);
+					}
+				}
+				TempData["errors"] = errorMessages;
+				return View(model);
 			}
 
-			HttpContext.Session.Clear();
-			TempData["SuccessMessage"] = "Your password has been changed successfully. Please log in with your new password.";
-			return RedirectToAction("Login");
+			//HttpContext.Session.Clear();
+			TempData["success"] = "Your password has been changed successfully. Please log in with your new password.";
+			return View();
 		}
+		
 
 
 
