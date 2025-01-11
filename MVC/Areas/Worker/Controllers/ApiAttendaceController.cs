@@ -11,7 +11,7 @@ using System.Net;
 namespace GeneralTemplate.Areas.Worker.Controllers
 {
 	[Route("api/attendance")]
-	//[ApiController]
+	[ApiController]
 	public class ApiAttendaceController : ControllerBase
 	{
 		private readonly WorkerService _workerService;
@@ -23,7 +23,18 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			_workerService = new WorkerService();
 			_attendanceService = new WorkerAttendanceService();
 			_mms = new MultiMediaService();
+
 		}
+
+		//public ApiAttendaceController(
+		//	WorkerService workerService,
+		//	WorkerAttendanceService attendanceService,
+		//	MultiMediaService mms)
+		//{
+		//	_workerService = workerService;
+		//	_attendanceService = attendanceService;
+		//	_mms = mms;
+		//}
 
 
 		[HttpPost("worker-attendance-report")]

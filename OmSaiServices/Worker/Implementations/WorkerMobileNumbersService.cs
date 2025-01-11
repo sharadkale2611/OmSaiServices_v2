@@ -105,14 +105,12 @@ namespace OmSaiServices.Worker.Implementations
         }
 
 
-        private SqlParameter[] GetParams(int? id = null, int? WorkerId = null, string? MobileNumber = null)
+        private SqlParameter[] GetParams(int? id = null, int? WorkerId = null)
         {
             return new SqlParameter[]
             {
                 new SqlParameter("@WorkerMobileNumberId", id),
-                new SqlParameter("@WorkerId", WorkerId),
-                new SqlParameter("@MobileNumber", MobileNumber)
-				
+                new SqlParameter("@WorkerId", WorkerId)				
 			};
         }
 

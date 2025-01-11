@@ -27,33 +27,43 @@ namespace OmSaiServices.Worker.Implimentation
 			_mapper = new Mapper();
 		}
 
-		public async Task<WorkerModel> Login(string workmanId, string password)
+		public async Task<WorkerModel> Login(string loginIdentifier, string password)
 		{
 			WorkerModel worker = null;
 
+			// Map database result to WorkerModel
 			var mapEntity = new Func<IDataReader, WorkerModel>(reader =>
 			{
-				return new WorkerModel
+				if (reader["Message"].ToString() == "Login Successful")
 				{
-					WorkerId = Convert.ToInt32(reader["WorkerId"]),
-					WorkmanId = reader["WorkmanId"] as string,
-					ProfileImage = reader["ProfileImage"] as string,
-					FirstName = reader["FirstName"] as string,
-					MiddleName = reader["MiddleName"] as string,
-					LastName = reader["LastName"] as string
-				};
+					return new WorkerModel
+					{
+						WorkerId = Convert.ToInt32(reader["WorkerId"]),
+						WorkmanId = reader["WorkmanId"] as string,
+						ProfileImage = reader["ProfileImage"] as string,
+						FirstName = reader["FirstName"] as string,
+						MiddleName = reader["MiddleName"] as string,
+						LastName = reader["LastName"] as string
+					};
+				}
+				return null; // Handle failure case (null means login failed)
 			});
+
+			// Define parameters for stored procedure
 			var parameters = new SqlParameter[]
 			{
-				new SqlParameter("@WorkmanId", workmanId),
+				new SqlParameter("@LoginIdentifier", loginIdentifier),
 				new SqlParameter("@Password", password)
 			};
+
+			// Execute query and map results
 			var result = QueryService.Query("usp_LoginWorker", mapEntity, parameters);
 
 			worker = result.FirstOrDefault();
 
 			return worker;
 		}
+
 
 		public int RowCount()
 		{
@@ -64,7 +74,7 @@ namespace OmSaiServices.Worker.Implimentation
 		{
 			if(model.DepartmentShortName == "" || model.DepartmentShortName == null)
 			{
-				model.DepartmentShortName = "w";
+				model.DepartmentShortName = "W";
 			}
 			string WorkerCode = $"{model.DepartmentShortName}{(RowCount() + 1):00000000}"; // Ensures leading zeros up to 6 digits
 			model.WorkmanId = WorkerCode;
