@@ -71,6 +71,9 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			ViewBag.Addresses = _workerAddressService.GetByWorkerId(id);
 			ViewBag.SiteShifts = _siteShiftService.GetBySiteId(worker.SiteId);
 
+			var workerId = HttpContext.Session.GetInt32("WorkerId");
+			
+
 			return View();
 		}
 
@@ -522,9 +525,6 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			return View(model);
 		}
 
-
-
-
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		public IActionResult Delete(int id)
@@ -534,6 +534,67 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			TempData["success"] = "Project deleted successfully!";
 
 			return RedirectToAction("Index");
+		}
+
+
+		[HttpPost]
+		//[ValidateAntiForgeryToken]
+		public IActionResult WorkerChangePassword(WorkerChangePasswordModel model)
+		{
+			ViewBag.IsChangePasswordPage = true;
+			var workerId = HttpContext.Session.GetInt32("WorkerId");
+			
+			if (!ModelState.IsValid)
+			{
+
+				var errorMessages = new List<string>();
+				foreach (var state in ModelState)
+				{
+					foreach (var error in state.Value.Errors)
+					{
+						errorMessages.Add(error.ErrorMessage);
+					}
+				}
+				TempData["errors"] = errorMessages;
+				return RedirectToAction("Profile", new { id = model.WorkerId });
+			}
+			try
+			{
+				var result = _workerService.ChangePassword(model.WorkerId, model.OldPassword, model.NewPassword);
+
+				if (!result)
+				{
+					//ModelState.AddModelError(string.Empty, "Old password is incorrect.");
+					if (model.ConfirmPassword != model.NewPassword)
+					{
+						TempData["error"] = "Confirmed password in not match New Password ";
+					}
+
+					var errorMessages = new List<string>();
+					foreach (var state in ModelState)
+					{
+						foreach (var error in state.Value.Errors)
+						{
+							errorMessages.Add(error.ErrorMessage);
+						}
+					}
+					TempData["errors"] = errorMessages;
+					return RedirectToAction("Profile", new { id = model.WorkerId });
+
+				}
+			}
+			catch (Exception ex)
+			{
+				TempData["error"] = ex.Message;
+				return RedirectToAction("Profile", new { id = model.WorkerId });
+
+			}
+
+
+			//HttpContext.Session.Clear();
+			TempData["success"] = "Your password has been changed successfully.";
+			return RedirectToAction("Profile", new { id = model.WorkerId });
+
 		}
 	}
 }

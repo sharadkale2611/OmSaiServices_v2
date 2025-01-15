@@ -1,4 +1,6 @@
-﻿@{
+﻿@model OmSaiModels.Worker.WorkerChangePasswordModel;
+
+@{
     ViewData["Title"] = "Worker Profile";
 
     var worker = @ViewBag.AllData;
@@ -11,6 +13,8 @@
     var CurrentAddress = address.Count > 1 ? address[1]?.Address ?? "" : "";
 
     int serialNumber = 0;
+    
+
 }
 
 <style>
@@ -77,13 +81,55 @@
 <div class="my-3 my-md-5">
     <div class="container">
         <div class="row">
+            <partial name="~/Views/shared/_alertpartial.cshtml" />
+        </div>
+        <div class="row">
             <div class="col-lg-4">
                 <div class="card">
                     <div class="card-header d-flex">
                         <a asp-area="worker" asp-controller="worker" asp-action="Edit" asp-route-id="@worker.WorkerId" class="btn btn-outline-warning ml-1"><i class="fe fe-edit"></i> Edit Profile</a>
-                        <a class="btn btn-outline-warning ml-1"><i class="fe fe-lock"></i> Change Password</a>
+                        <a class="btn btn-outline-warning ml-1"  onclick="$('#topcard').show()"><i class="fe fe-lock"></i> Change Password</a>
                     </div>
                 </div>
+
+                <div class="card" id="topcard" style="display: @(ViewBag.IsChangePasswordPage != null? "block":"none");">
+
+
+                    <form method="post" asp-area="Worker" asp-controller="Worker" asp-action="WorkerChangePassword" id="changepasswordcard">
+                        <div class="card-body">
+                            <h4>Reset Password</h4>
+
+                            <input type="hidden" asp-for="WorkerId" value='@worker.WorkerId'  >
+
+                            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                            <div class="form-floating mb-3">
+                                <label asp-for="OldPassword" class="form-label">Old Password:</label>
+                                <input type="password" asp-for="OldPassword" id="oldPassword" class="form-control" placeholder="Enter Old Password" required />
+                                <span asp-validation-for="OldPassword" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <label asp-for="NewPassword" class="form-label">New Password:</label>
+                                <input type="password" asp-for="NewPassword" id="NewPassword" class="form-control" placeholder="Enter New Password" required />
+                                <span asp-validation-for="NewPassword" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <label asp-for="ConfirmPassword" class="form-label">Confirm New Password:</label>
+                                <input type="password" asp-for="ConfirmPassword" id="ConfirmNewPassword" class="form-control" placeholder="Enter Confirm Password" required />
+                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-outline-secondary" id="btnSubmit">Set</button>
+                                <button type="button" class="btn btn-outline-warning"  onclick="$('#topcard').hide()">Cancel</button>
+                            </div>
+                            @*  <div>
+                                <button id="login-submit" type="submit" class="w-100 btn btn-primary ">Set Password</button>
+                            </div> *@
+                        </div>
+                    </form>
+
+
+                </div>
+
 
                 <div class="card">
                     <div class="card-body">
@@ -488,10 +534,12 @@
 @section Scripts {
 
     <script>
-
-
+            
 
         $(document).ready(function () {
+
+
+
             // Open modal when the button is clicked
             $('.btn-upload').on('click', function () {
                 $('#uploadImageModal').modal('show');
