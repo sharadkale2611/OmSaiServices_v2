@@ -23,6 +23,21 @@ namespace GeneralTemplate.Controllers
 
 			// You can now use userId as needed
 			ViewBag.UserId = userId;
+            // Check Session for WorkerName
+            var workerName = HttpContext.Session.GetString("WorkerName");
+            var workerId = HttpContext.Session.GetInt32("WorkerId");
+            if (workerId != null)
+            {
+                ViewBag.IsSignedIn = true;
+
+            }
+            else
+            {
+				ViewBag.IsSignedIn = false;
+
+			}
+			ViewBag.WorkerName = workerName;
+            ViewBag.WorkerId = workerId;
 
 			return View();
 		}

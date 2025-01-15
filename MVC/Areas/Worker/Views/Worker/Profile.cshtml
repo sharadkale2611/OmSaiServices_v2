@@ -6,15 +6,23 @@
     var worker = @ViewBag.AllData;
     var fullName = worker.FirstName + " " + worker.MiddleName + " " + worker.LastName;
     var attendanceHistory = ViewBag.AttendanceHistory; //test commentn
-    var address = ViewBag.Addresses;
 
-    var PermanentAddress = address[0]?.Address??"";
-    var CurrentAddress = address[1]?.Address ?? "";
+    var address = ViewBag.Addresses;
+    // Ensure there are at least two items in the collection before accessing
+    var PermanentAddress = address.Count > 0 ? address[0]?.Address ?? "" : "";
+    var CurrentAddress = address.Count > 1 ? address[1]?.Address ?? "" : "";
+
     int serialNumber = 0;
-    ViewData["Title1"] = "Reset Password";
+    
+
 }
 
 <style>
+
+    .border-danger{
+        border:0px solid maroon;
+        box-shadow: 1px 1px 5px maroon;
+    }
 
     .selfie-image{
     width:40px;
@@ -80,26 +88,24 @@
                 <div class="card">
                     <div class="card-header d-flex">
                         <a asp-area="worker" asp-controller="worker" asp-action="Edit" asp-route-id="@worker.WorkerId" class="btn btn-outline-warning ml-1"><i class="fe fe-edit"></i> Edit Profile</a>
-                        <a  class="btn btn-outline-warning ml-1" id="btnshowForm" ><i class="fe fe-lock"></i> Change Password</a>
+                        <a class="btn btn-outline-warning ml-1"  onclick="$('#topcard').show()"><i class="fe fe-lock"></i> Change Password</a>
                     </div>
                 </div>
 
-
-                <!-- card -->
                 <div class="card" id="topcard" style="display: @(ViewBag.IsChangePasswordPage != null? "block":"none");">
-                  
-                  
+
+
                     <form method="post" asp-area="Worker" asp-controller="Worker" asp-action="WorkerChangePassword" id="changepasswordcard">
                         <div class="card-body">
-                            <h4>@ViewBag.Title1</h4>
+                            <h4>Reset Password</h4>
 
                             <input type="hidden" asp-for="WorkerId" value='@worker.WorkerId'  >
 
                             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                             <div class="form-floating mb-3">
-                                <label asp-for="oldPassword" class="form-label">Old Password:</label>
-                                <input type="password" asp-for="oldPassword" id="oldPassword" class="form-control" placeholder="Enter Old Password" required />
-                                <span asp-validation-for="oldPassword" class="text-danger"></span>
+                                <label asp-for="OldPassword" class="form-label">Old Password:</label>
+                                <input type="password" asp-for="OldPassword" id="oldPassword" class="form-control" placeholder="Enter Old Password" required />
+                                <span asp-validation-for="OldPassword" class="text-danger"></span>
                             </div>
                             <div class="form-floating mb-3">
                                 <label asp-for="NewPassword" class="form-label">New Password:</label>
@@ -110,21 +116,22 @@
                                 <label asp-for="ConfirmPassword" class="form-label">Confirm New Password:</label>
                                 <input type="password" asp-for="ConfirmPassword" id="ConfirmNewPassword" class="form-control" placeholder="Enter Confirm Password" required />
                                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                            </div>                          
+                            </div>
                             <div class="text-center">
                                 <button type="submit" class="btn btn-outline-secondary" id="btnSubmit">Set</button>
-                                <button type="button" class="btn btn-outline-warning" id="btnCloseForm">Cancel</button>
+                                <button type="button" class="btn btn-outline-warning"  onclick="$('#topcard').hide()">Cancel</button>
                             </div>
                             @*  <div>
                                 <button id="login-submit" type="submit" class="w-100 btn btn-primary ">Set Password</button>
                             </div> *@
                         </div>
-                     </form>
-                   
+                    </form>
+
 
                 </div>
 
-                <div class="card" id="bottomcard">
+
+                <div class="card">
                     <div class="card-body">
                         <div class="media">
                             @* <span class="avatar avatar-xxl mr-5" style="background-image: url('@user.ImagePath')"></span> *@
@@ -147,6 +154,49 @@
                         </div>
                     </div>
                 </div>
+                <div class="card @(worker.WorkerShiftId == null?"border-danger":"")">
+                    <div class="card-header ">
+                        <h4 class="card-title">Current Shift</h4>
+                    </div>
+                    @if (worker.WorkerShiftId != null){
+                        <div class="card-body p-2" id="card-workershift-display">
+
+                            <button type="button" class="btn btn-sm btn-warning" style="float:right;" onclick="EditShift()" id="btnEditShift">Edit</button>
+
+                            @worker.ShiftName (@DateTime.Today.Add(@worker.StartTime).ToString("hh:mm tt") -
+                            @DateTime.Today.Add(@worker.EndTime).ToString("hh:mm tt"))
+                        </div>
+                    }
+
+                                                
+                    <div class="card-body p-2 @(worker.WorkerShiftId == null?"":"d-none")" id="card-workershift-form">
+                        <form id="formWorkerShift" method="post">
+                            
+                            <input type="hidden" id="txtWorkerId1" value="@worker.WorkerId" />
+                            <div class="mb-3">
+                                <label class="form-label" for="drpShiftId"> Shift Time </label>
+                                <select class="form-control" id="drpShiftId">
+                                    @foreach (var shift in ViewBag.SiteShifts)
+                                    {
+                                        <option value="@shift.SiteShiftId">
+                                            @shift.ShiftName : (@DateTime.Today.Add(@shift.StartTime).ToString("hh:mm tt") -
+                                            @DateTime.Today.Add(@shift.EndTime).ToString("hh:mm tt"))
+                                        </option>
+
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="text-center">
+
+                                <button class="btn btn-outline-primary" type="submit" id="btnSaveformWorkerShift"><i class="fe fe-save"></i> Save</button>
+                                <button class="btn btn-outline-danger" type="button" id="btnCancelformWorkerShift" onclick="cancelShift()"><i class="fe fe-x"></i> Cancel</button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+
 
                 <div class="card">
                     <div class="card-header">
@@ -264,6 +314,7 @@
                                     <th>Site Name</th>
                                     <th>In Time</th>
                                     <th>Out Time</th>
+                                    <th>Working Hours</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
@@ -271,18 +322,42 @@
                                 @foreach (var attendance in attendanceHistory)
                                 {
                                     serialNumber++;
+                                    var timeDifference = "---";
+
+                                    // Check if both InTime and OutTime are not null
+
+                                    if (attendance.OutTime is DateTime outTime && attendance.InTime is DateTime inTime)
+                                    {
+                                        var difference = outTime - inTime;
+                                        timeDifference = $"{difference.Hours} Hrs {difference.Minutes} Min";
+
+                                        // Use difference as needed
+                                    }
+
+                                    @* if (attendance.OutTime.HasValue && attendance.InTime.HasValue) *@
+                                    @* { *@
+                                    @*     var difference = attendance.OutTime.Value - attendance.InTime.Value; *@
+                                    @*     // Use difference as needed *@
+                                    @*     timeDifference = $"{difference.Hours} Hrs {difference.Minutes} Min"; *@
+
+                                    @* } *@
+
+
+
+
                                     <tr>
                                         <td>@serialNumber</td>
                                         <td>@attendance.CreatedAt?.ToString("ddd, dd MMM yy")</td>
                                         <td>@attendance.SiteName</td>
                                         <td>
-                                            <img src="@attendance.InSelfiPath" class="selfie-image" />
+                                            <img src="@attendance.InSelfiPath" class="selfie-image" /><br />
                                             @attendance.InTime?.ToString("hh:mm tt")
                                         </td>
                                         <td>
-                                            <img src="@attendance.OutSelfiPath" class="selfie-image" />
+                                            <img src="@attendance.OutSelfiPath" class="selfie-image" /><br />
                                             @attendance.OutTime?.ToString("hh:mm tt")
                                         </td>
+                                        <td>@timeDifference</td>
                                         <td>
 
                                             @if (attendance.Status == "Present")
@@ -458,42 +533,13 @@
 </div>
 @section Scripts {
 
-    <partial name="_ValidationScriptsPartial" />
-
-
     <script>
             
-        var btnShowForm = document.getElementById('btnshowForm');
-        var btnCloseForm = document.getElementById('btnCloseForm');
-        var topCard = document.getElementById('topcard');
-
-        btnShowForm.addEventListener('click', () => {
-            topCard.style.display = 'block';
-
-             $('#btnSubmit').text("Set");
-              $('#changepasswordcard').attr('action', '/worker/Worker/WorkerChangePassword');
-        });
-
-        btnCloseForm.addEventListener('click', () => {
-            topCard.style.display = 'none';
-        });
-
-        // $('#btnShowForm').click(() => {
-            
-        //     $('#topcard').fadeIn();
-        //     // $('#btnShowForm').fadeIn();
-        //     $('#btnSubmit').text("Set");
-
-        //     $('#changepasswordcard').attr('action', '/worker/Worker/WorkerChangePassword');
-        // });
-
-        //  $('#btnCloseForm').click(() => {
-
-        //     $('#topcard').fadeOut();
-        // });
 
         $(document).ready(function () {
-        
+
+
+
             // Open modal when the button is clicked
             $('.btn-upload').on('click', function () {
                 $('#uploadImageModal').modal('show');
@@ -551,13 +597,13 @@
             });
 
             // Handle form submission via AJAX
-                  $('#imageUploadForm').on('submit', function (e) {
-            e.preventDefault();
+            $('#imageUploadForm').on('submit', function (e) {
+                    e.preventDefault();
 
-            var formData = new FormData();
-            const fileInput = document.getElementById('imageInput');
+                    var formData = new FormData();
+                    const fileInput = document.getElementById('imageInput');
 
-            // // Ensure file is selected
+                    // Ensure file is selected
                       if (!fileInput.files || fileInput.files.length === 0) {
                           // alert('You Have Not Selected Document File.');
 
@@ -573,54 +619,94 @@
                       }
 
 
-            // Add parameters
-            formData.append('WorkerId', $('#txtWorkerId').val());
+                // Add parameters
+                formData.append('WorkerId', $('#txtWorkerId').val());
 
-            formData.append('DocumentId', $('#txtDocumentId').val());
+                formData.append('DocumentId', $('#txtDocumentId').val());
                 formData.append('DocumentNumber', $('#txtDocumentNumber').val());
                 formData.append('DocumentImage', $('#documentImage').val());
 
 
-
-            // Debugging: Log FormData keys and values
-            for (let [key, value] of formData.entries()) {
-                console.log(key, value);
-            }
-
-            // Send AJAX request
-            $.ajax({
-                url: '/api/Worker/UploadDocument',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    console.log(response);
-                    if (response.success) {
-                        alert('Document uploaded successfully!');
-                        location.reload();
-                    } else {
-                        alert('Error: ' + response.message);
+                // Send AJAX request
+                $.ajax({
+                    url: '/api/Worker/UploadDocument',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        console.log(response);
+                        if (response.success) {
+                            alert('Document uploaded successfully!');
+                            location.reload();
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX Error Status:', status);
+                        console.error('AJAX Error Message:', error);
+                        console.error('AJAX Response Text:', xhr.responseText);
+                        alert('An error occurred while uploading the document.');
                     }
-                },
-                error: function (xhr, status, error) {
-                    console.error('AJAX Error Status:', status);
-                    console.error('AJAX Error Message:', error);
-                    console.error('AJAX Response Text:', xhr.responseText);
-                    alert('An error occurred while uploading the document.');
-                }
-            });
-            });
+                });
+        });
 
         });
-        // $('#btnShowForm').click(() => {
-        //     debugger;
-        //     $('#topcard').fadeIn();
-        //     // $('#btnShowForm').fadeIn();
-        //     $('#btnSubmit').text("Set");
 
-        //     $('#changepasswordcard').attr('action', '/worker/Worker/WorkerChangePassword');
-        // });
+
+            $('#btnSaveformWorkerShift').click(()=>{
+                
+                $('#formWorkerShift').submit();
+            })
+
+            function EditShift(){
+                $('#btnEditShift').addClass('d-none');
+                $('#card-workershift-form').removeClass('d-none');
+            }
+
+            function cancelShift(){
+                $('#btnEditShift').removeClass('d-none');
+                $('#card-workershift-form').addClass('d-none');
+            }
+
+            // Handle form submission via AJAX
+            $('#formWorkerShift').on('submit', function (e) {
+                    e.preventDefault();
+
+                    var formData = new FormData();
+
+                // Add parameters
+                formData.append('workerId', $('#txtWorkerId1').val());
+
+                formData.append('shiftId', $('#drpShiftId').val());
+
+                // Send AJAX request
+                $.ajax({
+                    url: '/api/Worker/ChangeWorkerShift',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        console.log(response);
+                        if (response.success) {
+                            alert('Shift updated successfully!');
+                            location.reload();
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX Error Status:', status);
+                        console.error('AJAX Error Message:', error);
+                        console.error('AJAX Response Text:', xhr.responseText);
+                        alert('An error occurred while updating shfit.');
+                    }
+                });
+        });
+
+
     </script>
 
 }

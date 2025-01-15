@@ -22,11 +22,18 @@ namespace OmSaiServices
 				//if (Attribute.IsDefined(property, typeof(IgnorePropertyAttribute)))
 				//	continue;
 
-				var columnValue = reader[property.Name];
+				//var columnValue = reader[property.Name];
+				//var columnValue = reader.GetSchemaTable()
+				//						.Rows
+				//						.Cast<DataRow>()
+				//						.FirstOrDefault(row => row["ColumnName"].ToString().Equals(property.Name, StringComparison.OrdinalIgnoreCase));
+
 
 				// Check if column value is not DBNull
-				if (columnValue != DBNull.Value)
+				if (!reader.IsDBNull(reader.GetOrdinal(property.Name))) // Check if the column value is not DBNull
 				{
+					var columnValue = reader[property.Name]; // Retrieve the actual column value
+
 					var propertyType = property.PropertyType;
 
 					// Handle Nullable types

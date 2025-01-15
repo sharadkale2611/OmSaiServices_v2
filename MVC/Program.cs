@@ -12,6 +12,7 @@ using LmsServices.Common;
 using OmSaiServices.Worker.Implementations;
 using OmSaiServices.Worker.Implimentation;
 using Microsoft.AspNetCore.Mvc;
+using GeneralTemplate.Filter;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -79,10 +80,18 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options => options.SignIn.Re
 builder.Services.AddScoped<UserManager<AppUser>>();
 builder.Services.AddScoped<RoleManager<IdentityRole>>();
 
+//builder.Services.AddControllersWithViews(options =>
+//{
+//	options.Filters.Add<WorkerAuthorizeFilter>();
+//}).AddRazorRuntimeCompilation();
 
 
+//builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+	options.FallbackPolicy = null; // Allow unauthenticated access by default
+});
 
-builder.Services.AddAuthorization();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
@@ -111,7 +120,6 @@ builder.Services.AddRazorPages()
 		options.Cookie.HttpOnly = true; // Security setting
 		options.Cookie.IsEssential = true; // GDPR compliance
 	});
-
 
 
 

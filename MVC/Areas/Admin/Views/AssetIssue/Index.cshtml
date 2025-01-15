@@ -1,0 +1,226 @@
+﻿@model OmSaiModels.Admin.AssetsIssuesModel
+@{
+    ViewData["Title"] = "AssetIssues";
+    Layout = "/Views/Shared/_Layout.cshtml";
+    ViewData["AreaName"] = "Admin";
+    ViewData["ControllerName"] = "AssetIssue";
+    int serialNumber = 0;
+}
+
+@section css {
+    <style>
+        .btnEdit:hover {
+            cursor: pointer;
+        }
+    </style>
+}
+
+<div class="app-content-header">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <!--begin::Row-->
+        <div class="row">
+            <div class="col-sm-6">
+                <h3 class="page-title">
+                    AssetIssues
+                    <button class="btn btn-sm btn-primary" id="btnShowForm">Add New</button>
+                </h3>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">Master</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        AssetIssues
+                    </li>
+                </ol>
+            </div>
+        </div> <!--end::Row-->
+    </div> <!--end::Container-->
+</div> <!--end::App Content Header--> <!--begin::App Content-->
+
+
+<div class="app-content">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <partial name="~/Views/shared/_alertpartial.cshtml" />
+        <div class="row">
+
+
+            <div class="col-lg-12 col-md-12 col-sm-12" id="leftCard">
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table card-table table-vcenter text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th class="w-1">No.</th>
+                                    <th>Worker Name</th>
+                                    <th>Asset Name</th>
+                                    <th>Issue By</th>
+                                    <th>Issue At</th>
+                                    <th>Remark</th>
+                                    <th>Is Returnable</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in ViewBag.assetsIssues)
+                                {
+                                    serialNumber++;
+                                    <tr class="align-middle">
+                                        <td>@serialNumber</td>
+                                        <td>@item.WorkerName</td>
+                                        <td>@item.AssetName</td>
+                                        <td>@item.IssueByName</td>
+                                        <td>@item.IssueAt</td>
+                                        <td>@item.Remark</td>
+                                        <td>
+                                            @if (item.IsReturnable == true)
+                                            {
+                                                <span class="status-icon bg-success"></span> <span>Yes Returnable</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="status-icon bg-danger"></span> <span>Not Returnable</span>
+                                            }
+                                        </td>
+
+                                        <td>
+                                            <nav class="nav justify-content-center flex-nowrap">
+                                                <a class="nav-link badge shadow m-1 text-warning btn btnEdit"
+                                                   data-id="@item.AssetIssueId"
+                                                   data-workerid="@item.WorkerId"
+                                                   data-assetid="@item.AssetId"
+                                                   data-remark="@item.Remark"
+                                                   data-is_returnable="@item.IsReturnable">
+
+                                                    <i class="fe fe-edit"></i> 
+                                                </a>
+                                                <a class="nav-link badge shadow m-1 text-danger btn btn-delete"
+                                                   data-delete_id="@item.AssetIssueId"
+                                                   data-delete_display="@item.WorkerName - @item.AssetName">
+                                                    <i class="fe fe-trash"></i> 
+                                                </a>
+                                            </nav>
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-4 col-sm-12" id="rightCard" style="display:none;">
+                <div class="card card-warning card-outline mb-4 mt-4">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <form id="AssetIssueIdForm" method="post" asp-area="Admin" asp-controller="AssetIssue" asp-action="Create" asp-antiforgery="true">
+                        <input type="hidden" asp-for="AssetIssueId" id="AssetIssueId" />
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label asp-for="WorkerId" class="col-form-label">Worker</label>
+                                <select asp-for="WorkerId" class="form-control">
+                                    <option value="">Select Worker</option>
+                                    @foreach (var worker in ViewBag.workers)
+                                    {
+                                        <option value="@worker.WorkerId">@worker.FirstName @worker.MiddleName @worker.LastName </option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="AssetId" class="col-form-label">Asset Name </label>
+                                <select asp-for="AssetId" class="form-control">
+                                    <option value="">Select Assets</option>
+                                    @foreach (var asset in ViewBag.assets)
+                                    {
+                                        <option value="@asset.AssetId">@asset.AssetName</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Remark" class="col-form-label">Remark</label>
+                                <input type="text" class="form-control" asp-for="Remark" placeholder="Remark" required>
+                            </div>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" asp-for="IsReturnable" type="checkbox" id="IsReturnableT" value="true" >
+                                <label class="form-check-label" for="IsReturnableT">Yes Returnable</label>
+
+                            </div>
+                        </div>
+                        <div class="card-footer text-center">
+                            <button type="submit" class="btn btn-outline-warning" id="btnSubmit">Save</button>
+                            <button type="button" class="btn btn-outline-danger" id="btnCloseForm">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+@section modals {
+    <partial name="~/Views/shared/_DeleteModelPartial.cshtml" />
+}
+
+@section Scripts {
+    <script>
+        $('#btnShowForm').click(() => {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Save");
+
+            $('#AssetIssueIdForm').attr('action', '/admin/AssetIssue/Create');
+            $('#AssetIssueId').val("");
+        });
+
+        $('#btnCloseForm').click(() => {
+            $('#leftCard').addClass("col-lg-12 col-md-12").removeClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeOut();
+            $('#btnShowForm').fadeIn();
+        });
+
+        $('.btnEdit').click(function () {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Update");
+
+            let data = $(this).data();
+           
+            if (data.status == "False") {
+                $('#Status').prop('checked', false);
+            } else {
+                $('#Status').prop('checked', true);
+            }
+
+
+            $('#AssetIssueId').val(data.id);
+            $('#WorkerId').val(data.workerid);
+            $('#AssetId').val(data.assetid);
+            $('#Remark').val(data.remark);
+            if(data.is_returnable == 'True'){
+                $('#IsReturnableT').prop('checked',true);
+            }else{
+                $('#IsReturnableT').prop('checked',false);
+            }
+
+            $('#AssetIssueIdForm').attr('action', '/admin/AssetIssue/Edit');
+        });
+
+        // $('.btn-delete').click(function () {
+        //     $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+        //     $('#rightCard').fadeIn();
+        //     $('#btnShowForm').fadeOut();
+        //     $('#btnSubmit').text("Delete");
+
+        //     let data = $(this).data();
+        //     $('#AssetIssueId').val(data.delete_id);
+        //     $('#AssetIssueIdForm').attr('action', '/admin/AssetIssue/Delete');
+        // });
+    </script>
+}

@@ -53,9 +53,16 @@ namespace OmSaiModels.Worker
 		public bool? Status { get; set; } = false;
 
 		public string? Password { get; set; }
+		//public int? WorkerMobileNumberId1 { get; set; }
+		//public int? WorkerMobileNumberId2 { get; set; }
+		//public int? WorkerAddressId1 { get; set; }
+		//public int? WorkerAddressId2 { get; set; }
+		
+
+		List<DepartmentModel> list { get; set; }
 
 
-        List<DepartmentModel> list { get; set; }
+
 	}
 
 
@@ -65,6 +72,8 @@ namespace OmSaiModels.Worker
 		public string Password { get; set; }
 
 	}
+
+
 
 
 }

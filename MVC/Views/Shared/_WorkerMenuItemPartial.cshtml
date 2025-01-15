@@ -1,0 +1,27 @@
+﻿<div class="header collapse d-lg-flex p-0" id="headerMenuCollapse">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg order-lg-first">
+                <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
+
+                    <li class="nav-item">
+                        <a asp-area="worker" asp-controller="WorkerAuthentication" asp-action="Profile" class="nav-link"><i class="fe fe-user"></i>Profile</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a asp-area="worker" asp-controller="WorkerAuthentication" asp-action="Attendance" class="nav-link"><i class="fe fe-clock"></i>Attendance</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a asp-area="worker" asp-controller="WorkerAuthentication" asp-action="LeaveRequest" class="nav-link"><i class="fe fe-calendar"></i>Leave Request</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a asp-area="worker" asp-controller="worker" asp-action="ProfilePrint" asp-route-id="1" target="_blank" class="nav-link"><i class="fe fe-printer"></i>Print Profile</a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

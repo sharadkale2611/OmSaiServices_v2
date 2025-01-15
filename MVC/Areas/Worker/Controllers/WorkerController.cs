@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using OmSaiModels.Admin;
 using OmSaiModels.Worker;
 using OmSaiServices.Admin.Implementations;
@@ -24,6 +26,8 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 		private readonly WorkerDocumentService _workerDocumentService;
 		private readonly WorkerMobileNumbersService _workerMobileNumbersService;
 		private readonly WorkerAddressService _workerAddressService;
+		private readonly SiteShiftService _siteShiftService;
+		private readonly WorkerShiftService _workerShiftService;
 
 		public WorkerController()
 		{
@@ -38,8 +42,11 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			_attendanceService = new WorkerAttendanceService();
 			_workerDocumentService = new WorkerDocumentService();
 			_workerAddressService = new WorkerAddressService();
-
+			_siteShiftService = new SiteShiftService();
+			_workerShiftService = new WorkerShiftService();
 		}
+
+
 		public IActionResult Index()
 		{
 			ViewBag.AllData = _workerService.GetAll();
@@ -53,19 +60,68 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 
 		public IActionResult Profile(int id)
 		{
-			ViewBag.AllData = _workerService.GetProfileById(id, null);
-			if(ViewBag.AllData == null)
+			var worker = _workerService.GetProfileById(id, null);
+			ViewBag.AllData = worker;
+			if (ViewBag.AllData == null)
 			{
 				return RedirectToAction(nameof(Index));// nameof checks method compiletime to avoid errors
 			}
-			ViewBag.AttendanceHistory = _attendanceService.GetAll(id);
+			ViewBag.AttendanceHistory = _attendanceService.GetAll(id, null, null, null,10);
 			ViewBag.WorkerDocuments = _workerDocumentService.GetAll(id);
 			ViewBag.Addresses = _workerAddressService.GetByWorkerId(id);
+			ViewBag.SiteShifts = _siteShiftService.GetBySiteId(worker.SiteId);
 
 			var workerId = HttpContext.Session.GetInt32("WorkerId");
 			
 
 			return View();
+		}
+
+
+		[HttpPost]
+		[Route("api/Worker/ChangeWorkerShift")]
+		public IActionResult ChangeWorkerShift(int workerId=0, int shiftId=0)
+		{
+			try
+			{
+				// Validate the input data
+				if (workerId == 0 || shiftId == 0 )
+				{
+
+					return Ok(new
+					{
+						Success = false,
+						Message = "Invalid request data."
+					});
+
+				}
+
+				WorkerShiftModel workerShiftModel = new WorkerShiftModel
+				{
+					WorkerId = workerId,
+					SiteShiftId = shiftId
+				};
+				// Attempt to change the password using the service method
+				var result = _workerShiftService.Create(workerShiftModel);
+
+				return Ok(new
+				{
+					Success = true,
+					Message = "record updated successfully.",
+					Data = result
+				});
+			}
+			catch (Exception ex)
+			{
+
+				return Ok(new
+				{
+					Success = false,
+					Message = ex.Message
+				});
+			}
+
+
 		}
 
 
@@ -237,10 +293,10 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 					};
 					_workerMobileNumbersService.Create(workerMobileNumbersModel);
 
-					if(MobileNumber2 == "")
-					{
-						MobileNumber2 = MobileNumber;
-					}
+					//if(MobileNumber2 == "")
+					//{
+					//	MobileNumber2 = MobileNumber;
+					//}
 					WorkerMobileNumbersModel workerMobileNumbersModel_2 = new WorkerMobileNumbersModel
 					{
 						WorkerId = lastWorkerId,
@@ -248,8 +304,8 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 					};
 					_workerMobileNumbersService.Create(workerMobileNumbersModel_2);
 
-					if (Address1 != "" && Address1 != null)
-					{
+					//if (Address1 != "" && Address1 != null)
+					//{
 						WorkerAddressModel workerAddressModel_1 = new WorkerAddressModel
 						{
 							WorkerId = lastWorkerId,
@@ -258,10 +314,10 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 						};
 						_workerAddressService.Create(workerAddressModel_1);
 
-					}
+					//}
 
-					if (Address2 != "" && Address2 != null)
-					{
+					//if (Address2 != "" && Address2 != null)
+					//{
 						WorkerAddressModel workerAddressModel_2 = new WorkerAddressModel
 						{
 							WorkerId = lastWorkerId,
@@ -269,7 +325,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 							Address = Address2
 						};
 						_workerAddressService.Create(workerAddressModel_2);
-					}
+					//}
 
 					var documentIds = new List<int> { 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 11 };
 
@@ -331,21 +387,43 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			ViewBag.Addresses = _workerAddressService.GetByWorkerId(id);
 			ViewBag.MobilesNumbers = _workerMobileNumbersService.GetByWorkerId(id);
 
-			return View(p);
+			return View("Edit",p);
 		}
 
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public IActionResult Edit(WorkerModel model, int ProjectId, int SiteId, int QualificationId, string MobileNumber, bool Status, int WorkerMobileNumberId1, int WorkerMobileNumberId2, int WorkerAddressId1, int WorkerAddressId2, string? MobileNumber2 = "", string? Address1 = "", string? Address2 = "")
+		public IActionResult Edit([FromForm] WorkerModel model, int ProjectId, int SiteId, int QualificationId, string MobileNumber, bool Status,  int WorkerMobileNumberId1,  int WorkerMobileNumberId2,  int WorkerAddressId1,  int WorkerAddressId2, string? MobileNumber2 = "", string? Address1 = "", string? Address2 = "")
 		{
+			// Remove parameters you don't want validated
+			ModelState.Remove("WorkerMobileNumberId1");
+			ModelState.Remove("WorkerMobileNumberId2");
+			ModelState.Remove("WorkerAddressId1");
+			ModelState.Remove("WorkerAddressId2");
+			ModelState.Remove("MobileNumber1");
+			ModelState.Remove("Address1");
+			ModelState.Remove("Address2");
+			
+
 			try
 			{
+
+				// masters
+				ViewBag.Department = _departmentService.GetAll();
+				ViewBag.Sites = _siteService.GetAll();
+				ViewBag.Projects = _projectService.GetAll();
+				ViewBag.Qualifications = _qualificationService.GetAll();
+
 				if (!model.WorkerId.HasValue)
 				{
 					TempData["error"] = "WorkerId is required for updating.";
 					return View(model);
 				}
+				var worker = _workerService.GetProfileById(model.WorkerId, null);
+				ViewBag.Worker = worker;
+
+				ViewBag.Addresses = _workerAddressService.GetByWorkerId(model.WorkerId??0);
+				ViewBag.MobilesNumbers = _workerMobileNumbersService.GetByWorkerId(model.WorkerId??0);
 
 				if (ModelState.IsValid)
 				{
@@ -376,7 +454,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 						WorkerId = model.WorkerId ?? 0,
 						QualificationId = QualificationId
 					};
-					_workerQualificationService.Create(workerQualificationModel);
+					_workerQualificationService.Update(workerQualificationModel);
 
 
 					if (workerQualification != null)
@@ -482,7 +560,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			}
 			try
 			{
-				var result = _workerService.ChangePassword(model.WorkerId, model.oldPassword, model.NewPassword);
+				var result = _workerService.ChangePassword(model.WorkerId, model.OldPassword, model.NewPassword);
 
 				if (!result)
 				{

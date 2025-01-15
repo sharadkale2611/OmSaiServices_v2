@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using GeneralTemplate.Filter;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using OmSaiModels.Worker;
@@ -10,7 +12,9 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace GeneralTemplate.Areas.Worker.Controllers
 {
     [Area("Worker")]
-    public class WorkerAuthenticationController : Controller
+	[Route("Worker/auth")]
+
+	public class WorkerAuthenticationController : Controller
     {
 
 		private readonly LeaveRequestService _leaveRequestService;
@@ -31,6 +35,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			_workerAddressService = new WorkerAddressService();
 
 		}
+		[HttpGet("Index")]
 		public IActionResult Index()
         {
 			var workerName = HttpContext.Session.GetString("WorkerName");
@@ -38,11 +43,17 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			{
 				return RedirectToAction("Profile");
 			}
+			else
+			{
+				return RedirectToAction("Login");
 
-			ViewBag.IsSignedIn = false;
-			return View();
+			}
+
         }
 
+
+		[HttpGet("Login")]
+		[WorkerGuestFilter]
         public IActionResult Login()
         {
 			var workerName = HttpContext.Session.GetString("WorkerName");
@@ -54,8 +65,10 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			return View();
         }
 
-        [HttpPost]
-        public IActionResult Login(string WorkmanId, string Password)
+        [HttpPost("Login")]
+		[WorkerGuestFilter]
+
+		public IActionResult Login(string WorkmanId, string Password)
         {
             // Validate WorkmanId and Password
             var worker = _workerService
@@ -76,64 +89,77 @@ namespace GeneralTemplate.Areas.Worker.Controllers
             return View();
         }
 
-		//public IActionResult ChangePassword()
-		//{
-		//	var workerId = HttpContext.Session.GetInt32("WorkerId");
-		//	{
-		//		return View();
-		//	}
-
-		//}
-
-		//[HttpPost]
-		////[ValidateAntiForgeryToken]
-		//public IActionResult ChangePassword(WorkerChangePasswordModel model)
-		//{
-		//	var workerId = HttpContext.Session.GetInt32("WorkerId");
-
-		//	if (!ModelState.IsValid)
-		//	{
-
-		//		var errorMessages = new List<string>();
-		//		foreach (var state in ModelState)
-		//		{
-		//			foreach (var error in state.Value.Errors)
-		//			{
-		//				errorMessages.Add(error.ErrorMessage);
-		//			}
-		//		}
-		//		TempData["errors"] = errorMessages;
-
-		//	}
-
-		//	var result = _workerService.ChangePassword(workerId.Value, model.oldPassword, model.NewPassword);
-
-		//	if (!result)
-		//	{
-		//		ModelState.AddModelError(string.Empty, "Old password is incorrect.");
-
-		//		var errorMessages = new List<string>();
-		//		foreach (var state in ModelState)
-		//		{
-		//			foreach (var error in state.Value.Errors)
-		//			{
-		//				errorMessages.Add(error.ErrorMessage);
-		//			}
-		//		}
-		//		TempData["errors"] = errorMessages;
-		//		return View(model);
-		//	}
-
-		//	//HttpContext.Session.Clear();
-		//	TempData["success"] = "Your password has been changed successfully. Please log in with your new password.";
-		//	return View();
-		//}
+		[HttpGet("ChangePassword")]
+		[WorkerAuthorizeFilter]
+		public IActionResult ChangePassword()
+		{
+			var workerId = HttpContext.Session.GetInt32("WorkerId");
+			{
+				return View();
+			}
+		}
 
 
+		[HttpPost("ChangePassword")]
+		[WorkerAuthorizeFilter]
+		//[ValidateAntiForgeryToken]
+		public IActionResult ChangePassword(WorkerChangePasswordModel model)
+		{
+			var workerId = HttpContext.Session.GetInt32("WorkerId");
 
+			if (!ModelState.IsValid)
+			{
 
+				var errorMessages = new List<string>();
+				foreach (var state in ModelState)
+				{
+					foreach (var error in state.Value.Errors)
+					{
+						errorMessages.Add(error.ErrorMessage);
+					}
+				}
+				TempData["errors"] = errorMessages;
+
+			}
+			try
+			{
+
+				var result = _workerService.ChangePassword(workerId.Value, model.OldPassword, model.NewPassword);
+
+				if (!result)
+				{
+					//ModelState.AddModelError(string.Empty, "Old password is incorrect.");
+
+					var errorMessages = new List<string>();
+					foreach (var state in ModelState)
+					{
+						foreach (var error in state.Value.Errors)
+						{
+							errorMessages.Add(error.ErrorMessage);
+						}
+					}
+					TempData["errors"] = errorMessages;
+					return View(model);
+				}
+
+				HttpContext.Session.Clear();
+				TempData["success"] = "Your password has been changed successfully. Please log in with your new password.";
+				return RedirectToAction("Login");
+			}
+			catch (Exception ex)
+			{
+				TempData["errors"] = null;
+				TempData["error"] = ex.Message;
+				return View();
+			}
+
+		}
+
+		[HttpGet("LeaveRequest")]
+		[WorkerAuthorizeFilter]
 		public IActionResult LeaveRequest()
 		{
+
 			// Check Session for WorkerName
 			var workerName = HttpContext.Session.GetString("WorkerName");
 			var workerId = HttpContext.Session.GetInt32("WorkerId");
@@ -142,6 +168,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 				return RedirectToAction("Login");
 			}
 
+			ViewBag.WorkerName = workerName;
 			ViewBag.WorkerId = workerId;
 			ViewBag.AllData = _leaveRequestService.GetAllByWorkerId(ViewBag.WorkerId);
 			ViewBag.LeaveType = _leaveTypeservice.GetAll();
@@ -152,10 +179,18 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			return View();
 		}
 
-		[HttpPost]
+		[HttpPost("LeaveRequest")]
 		[ValidateAntiForgeryToken]
+		[WorkerAuthorizeFilter]
 		public IActionResult LeaveRequest(LeaveRequestModel model)
 		{
+
+			var workerName = HttpContext.Session.GetString("WorkerName");
+			var workerId = HttpContext.Session.GetInt32("WorkerId");
+
+			ViewBag.WorkerName = workerName;
+			ViewBag.WorkerId = workerId;
+
 			//var result =  _leaveRequestService.Create(model);			
 			//return RedirectToAction(nameof(Index));
 			try
@@ -189,9 +224,9 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			}
 		}
 
-		[HttpPost]
+		[HttpPost("LeaveRequestEdit")]
 		[ValidateAntiForgeryToken]
-
+		[WorkerAuthorizeFilter]
 		public IActionResult LeaveRequestEdit(LeaveRequestModel model)
 		{
 			try
@@ -225,8 +260,9 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 		}
 
 
-		[HttpPost]
+		[HttpPost("LeaveRequestDelete")]
 		[ValidateAntiForgeryToken]
+		[WorkerAuthorizeFilter]
 		public IActionResult LeaveRequestDelete(int id)
 		{
 			_leaveRequestService.Delete(id);
@@ -236,8 +272,9 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 		}
 
 
-		[HttpPost]
+		[HttpPost("Create")]
 		[ValidateAntiForgeryToken]
+		[WorkerAuthorizeFilter]
 		public IActionResult Create(LeaveRequestModel model)
 		{
 			//var result =  _leaveRequestService.Create(model);			
@@ -273,6 +310,8 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			}
 		}
 
+		[HttpGet("Attendance")]
+		[WorkerAuthorizeFilter]
 		public IActionResult Attendance()
 		{
 			var WorkmanId = HttpContext.Session.GetString("WorkmanId");
@@ -298,13 +337,19 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			return View();
 		}
 
-
+		[HttpGet("Error")]
 		public IActionResult Error(string id)
 		{
 			ViewBag.WorkerId = id;
+			if (id == null)
+			{
+				return RedirectToAction("Index");
+			}
 			return View();
 		}
 
+		[HttpGet("Profile")]
+		[WorkerAuthorizeFilter]
 		public IActionResult Profile()
         {
             // Check Session for WorkerName
@@ -332,9 +377,9 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			return View();
         }
 
-		
-	
 
+		[HttpGet("Logout")]
+		[WorkerAuthorizeFilter]
 		public IActionResult Logout()
         {
             // Clear all session data

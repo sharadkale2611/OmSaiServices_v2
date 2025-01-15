@@ -55,6 +55,17 @@ namespace OmSaiServices.Admin.Implementations
 			return GetAll(sp_r, mapEntity, GetParams());
 		}
 
+		public List<SiteShiftModel> GetBySiteId(int id)
+		{
+
+			// Define the mapping function
+			var mapEntity = new Func<IDataReader, SiteShiftModel>(reader => _mapper.MapEntity<SiteShiftModel>(reader));
+
+			return GetAll(sp_r, mapEntity, GetParams(null, id));
+		}
+
+
+
 		public SiteShiftModel GetById(int id)
 		{
 			// Define the mapping function

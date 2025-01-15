@@ -32,6 +32,9 @@ namespace OmSaiModels.Worker
 
 
 		public int? VerifyBy { get; set; }
+		public string? InOutType { get; set; }
+
+		public string Status { get; set; }
 
 		//public DateTime? InTime { get; set; }
 
@@ -90,4 +93,4 @@ namespace OmSaiModels.Worker
 	}
 
 
-	}
+}
