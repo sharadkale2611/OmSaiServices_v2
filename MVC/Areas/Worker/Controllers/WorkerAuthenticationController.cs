@@ -76,61 +76,59 @@ namespace GeneralTemplate.Areas.Worker.Controllers
             return View();
         }
 
-		public IActionResult ChangePassword()
-		{
-			var workerId = HttpContext.Session.GetInt32("WorkerId");
-			{
-				return View();
-			}
+		//public IActionResult ChangePassword()
+		//{
+		//	var workerId = HttpContext.Session.GetInt32("WorkerId");
+		//	{
+		//		return View();
+		//	}
 
-		}
+		//}
 
-	
+		//[HttpPost]
+		////[ValidateAntiForgeryToken]
+		//public IActionResult ChangePassword(WorkerChangePasswordModel model)
+		//{
+		//	var workerId = HttpContext.Session.GetInt32("WorkerId");
 
-		[HttpPost]
-		//[ValidateAntiForgeryToken]
-		public IActionResult ChangePassword(WorkerChangePasswordModel model)
-		{
-			var workerId = HttpContext.Session.GetInt32("WorkerId");
+		//	if (!ModelState.IsValid)
+		//	{
 
-			if (!ModelState.IsValid)
-			{
+		//		var errorMessages = new List<string>();
+		//		foreach (var state in ModelState)
+		//		{
+		//			foreach (var error in state.Value.Errors)
+		//			{
+		//				errorMessages.Add(error.ErrorMessage);
+		//			}
+		//		}
+		//		TempData["errors"] = errorMessages;
 
-				var errorMessages = new List<string>();
-				foreach (var state in ModelState)
-				{
-					foreach (var error in state.Value.Errors)
-					{
-						errorMessages.Add(error.ErrorMessage);
-					}
-				}
-				TempData["errors"] = errorMessages;
+		//	}
 
-			}
-			
-			var result = _workerService.ChangePassword(workerId.Value, model.OldPassword, model.NewPassword);
+		//	var result = _workerService.ChangePassword(workerId.Value, model.oldPassword, model.NewPassword);
 
-			if (!result)
-			{
-				ModelState.AddModelError(string.Empty, "Old password is incorrect.");
+		//	if (!result)
+		//	{
+		//		ModelState.AddModelError(string.Empty, "Old password is incorrect.");
 
-				var errorMessages = new List<string>();
-				foreach (var state in ModelState)
-				{
-					foreach (var error in state.Value.Errors)
-					{
-						errorMessages.Add(error.ErrorMessage);
-					}
-				}
-				TempData["errors"] = errorMessages;
-				return View(model);
-			}
+		//		var errorMessages = new List<string>();
+		//		foreach (var state in ModelState)
+		//		{
+		//			foreach (var error in state.Value.Errors)
+		//			{
+		//				errorMessages.Add(error.ErrorMessage);
+		//			}
+		//		}
+		//		TempData["errors"] = errorMessages;
+		//		return View(model);
+		//	}
 
-			//HttpContext.Session.Clear();
-			TempData["success"] = "Your password has been changed successfully. Please log in with your new password.";
-			return View();
-		}
-		
+		//	//HttpContext.Session.Clear();
+		//	TempData["success"] = "Your password has been changed successfully. Please log in with your new password.";
+		//	return View();
+		//}
+
 
 
 

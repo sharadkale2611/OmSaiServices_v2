@@ -10,8 +10,9 @@ namespace OmSaiModels.Worker
 	public class WorkerChangePasswordModel
 	{
 		[Key]
+		public int WorkerId { get; set; }
 		[Required(ErrorMessage = "Please enter existing password")]
-		public string OldPassword { get; set; }
+		public string oldPassword { get; set; }
 		[Required(ErrorMessage = "Please enter new password")]
 
 		public string NewPassword { get; set; }
