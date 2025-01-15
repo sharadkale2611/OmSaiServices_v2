@@ -5,6 +5,7 @@ using OmSaiServices.Worker.Implementations;
 using OmSaiServices.Worker.Implimentation;
 using LmsServices.Common;
 using Microsoft.AspNetCore.Http;
+using OmSaiServices.Admin.Interfaces;
 
 namespace GeneralTemplate.Areas.Worker.Controllers
 {
@@ -14,22 +15,160 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 		private readonly WorkerService _workerService;
 		private readonly WorkerAttendanceService _attendanceService;
 		private readonly MultiMediaService _mms;
+		private readonly SiteService _siteService;
+		private readonly SiteShiftService _siteShiftService;
+
+
 		public AttendanceController()
 		{
 			_workerService = new WorkerService();
 			_attendanceService = new WorkerAttendanceService();
 			_mms = new MultiMediaService();
+			_siteService = new SiteService();
+			_siteShiftService = new SiteShiftService();
+
 		}
 
 		public IActionResult Index()
 		{
-
 			ViewBag.AttendanceHistory = _attendanceService.GetAll();
+			return View();
+		}
+
+		[HttpGet]
+		[Route("api/Worker/SiteShiftJson/{siteId}")]
+		public IActionResult SiteShiftJson(int siteId)
+		{
+			var result = _siteShiftService.GetBySiteId(siteId); // Fetch data
+			if (result == null)
+			{
+				return Json(new { success = false, message = "No data found." });
+			}
+			return Json(new { success = true, data = result });
+		}
+
+		[HttpPost]
+		public IActionResult CreateLedger(int? SiteId, int? SiteShiftId, int? Year, int? Month)
+		{
+			ViewData["success"] = "Ledger updated successfully!";
+			_attendanceService.CreateLedger(SiteId, SiteShiftId, Year, Month);
+			return RedirectToAction("Ledger");
+		}
+
+		public IActionResult LedgerNew(LedgerViewModel model, string? hasAllLedger = "yes")
+		{
+			ViewBag.Sites = _siteService.GetAll();
+
+			if (ModelState.IsValid || hasAllLedger == "yes")
+			{
+				ViewBag.ShowData = true;
+
+				// Set default or provided values for the filters
+				ViewBag.Month = model.Month;
+				ViewBag.MonthName = model.Month >= 1 && model.Month <= 12
+									? new DateTime(1, model.Month, 1).ToString("MMM")
+									: "---";
+
+				ViewBag.Year = model.Year.ToString();
+				ViewBag.SiteId = model.SiteId;
+				ViewBag.SiteShiftId = model.SiteShiftId;
+
+				// Call the service with appropriate parameters
+				var allData = (hasAllLedger == "yes")
+					? _attendanceService.GetLedger() // Retrieve all records
+					: _attendanceService.GetLedger(null, model.SiteId, model.SiteShiftId, model.Year, model.Month);
+
+				// Handle scenarios when no data is found
+				if (allData != null && allData.Count > 0)
+				{
+					ViewBag.AllData = allData;
+					ViewBag.SiteName = model.SiteId != 0 ? allData[0].SiteName : "All Sites";
+				}
+				else
+				{
+					ViewBag.AllData = new List<dynamic>(); // Use an empty list to prevent null reference errors
+					ViewBag.SiteName = "No Data Available";
+				}
+			}
+			else
+			{
+				ViewBag.ShowData = false;
+			}
 
 			return View();
 		}
 
 
+
+
+		public IActionResult Ledger(LedgerViewModel model, string? hasAllLedger="yes")
+		{
+			if(hasAllLedger == "yes")
+			{
+				ViewBag.Sites = _siteService.GetAll();
+
+				ViewBag.ShowData = true;
+				ViewBag.Month = null;
+				ViewBag.MonthName = "---";
+				ViewBag.Year = null;
+				ViewBag.SiteId = null;
+				ViewBag.SiteShiftId = null;
+				var allData = _attendanceService.GetLedger(null, null, null, null, null);
+				// Handle scenarios when no data is found
+				if (allData != null && allData.Count > 0)
+				{
+					ViewBag.AllData = allData;
+					ViewBag.SiteName = "All Sites";
+				}
+				else
+				{
+					ViewBag.AllData = new List<dynamic>(); // Use an empty list to prevent null reference errors
+					ViewBag.SiteName = "No Data Available";
+				}
+
+				return View();
+
+			}
+			ViewBag.Sites = _siteService.GetAll();
+
+			if (ModelState.IsValid)
+			{
+				ViewBag.ShowData = true;
+
+				ViewBag.Month = model.Month;
+
+				ViewBag.MonthName = model.Month >= 1 && model.Month <= 12
+								? new DateTime(1, model.Month, 1).ToString("MMM")
+								: "---";
+
+				ViewBag.Year = model.Year.ToString();
+				ViewBag.SiteId = model.SiteId;
+				ViewBag.SiteShiftId = model.SiteShiftId;
+
+				var allData = _attendanceService.GetLedger(null, model.SiteId, model.SiteShiftId, model.Year, model.Month);
+				// Handle scenarios when no data is found
+				if (allData != null && allData.Count > 0)
+				{
+					ViewBag.AllData = allData;
+					ViewBag.SiteName = model.SiteId != null ? allData[0].SiteName : "All Sites";
+				}
+				else
+				{
+					ViewBag.AllData = new List<dynamic>(); // Use an empty list to prevent null reference errors
+					ViewBag.SiteName = "No Data Available";
+				}
+
+			}
+			else
+			{
+				ViewBag.ShowData = false;
+			}
+
+			return View();
+		}
+
+
+		
 
 		public (string statusCode, string remark) ValidateAttendance(WorkerProfileModel worker, int graceTimeIn, int halfDayIn, int graceTimeOut, int halfDayOut, string InOutType)
 		{
@@ -98,11 +237,8 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 				statusCode = "shift-not-set";
 				remark = "Sorry! your shift not set, please contact to HR.";  // shift-not-set
 			}
-
 			return (statusCode, remark);
-
 		}
-
 
 
 		public IActionResult Create(string workmanId)
@@ -115,7 +251,6 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 				ViewData["Errpr"] = "Invalid WorkerId";
 				return RedirectToAction(nameof(Error));
 			}
-
 
 			int GraceTime = 10;     // In minutes
 			int halfDayIn = 60;     // In minutes

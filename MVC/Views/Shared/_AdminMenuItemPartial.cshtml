@@ -52,7 +52,11 @@
                     </li>
 
                     <li class="nav-item">
-                        <a asp-area="worker" asp-controller="Attendance" asp-action="Index" class="nav-link"><i class="fe fe-clock"></i>Attendance</a>
+                        <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-clock"></i> Attendance <i class="fe fe-chevron-down"></i></a>
+                        <div class="dropdown-menu dropdown-menu-arrow">
+                            <a asp-area="worker" asp-controller="Attendance" asp-action="Index" class="dropdown-item "> <i class="fe fe-users"></i> Attendance Log</a>
+                            <a asp-area="worker" asp-controller="Attendance" asp-action="Ledger" class="dropdown-item "> <i class="fe fe-file-text"></i> Attendance Ledger</a>
+                        </div>
                     </li>
 
                     @* <li class="nav-item"> *@
