@@ -11,6 +11,6 @@ namespace OmSaiServices.Worker.Interfaces
     public  interface IWorkerAddressService:IRepository<WorkerAddressModel>
     {
 		public List<WorkerAddressModel> GetByWorkerId(int id);
-
-	}
+       
+    }
 }

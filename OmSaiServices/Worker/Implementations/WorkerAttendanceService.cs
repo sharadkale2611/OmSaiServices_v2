@@ -52,7 +52,30 @@ namespace OmSaiServices.Worker.Implementations
 
 			return QueryService.Query("usp_GetAttendanceData", mapEntity, parameters);
 		}
+      //new method create
+        public WorkerAttendanceSummaryModel GetAttendanceSummary(int workerId, string attendanceMonth = null)
+    {
+        // Set the default attendance month to the current month if not provided
+        attendanceMonth ??= DateTime.Now.ToString("MMMM");
+
+        
+        var mapEntity = new Func<IDataReader, WorkerAttendanceSummaryModel>(reader => _mapper.MapEntity<WorkerAttendanceSummaryModel>(reader));
+
+        
+        var parameters = new[]
+        {
+            new SqlParameter("@WorkerId", workerId),
+            new SqlParameter("@AttendanceMonth", attendanceMonth)
+        };
+
+       
+        var result = QueryService.Query("usp_WorkerAttendanceSummary", mapEntity, parameters);
+
+        // If there is any result, return the first item, otherwise return a default WorkerAttendanceSummaryModel
+        return result.Count > 0 ? result[0] : new WorkerAttendanceSummaryModel();
+    }
 
 
-	}
+
+    }
 }

@@ -11,5 +11,6 @@ namespace OmSaiServices.Worker.Interfaces
 	{
 		public void ManageAttendance(WorkerAttendanceModel model);
 		public List<WorkerAttendanceViewModel> GetAll(int? WorkerId, int? SiteId, DateOnly? CurrentDate);
-	}
+        public WorkerAttendanceSummaryModel GetAttendanceSummary(int workerId, string attendanceMonth = null);
+    }
 }

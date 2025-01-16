@@ -51,22 +51,72 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			return View();
 		}
 
-		public IActionResult Profile(int id)
-		{
-			ViewBag.AllData = _workerService.GetProfileById(id, null);
-			if(ViewBag.AllData == null)
-			{
-				return RedirectToAction(nameof(Index));// nameof checks method compiletime to avoid errors
-			}
-			ViewBag.AttendanceHistory = _attendanceService.GetAll(id);
-			ViewBag.WorkerDocuments = _workerDocumentService.GetAll(id);
-			ViewBag.Addresses = _workerAddressService.GetByWorkerId(id);
-
-			return View();
-		}
 
 
-		public IActionResult ProfilePrint(int id)
+        //public IActionResult Profile(int id)
+        //{
+        //	ViewBag.AllData = _workerService.GetProfileById(id, null);
+        //	if (ViewBag.AllData == null)
+        //	{
+        //		return RedirectToAction(nameof(Index));// nameof checks method compiletime to avoid errors
+        //	}
+        //	ViewBag.AttendanceHistory = _attendanceService.GetAll(id);
+        //	ViewBag.WorkerDocuments = _workerDocumentService.GetAll(id);
+        //	ViewBag.Addresses = _workerAddressService.GetByWorkerId(id);
+
+        //	return View();
+
+        //}
+        public IActionResult Profile(int id, string attendanceMonth = null)
+        {
+            var workerProfile = _workerService.GetProfileById(id, null);
+
+            if (workerProfile == null)
+            {
+                return RedirectToAction(nameof(Index)); 
+            }
+
+            
+            attendanceMonth ??= DateTime.Now.ToString("MMMM");
+
+           
+            var attendanceSummary = _attendanceService.GetAttendanceSummary(id, attendanceMonth);
+
+            
+            var attendanceHistory = _attendanceService.GetAll(id);
+            var workerDocuments = _workerDocumentService.GetAll(id);
+            var workerAddresses = _workerAddressService.GetByWorkerId(id);
+
+            // Check if the request is AJAX (XHR Request)
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                
+                return Json(new
+                {
+                    presentCount = attendanceSummary.PresentCount,
+                    absentCount = attendanceSummary.AbsentCount,
+                    leaveCount = attendanceSummary.LeaveCount,
+                    missCount = attendanceSummary.MissCount
+                });
+            }
+
+           
+            ViewBag.AllData = workerProfile;
+            ViewBag.AttendanceMonth = attendanceMonth;
+            ViewBag.PresentCount = attendanceSummary.PresentCount;
+            ViewBag.AbsentCount = attendanceSummary.AbsentCount;
+            ViewBag.LeaveCount = attendanceSummary.LeaveCount;
+            ViewBag.MissCount = attendanceSummary.MissCount;
+            ViewBag.AttendanceHistory = attendanceHistory;
+            ViewBag.WorkerDocuments = workerDocuments;
+            ViewBag.Addresses = workerAddresses;
+
+            return View();
+        }
+
+
+
+        public IActionResult ProfilePrint(int id)
 		{
 			ViewBag.AllData = _workerService.GetProfileById(id, null);
 			if (ViewBag.AllData == null)
@@ -115,8 +165,113 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 				});
 			}
 		}
+        //[HttpPost]
+        //[Route("api/Worker/UploadProfileImage")]
+        //public IActionResult UploadProfileImage([FromForm] IFormFile file, [FromForm] int workerId, [FromForm] string? profileImage = "")
+        //{
+        //    if (file == null || workerId <= 0)
+        //    {
+        //        return BadRequest(new { success = false, message = "Invalid input parameters." });
+        //    }
 
-		[HttpPost]
+        //    var uploadPath = Path.Combine("wwwroot", "media/profile_images");
+
+        //    if (!Directory.Exists(uploadPath))
+        //    {
+        //        Directory.CreateDirectory(uploadPath);
+        //    }
+
+        //    var uniqueFileName = $"{Path.GetFileNameWithoutExtension(file.FileName)}_{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        //    var filePath = Path.Combine(uploadPath, uniqueFileName);
+
+        //    using (var stream = new FileStream(filePath, FileMode.Create))
+        //    {
+        //        file.CopyTo(stream);
+        //    }
+
+        //    try
+        //    {
+        //        var profileImagePath = $"/media/profile_images/{uniqueFileName}";
+        //        var profileImageModel = _workerService.UploadProfileImage(workerId, profileImagePath);
+
+        //        return Ok(new
+        //        {
+        //            success = true,
+        //            message = "Profile image uploaded successfully.",
+        //            profileImage = profileImageModel.ProfileImage
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, new { success = false, message = $"Error: {ex.Message}" });
+        //    }
+        //}
+
+
+        [HttpPost]
+        [Route("api/Worker/UploadProfileImage")]
+        public IActionResult UploadProfileImage([FromForm] IFormFile? file, [FromForm] int workerId, [FromForm] string? profileImage = "")
+        {
+            string uploadPath = "media/profile_images";
+
+            var model = new ProfileImageModel
+            {
+                WorkerId = workerId,
+                ProfileImage = profileImage
+            };
+
+            try
+            {
+                if (file != null && file.Length > 0)
+                {
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", uploadPath);
+
+                    if (!Directory.Exists(filePath))
+                        Directory.CreateDirectory(filePath);
+
+                    var uniqueFileName = $"{Path.GetFileNameWithoutExtension(file.FileName)}_{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+                    var completeFilePath = Path.Combine(filePath, uniqueFileName);
+
+                    using (var stream = new FileStream(completeFilePath, FileMode.Create))
+                    {
+                        file.CopyTo(stream);
+                    }
+
+                    model.ProfileImage = $"{uploadPath}/{uniqueFileName}";
+                    
+                    _workerService.UploadProfileImage(workerId, model.ProfileImage);
+
+                    return Ok(new
+                    {
+                        success = true,
+                        message = "Profile image uploaded successfully!",
+                        filePath = $"{uploadPath}/{uniqueFileName}"
+                    });
+                }
+                else
+                {
+                    model.ProfileImage = profileImage;
+                    
+                    _workerService.UploadProfileImage(workerId, model.ProfileImage);
+
+                    return Ok(new
+                    {
+                        success = true,
+                        message = "Profile image updated successfully!",
+                        filePath = profileImage
+                    });
+                }
+
+                return BadRequest(new { success = false, message = "No file uploaded." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = $"An error occurred: {ex.Message}" });
+            }
+        }
+
+
+        [HttpPost]
 		[Route("api/Worker/UploadDocument")]
 		public IActionResult UploadDocument([FromForm] IFormFile? file, [FromForm] int WorkerId, int DocumentId, [FromForm] string? documentNumber = "", string? documentImage = null)
 		{

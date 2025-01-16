@@ -24,6 +24,7 @@
     <Folder Include="Areas\Admin\Models\" />
     <Folder Include="Areas\Worker\Data\" />
     <Folder Include="Areas\Worker\Models\" />
+    <Folder Include="wwwroot\media\profile_images\" />
   </ItemGroup>
 
   <ItemGroup>
