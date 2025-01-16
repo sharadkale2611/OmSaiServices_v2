@@ -44,12 +44,13 @@ namespace GeneralTemplate.Areas.Admin.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    TempData["success"] = "Record added successfully!";
                     // Get the logged-in user's ID
                     string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                     model.IssueBy = userId;
                     _assetsIssuesService.Create(model);
-                    return RedirectToAction(nameof(Index));
+					TempData["success"] = "Record added successfully!";
+
+					return RedirectToAction(nameof(Index));
                 }
                 else
                 {
@@ -57,12 +58,15 @@ namespace GeneralTemplate.Areas.Admin.Controllers
                     return View("Index", model);
                 }
             }
-            catch
+            catch(Exception ex)
             {
-                TempData["error"] = "Something went wrong!";
-                return View("Index", model);
-            }
-        }
+                //TempData["error"] = "Something went wrong!";
+                TempData["error"] = ex.Message;
+				//return View("Index", model);
+				return RedirectToAction(nameof(Index));
+
+			}
+		}
 
 
         [HttpPost]
@@ -71,31 +75,30 @@ namespace GeneralTemplate.Areas.Admin.Controllers
         {
             try
             {
-                TempData["success"] = "Record updated successfully!";
-                   _assetsIssuesService.Update(model);
 
-                //model.IsReturnable = true;
-                //if (ModelState.IsValid)
-                //{
-                //    TempData["success"] = "Record updated successfully!";
-                //    _assetsIssuesService.Update(model);
-                //}
-                //else
-                //{
-                //    var errorMessages = new List<string>();
-                //    foreach (var state in ModelState)
-                //    {
-                //        foreach (var error in state.Value.Errors)
-                //        {
-                //            errorMessages.Add(error.ErrorMessage);
-                //        }
-                //    }
-                //    TempData["errors"] = errorMessages;
-                //}
 
-                return RedirectToAction(nameof(Index));
-            }
-            catch
+				if (!ModelState.IsValid)
+                {
+					var errorMessages = new List<string>();
+					foreach (var state in ModelState)
+					{
+						foreach (var error in state.Value.Errors)
+						{
+							errorMessages.Add(error.ErrorMessage);
+						}
+					}
+					TempData["errors"] = errorMessages;
+					return View(model);
+
+				}
+
+				TempData["success"] = "Record updated successfully!";
+				_assetsIssuesService.Update(model);
+				return RedirectToAction(nameof(Index));
+
+
+			}
+			catch
             {
                 TempData["error"] = "Something went wrong!";
                 return View("Index", model);
@@ -104,7 +107,6 @@ namespace GeneralTemplate.Areas.Admin.Controllers
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult Delete(int id)
         {
             try

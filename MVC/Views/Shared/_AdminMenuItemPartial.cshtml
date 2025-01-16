@@ -1,0 +1,75 @@
+﻿<div class="header collapse d-lg-flex p-0" id="headerMenuCollapse">
+    <div class="container">
+        <div class="row align-items-center">
+            @* <div class="col-lg-3 ml-auto"> *@
+            @*     <form class="input-icon my-3 my-lg-0"> *@
+            @*         <input type="search" class="form-control header-search" placeholder="Search&hellip;" tabindex="1"> *@
+            @*         <div class="input-icon-addon"> *@
+            @*             <i class="fe fe-search"></i> *@
+            @*         </div> *@
+            @*     </form> *@
+            @* </div> *@
+            <div class="col-lg order-lg-first">
+                <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
+                    <li class="nav-item">
+                        <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link"><i class="fe fe-home"></i> Home</a>
+                    </li>
+                    @if (User.IsInRole("Administrator"))
+                    {
+                        <li class="nav-item">
+                            <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-box"></i> Configuration <i class="fe fe-chevron-down"></i></a>
+                            <div class="dropdown-menu dropdown-menu-arrow">
+                                <a asp-area="Admin" asp-controller="Role" asp-action="Index" class="dropdown-item "> <i class="fe fe-users"></i> Roles</a>
+                                <a asp-area="Admin" asp-controller="Document" asp-action="Index" class="dropdown-item "> <i class="fe fe-file-text"></i> Documents</a>
+                                <a asp-area="Admin" asp-controller="Department" asp-action="Index" class="dropdown-item "><i class="fe fe-shield"></i> Departments</a>
+                                <a asp-area="Admin" asp-controller="Qualification" asp-action="Index" class="dropdown-item "> <i class="fe fe-send"></i> Qualification</a>
+                                <a asp-area="Admin" asp-controller="Asset" asp-action="Index" class="dropdown-item"> <i class="fe fe-box"></i> Assets</a>
+                            </div>
+                        </li>
+
+
+                        <li class="nav-item">
+                            <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-box"></i> Projects And Sites <i class="fe fe-chevron-down"></i></a>
+                            <div class="dropdown-menu dropdown-menu-arrow">
+                                <a asp-area="Admin" asp-controller="Project" asp-action="Index" class="dropdown-item "> <i class="fe fe-zap"></i> Projects</a>
+                                <a asp-area="Admin" asp-controller="Site" asp-action="Index" class="dropdown-item "> <i class="fe fe-map"></i> Sites</a>
+                                <a asp-area="Admin" asp-controller="SiteShift" asp-action="Index" class="dropdown-item "> <i class="fe fe-map"></i> Site Shifts</a>
+                            </div>
+                        </li>
+
+                        <li class="nav-item">
+                            <a asp-area="Admin" asp-controller="User" asp-action="Index" class="nav-link"><i class="fe fe-users"></i>Staff</a>
+                        </li>
+
+                    }
+
+
+                    <li class="nav-item">
+                        <a asp-area="worker" asp-controller="worker" asp-action="Index" class="nav-link"><i class="fe fe-users"></i>Requirements/Workers</a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-area="Admin" asp-controller="AssetIssue" asp-action="Index" class="nav-link"><i class="fe fe-pocket"></i>Uniform</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-clock"></i> Attendance <i class="fe fe-chevron-down"></i></a>
+                        <div class="dropdown-menu dropdown-menu-arrow">
+                            <a asp-area="worker" asp-controller="Attendance" asp-action="Index" class="dropdown-item "> <i class="fe fe-users"></i> Attendance Log</a>
+                            <a asp-area="worker" asp-controller="Attendance" asp-action="Ledger" class="dropdown-item "> <i class="fe fe-file-text"></i> Attendance Ledger</a>
+                        </div>
+                    </li>
+
+                    @* <li class="nav-item"> *@
+                    @*     <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link text-danger"><i class="fe fe-briefcase"></i>Salary</a> *@
+                    @* </li> *@
+
+                    @* <li class="nav-item"> *@
+                    @*     <a asp-area="Worker" asp-controller="WorkerAuthentication" asp-action="Index" class="nav-link"><i class="fe fe-user"></i>Worker Login</a> *@
+                    @* </li> *@
+
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

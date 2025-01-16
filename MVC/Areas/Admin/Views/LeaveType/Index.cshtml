@@ -1,0 +1,177 @@
+﻿@model OmSaiModels.Admin.LeaveTypeModel;
+@{
+    ViewData["Title"] = "LeaveTypes";
+    Layout = "/Views/Shared/_Layout.cshtml";
+    ViewData["AreaName"] = "Admin";
+    ViewData["ControllerName"] = "LeaveType";
+    int serialNumber = 0;
+}
+
+@section css {
+    <style>
+        .btnEdit:hover {
+            cursor: pointer;
+        }
+    </style>
+}
+
+<div class="app-content-header">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <!--begin::Row-->
+        <div class="row">
+            <div class="col-sm-6">
+                <h3 class="page-title">
+                    LeaveTypes
+                    <button class="btn btn-sm btn-primary" id="btnShowForm">Add New</button>
+                </h3>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">Master</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        LeaveTypes
+                    </li>
+                </ol>
+            </div>
+        </div> <!--end::Row-->
+    </div> <!--end::Container-->
+</div> <!--end::App Content Header--> <!--begin::App Content-->
+
+
+
+<div class="app-content">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <partial name="~/Views/shared/_alertpartial.cshtml" />
+        <div class="row">
+
+
+            <div class="col-lg-12 col-md-12 col-sm-12" id="leftCard">
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table card-table table-vcenter text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th class="w-1">No.</th>
+                                    <th>Leave Type Name</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in ViewBag.AllData)
+                                {
+                                    serialNumber++;
+                                    <tr class="align-middle">
+                                        <td>@serialNumber</td>
+                                        <td>@item.LeaveTypeName</td>
+                                        <td>
+                                            @if (item.Status == true)
+                                            {
+                                                <span class="status-icon bg-success"></span> <span>Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="status-icon bg-danger"></span> <span>Inactive</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <nav class="nav justify-content-center">
+                                                <a class="nav-link badge shadow m-0 text-warning btn btnEdit"
+                                                   data-id="@item.LeaveTypeId"
+                                                   data-name="@item.LeaveTypeName"
+                                                   data-status="@item.Status">
+                                                    <i class="fe fe-edit"></i>
+                                                </a>
+                                                <a class="nav-link badge shadow m-0 text-danger btn btn-delete"
+                                                   data-delete_id="@item.LeaveTypeId"
+                                                   data-delete_display="@item.LeaveTypeName">
+                                                    <i class="fe fe-trash"></i>
+                                                </a>
+                                            </nav>
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-4 col-sm-12" id="rightCard" style="display:none;">
+                <div class="card card-warning card-outline mb-4 ">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <form id="LeaveTypeForm" method="post" asp-area="admin" asp-controller="LeaveType" asp-action="Create" asp-antiforgery="true">
+                        <input type="hidden" asp-for="LeaveTypeId" id="LeaveTypeId" />
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label asp-for="LeaveTypeName" class="col-form-label">Leave Type Name</label>
+                                <input type="text" class="form-control" asp-for="LeaveTypeName" placeholder="Leave Type Name" required>
+                            </div>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" asp-for="Status" type="checkbox" id="status" checked>
+                                <label class="form-check-label" for="status">Is Active</label>
+                            </div>
+                        </div>
+                        <div class="card-footer text-center">
+                            <button type="submit" class="btn btn-outline-secondary" id="btnSubmit">Save</button>
+                            <button type="button" class="btn btn-outline-warning" id="btnCloseForm">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+@section modals {
+    <partial name="~/Views/shared/_DeleteModelPartial.cshtml" />
+}
+
+@section Scripts {
+    <script>
+        $('#btnShowForm').click(() => {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Save");
+
+            $('#LeaveTypeForm').attr('action', '/admin/LeaveType/Create');
+            $('#LeaveTypeId').val("");
+        });
+
+        $('#btnCloseForm').click(() => {
+            $('#leftCard').addClass("col-lg-12 col-md-12").removeClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeOut();
+            $('#btnShowForm').fadeIn();
+        });
+
+        $('.btnEdit').click(function () {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Update");
+
+            let data = $(this).data();
+            $('#LeaveTypeId').val(data.id);
+            $('#LeaveTypeName').val(data.name);
+            $('#LeaveTypeForm').attr('action', '/admin/LeaveType/Edit');
+        });
+        $('.btn-delete').click(function () {
+            $('#leftCard').removeClass("col-lg-12 col-md-12").addClass("col-lg-8 col-md-8");
+            $('#rightCard').fadeIn();
+            $('#btnShowForm').fadeOut();
+            $('#btnSubmit').text("Delete");
+
+            let data = $(this).data();
+            $('#LeaveTypeId').val(data.delete_id);
+            $('#LeaveTypeForm').attr('action', '/admin/LeaveType/Delete');
+        });
+    </script>
+}

@@ -3,7 +3,7 @@
     ViewData["Title"] = "AssetIssues";
     Layout = "/Views/Shared/_Layout.cshtml";
     ViewData["AreaName"] = "Admin";
-    ViewData["ControllerName"] = "AssetIssues";
+    ViewData["ControllerName"] = "AssetIssue";
     int serialNumber = 0;
 }
 
@@ -53,13 +53,12 @@
                             <thead>
                                 <tr>
                                     <th class="w-1">No.</th>
-                                    <th>WorkerName</th>
-                                    <th>AssetName</th>
-                                    <th>IssueBy</th>
-                                    <th>IssueAt</th>
+                                    <th>Worker Name</th>
+                                    <th>Asset Name</th>
+                                    <th>Issue By</th>
+                                    <th>Issue At</th>
                                     <th>Remark</th>
-                                    <th>IsReturnable</th>
-                                    <th>Status</th>
+                                    <th>Is Returnable</th>
                                     <th class="text-center">Action</th>
                                 </tr>
                             </thead>
@@ -75,16 +74,6 @@
                                         <td>@item.IssueAt</td>
                                         <td>@item.Remark</td>
                                         <td>
-                                            @if (item.Status == true)
-                                            {
-                                                <span class="status-icon bg-success"></span> <span>Active</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="status-icon bg-danger"></span> <span>Inactive</span>
-                                            }
-                                        </td>
-                                        <td>
                                             @if (item.IsReturnable == true)
                                             {
                                                 <span class="status-icon bg-success"></span> <span>Yes Returnable</span>
@@ -94,6 +83,7 @@
                                                 <span class="status-icon bg-danger"></span> <span>Not Returnable</span>
                                             }
                                         </td>
+
                                         <td>
                                             <nav class="nav justify-content-center flex-nowrap">
                                                 <a class="nav-link badge shadow m-1 text-warning btn btnEdit"
@@ -101,14 +91,14 @@
                                                    data-workerid="@item.WorkerId"
                                                    data-assetid="@item.AssetId"
                                                    data-remark="@item.Remark"
-                                                   data-IsReturnable="@item.IsReturnable">
+                                                   data-is_returnable="@item.IsReturnable">
 
-                                                    <i class="bi bi-pencil-square"></i> Edit
+                                                    <i class="fe fe-edit"></i> 
                                                 </a>
                                                 <a class="nav-link badge shadow m-1 text-danger btn btn-delete"
                                                    data-delete_id="@item.AssetIssueId"
-                                                   data-delete_display="@item.WorkerId">
-                                                    <i class="bi bi-trash3-fill"></i> Delete
+                                                   data-delete_display="@item.WorkerName - @item.AssetName">
+                                                    <i class="fe fe-trash"></i> 
                                                 </a>
                                             </nav>
                                         </td>
@@ -153,8 +143,9 @@
                                 <input type="text" class="form-control" asp-for="Remark" placeholder="Remark" required>
                             </div>
                             <div class="form-check mt-2">
-                                <input class="form-check-input" asp-for="IsReturnable" type="checkbox" id="IsReturnable" checked>
-                                <label class="form-check-label" for="IsReturnable">Yes Returnable </label>
+                                <input class="form-check-input" asp-for="IsReturnable" type="checkbox" id="IsReturnableT" value="true" >
+                                <label class="form-check-label" for="IsReturnableT">Yes Returnable</label>
+
                             </div>
                         </div>
                         <div class="card-footer text-center">
@@ -200,6 +191,7 @@
             $('#btnSubmit').text("Update");
 
             let data = $(this).data();
+           
             if (data.status == "False") {
                 $('#Status').prop('checked', false);
             } else {
@@ -211,7 +203,11 @@
             $('#WorkerId').val(data.workerid);
             $('#AssetId').val(data.assetid);
             $('#Remark').val(data.remark);
-            $('#IsReturnable').val(data.IsReturnable);
+            if(data.is_returnable == 'True'){
+                $('#IsReturnableT').prop('checked',true);
+            }else{
+                $('#IsReturnableT').prop('checked',false);
+            }
 
             $('#AssetIssueIdForm').attr('action', '/admin/AssetIssue/Edit');
         });

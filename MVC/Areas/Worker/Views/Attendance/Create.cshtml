@@ -2,8 +2,12 @@
 @model WorkerAttendanceModel;
 @{
     Layout = "_layout2";
+    ViewData["Title"] = "Worker Attendance";
+
     var worker = @ViewBag.Worker;
     var fullName = worker.FirstName + " " + worker.MiddleName + " " + worker.LastName;
+    var attendanceHistory = ViewBag.attendanceHistory;
+    
 }
 
 @section css {
@@ -13,53 +17,53 @@
 <style>
 
     #video, #canvas {
-        border-radius: 10px;
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        border: 2px solid #007bff;
-        box-shadow: 1px 1px 5px green;
+    border-radius: 10px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 2px solid #007bff;
+    box-shadow: 1px 1px 5px green;
     }
 
     #canvas {
-        display: none;
+    display: none;
     }
 
     .id-card {
-        width: 300px;
-        height: 570px;
-        border: 2px solid #007bff;
-        border-radius: 10px;
-        background: #f8f9fa;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        text-align: center;
+    width: 300px;
+    height: 570px;
+    border: 2px solid #007bff;
+    border-radius: 10px;
+    background: #f8f9fa;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
     }
 
-        .id-card img.profile {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 2px solid #007bff;
-        }
+    .id-card img.profile {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 2px solid #007bff;
+    }
 
-        .id-card h5 {
-            margin: 10px 0;
-            font-weight: bold;
-        }
+    .id-card h5 {
+    margin: 10px 0;
+    font-weight: bold;
+    }
 
-        .id-card p {
-            margin: 5px 0;
-            color: #6c757d;
-        }
+    .id-card p {
+    margin: 5px 0;
+    color: #6c757d;
+    }
 
-        .id-card .barcode {
-            margin-top: 20px;
-        }
+    .id-card .barcode {
+    margin-top: 20px;
+    }
 
-            .id-card .barcode img {
-                width: 80%;
-            }
+    .id-card .barcode img {
+    width: 80%;
+    }
 
 </style>
 
@@ -67,6 +71,8 @@
 <nav class="navbar navbar-expand-sm navbar-dark bg-danger justify-content-center align-items-center ">
     <a class="navbar-brand text-white" href="#">Om Sai Services</a>
 </nav>
+
+<input type="hidden" id="InOutType" value="@ViewBag.InOutType" />
 
 
 <div class="d-flex justify-content-center align-items-center vh-100 mt-4">
@@ -82,7 +88,31 @@
         <p>Worker ID: @worker.WorkmanId</p>
         <p>Department: @worker.DepartmentName</p>
 
-        <hr />
+        @if (worker.StartTime != null)
+        {
+            <div>
+            Shfit Time : (@DateTime.Today.Add(@worker.StartTime).ToString("hh:mm tt") -
+            @DateTime.Today.Add(@worker.EndTime).ToString("hh:mm tt"))
+            </div>
+        }
+        @if (attendanceHistory != null)
+        {
+            if (attendanceHistory.Count > 0)
+            {
+                <table class="table table-sm table-bordered table-striped">
+                    <tr>
+                        <td>In-Time</td>
+                        <td>@attendanceHistory[0].InTime</td>
+                    </tr>
+                    <tr>
+                        <td>Out-Time</td>
+                        <td>@attendanceHistory[0].OutTime</td>
+                    </tr>
+                </table>
+            }
+        }
+
+
         <div class="text-success" id="lbl-success" style="display:none;">
             <i class="fe fe-check-circle" style="font-size:48px;"></i><br />
             <small>Attendance Completed!</small>
@@ -96,19 +126,33 @@
         </div>
         <!-- Barcode -->
         <div class="barcode">
-            <button id="capture" class="btn btn-primary">Capture Selfie</button>
-            <button id="retake" class="btn btn-secondary shadow" style="display: none;">Retake</button>
-            <button type="button" id="saveAttendance" class="btn btn-primary shadow" style="display: none;"> Submit Attendance</button>
+            @if (ViewBag.isAttendanceAllowed == true){
+                <p class="text-info">
+                    @ViewBag.remark
+                </p>
+
+                <button id="capture" class="btn btn-primary">Capture Selfie</button>
+                <button id="retake" class="btn btn-secondary shadow" style="display: none;">Retake</button>
+                <button type="button" id="saveAttendance" class="btn btn-primary shadow" style="display: none;"> Submit Attendance</button>
+            }else{
+                <b class="text-danger">
+                    @ViewBag.remark
+                </b>
+            }
+
         </div>
     </div>
 </div>
 
 <form method="post" id="attendance-form" class=" m-0 p-0" style="height:0px;">
+    <input type="hidden" id="CurrentTime" name="CurrentTime" />
+    <input type="hidden" id="Status" name="Status" value="@ViewBag.Status" />
+    
     <input type="hidden" id="captured-image" name="SelfieImage">
     <input type="hidden" id="worker-id" name="WorkerId" placeholder="Worker ID" value="@worker.WorkerId" required><br>
     <input type="hidden" id="site-id" name="SiteId" placeholder="Site ID" value="@worker.SiteId" required><br>
     <input type="hidden" id="shift-id" name="ShiftId" placeholder="Shift ID" value="1" required><br>
-    <input type="hidden" id="geo-location" name="GeoLocation" placeholder="Geo Location" required><br>
+    <input type="hidden" id="geo-location" name="GeoLocation" value="@worker.GpsLocation" placeholder="Geo Location" required><br>
     <input type="hidden" id="txtSiteLocation" value="@worker.GpsLocation" />
     <input type="submit" value="Save direct" id="btn-attendance-form" />
 </form>
@@ -190,6 +234,11 @@
                  formData.append('SiteId', $('#site-id').val());
                  formData.append('ShiftId', $('#shift-id').val());
                  formData.append('GeoLocation', $('#geo-location').val());
+                 formData.append('InOutType', $('#InOutType').val());
+                 formData.append('Status', $('#Status').val());
+                 // formData.append('CurrentTime', $('#CurrentTime').val());
+
+                 let InOutType = $('#InOutType').val();
 
                 // Get the base URL dynamically
                 const baseUrl = `${window.location.protocol}//${window.location.host}`;

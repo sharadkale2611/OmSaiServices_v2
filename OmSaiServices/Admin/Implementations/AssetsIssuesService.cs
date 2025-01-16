@@ -19,7 +19,7 @@ namespace OmSaiServices.Admin.Implementations
 
         public AssetsIssuesService()
         {
-            sp_cud = "usp_CreateUpdateDeleteRestore_AssetIssue";
+            sp_cud = "usp_CreateUpdateDeleteRestore_AssetIssues";
             sp_r = "usp_GetAll_AssetIssues";
             _mapper = new Mapper();
         }

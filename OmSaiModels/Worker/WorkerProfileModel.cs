@@ -9,6 +9,9 @@ namespace OmSaiModels.Worker
 {
 	public class WorkerProfileModel
 	{
+
+
+
 		public int WorkerId { get; set; }
 		public string WorkmanId { get; set; }
 		public string FirstName { get; set; }
@@ -26,10 +29,11 @@ namespace OmSaiModels.Worker
 		//public DepartmentModel Department { get; set; }
 
 		public int WorkerQualificationId { get; set; }
+		public int QualificationId { get; set; }
 		public string QualificationName { get; set; }
 		public DateOnly? DateofJoining { get; set; }
-		
 
+		
 		//public List<WorkerQualificationModel> WorkerQualifications { get; set; }
 
 		public int WorkerMobileNumberId { get; set; }
@@ -44,5 +48,16 @@ namespace OmSaiModels.Worker
 		public string SiteName { get; set; }
 		public string SiteLocation { get; set; }
 		public string GpsLocation { get; set; }
+
+		public int? WorkerShiftId { get; set; }
+		public int? SiteShiftId { get; set; }
+		public string? ShiftName { get; set; }
+		public TimeSpan? StartTime { get; set; }
+		public TimeSpan? EndTime { get; set; }
+		public DateTime? ShiftCreatedAt { get; set; }
+
+
+
+
 	}
 }

@@ -1,0 +1,290 @@
+﻿@model OmSaiModels.Worker.LedgerViewModel
+@{
+    int SerialNumber = 0;
+    ViewData["title"] = "Attendance Ledger";
+}
+
+@functions {
+    public string DateTimeFormat(int month)
+    {
+        return new DateTime(1, month, 1).ToString("MMM");
+    }
+}
+
+
+@section css{
+
+<style>
+        .table2 {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1cm;
+        }
+
+        th, td {
+            border: 1px solid #000 !important;
+            padding: 5px;
+            text-align: left;
+            word-wrap: break-word; /* Prevent content from overflowing */
+        }
+
+        @@media print {
+            @@page {
+                size: A4 landscape; /* Set the page size to A4 */
+                margin: 1cm; /* Set margins for the printed page */
+            }
+            body {
+                margin: 0;
+                font-family: Arial, sans-serif;
+                font-size: 12px;
+                line-height: 1.5;
+            }
+            .content {
+                width: 100%;
+                max-width: 100%; /* Ensure it fits within the page width */
+                overflow: hidden;
+                word-wrap: break-word;
+            }
+            table2 {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 1cm;
+            }
+            th, td {
+                border: 1px solid #000 !important;
+                padding: 5px;
+                text-align: left;
+                word-wrap: break-word; /* Prevent content from overflowing */
+            }
+        }
+    </style>
+
+}
+ 
+<div class="container">
+    <partial name="~/Views/shared/_alertpartial.cshtml" />
+    <div class="card d-print-none">
+        <div class="card-body">
+            <form method="GET" asp-action="Ledger" id="form">
+                <div class="row">
+                    <!-- Site Name -->
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label class="form-label">Site Name</label>
+                            <input type="text" id="SiteIdTest" value="@ViewBag.SiteId" hidden />
+                            <input type="text" id="SiteShiftIdTest" value="@ViewBag.SiteShiftId" hidden />
+                            <input type="text" id="YearTest" value="@ViewBag.Year" hidden />
+                            <input type="text" id="MonthTest" value="@ViewBag.Month" hidden />
+
+                            <select class="form-control" id="SiteId" asp-for="SiteId" onchange="loadShift()" required>
+                                <option value="" selected >---</option>
+                                @foreach (var site in ViewBag.Sites)
+                                {
+                                    <option value="@site.SiteId">
+                                        @site.SiteName (@site.ProjectName)
+                                    </option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Shift Name -->
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label class="form-label">Shift Name</label>
+                            <select class="form-control" id="SiteShiftId" asp-for="SiteShiftId" required>
+                                <option value="" selected>---</option>
+
+                                @* Add options dynamically if needed *@
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Year -->
+                    <div class="col-md-2">
+                        <div class="mb-3">
+                            <label class="form-label">Year</label>
+                            <select class="form-control" id="Year" asp-for="Year" required>
+                                <option value="" selected>---</option>
+                                <option value="2025" >2025</option>
+                                <option value="2024" >2024</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Month -->
+                    <div class="col-md-2">
+                        <div class="mb-3">
+                            <label class="form-label">Month</label>
+                            <select class="form-control" id="Month" asp-for="Month" required>
+                                <option value="" >---</option>
+                                @for (int i = 1; i <= 12; i++)
+                                {
+                                    <option value="@i" >
+                                        @DateTimeFormat(i)
+                                    </option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <input type="hidden" name="hasAllLedger" value="no" />
+                    <!-- Submit Button -->
+                    <div class="col-md-2">
+                        <div class="mb-3 pt-4">
+                            <button type="submit" class="btn btn-info mt-3" id="btnSubmitSearch"> <i class="fe fe-search"></i> Search</button>
+                            <button type="submit" class="btn btn-primary mt-3" id="btnSubmitUpdate"> <i class="fe fe-folders"></i> Update Ledger</button>
+
+                        </div>
+                    </div>
+                </div>
+            </form>
+            
+        </div>
+    </div>
+</div>
+
+@if (ViewBag.ShowData == true)
+{
+    if (ViewBag.AllData.Count > 0)
+{
+    <div class="card">
+        <div class="card-body">
+            <table class="table2 table-bordered ">
+                <tr>
+                    <td class="text-center" colspan="38"><b>OM SAI SERVICES</b></td>
+                </tr>
+                <tr>
+                    <td colspan="19">SiteName : <b>@ViewBag.SiteName</b></td>
+                    <td colspan="19">Month Year (Shift) : <b>@ViewBag.MonthName @ViewBag.Year</b></td>
+                </tr>
+                <tr>
+                    <th>Sr.No.</th>
+                    <th>Worker Name</th>
+                    <th>Shift</th>
+                    @for (var i = 1; i <= 31; i++)
+                    {
+                        <th>@i</th>
+                    }
+
+                    <th>Total Days</th>
+                    <th>Present</th>
+                    <th>Absent</th>
+                    <th>Leave</th>
+                </tr>
+                @foreach (var item in ViewBag.AllData)
+                {
+                    SerialNumber++;
+                    <tr>
+                        <td>@SerialNumber</td>
+                        <td>@item.WorkerName</td>
+                        <td>@item.ShiftName</td>
+                        @for (int day = 1; day <= 31; day++)
+                        {
+                            <td class="col-day">@item.GetType().GetProperty($"Day{day}")?.GetValue(item)</td>
+                        }
+
+                        <td>@item.TotalDays</td>
+                        <td>@item.DaysPresent</td>
+                        <td>@item.DaysAbsent</td>
+                        <td>@item.DaysLeave</td>
+                            
+
+                    </tr>
+
+                }
+
+            </table>
+
+        </div>
+    </div>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-body text-center text-danger">
+                <p>No data available for the selected criteria.</p>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="card">
+        <div class="card-body text-center text-danger">
+            <p>Please provide valid search criteria.</p>
+        </div>
+    </div>
+}
+@section Scripts{
+    <script>
+        $('document').ready(()=>{
+            $('#RenderBody').removeClass("container")
+                 let siteId = $("#SiteIdTest").val();
+                 if(siteId != '')
+                 {
+                   setTimeout(function () {
+                       $('#SiteId').val(siteId);
+
+                       loadShift();
+                       $('#Year').val($('#YearTest').val())
+                       $('#Month').val($('#MonthTest').val())
+                   }, 1000); // 1000 milliseconds = 1 second                 
+                 }
+
+                $('#btnSubmitSearch').click(function (e) {
+                   e.preventDefault(); // Prevent default form submission
+                   $('#form')
+                       .attr('method', 'GET')
+                       .attr('action', '/Worker/Attendance/Ledger') // Replace 'YourControllerName' with your actual controller
+                       .submit(); // Submit the form
+               });
+
+               $('#btnSubmitUpdate').click(function (e) {
+                   e.preventDefault(); // Prevent default form submission
+                   $('#form')
+                       .attr('method', 'POST')
+                       .attr('action', '/Worker/Attendance/CreateLedger') // Replace 'YourControllerName' with your actual controller
+                       .submit(); // Submit the form
+               });
+
+
+
+               });
+
+
+        
+        function loadShift(){
+            let siteId = $("#SiteId").val();
+            // alert('site changed');
+            $.ajax({
+                url: '/api/Worker/SiteShiftJson/'+siteId, 
+                type: 'GET',
+                success: function (response) {  
+                    if (response.success) {
+                        // console.log('Data:', response.data);
+                        // Populate dropdown
+                        let dropdown = $('#SiteShiftId');
+                        dropdown.empty(); // Clear existing options
+
+                        // Add a default option
+                        dropdown.append('<option value="" selected>Select Shift</option>');
+
+                        // Iterate over the response data and add options
+                        response.data.forEach(function (item) {
+                            dropdown.append('<option value="' + item.siteShiftId + '">' + item.shiftName  +  '</option>');
+                        });
+                        $('#SiteShiftId').val($('#SiteShiftIdTest').val())
+
+                    } else {
+                        console.error(response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('AJAX Error:', error);
+                }
+            });
+
+
+        }
+    </script>
+}
