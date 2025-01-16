@@ -86,7 +86,12 @@ builder.Services.AddScoped<RoleManager<IdentityRole>>();
 //}).AddRazorRuntimeCompilation();
 
 
-builder.Services.AddAuthorization();
+//builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+	options.FallbackPolicy = null; // Allow unauthenticated access by default
+});
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
@@ -115,7 +120,6 @@ builder.Services.AddRazorPages()
 		options.Cookie.HttpOnly = true; // Security setting
 		options.Cookie.IsEssential = true; // GDPR compliance
 	});
-
 
 
 

@@ -10,23 +10,34 @@
 	var MarriedList = new List<string>(){
 		"Married","Unmarried"
 	};
-	var address = ViewBag.Addresses;
 	var Worker = ViewBag.Worker;
+
+	// var workerMobiles = ViewBag.MobilesNumbers;
+	// var WorkerMobileNumberId1 = workerMobiles.Count > 0 ? workerMobiles[0]?.WorkerMobileNumberId ?? "":"";
+	// var WorkerMobileNumberId2 = workerMobiles.Count > 1 ? workerMobiles[1]?.WorkerMobileNumberId ?? "" : "";
+
 	var workerMobiles = ViewBag.MobilesNumbers;
-	var WorkerMobileNumberId1 = workerMobiles[0].WorkerMobileNumberId;
-	var WorkerMobileNumberId2 = workerMobiles[1].WorkerMobileNumberId;
+	var WorkerMobileNumberId1 = workerMobiles != null && workerMobiles.Count > 0 && workerMobiles[0] != null ? workerMobiles[0]?.WorkerMobileNumberId ?? "" : "";
+	var WorkerMobileNumberId2 = workerMobiles != null && workerMobiles.Count > 1 && workerMobiles[1] != null ? workerMobiles[1]?.WorkerMobileNumberId ?? "" : "";
 
-	var mobileNumbers = Worker.MobileNumbers;    //"9867789840, 7364043357" "split it with array"
-													//Split mobile numbers
 
-	var mobileNumbersArray = mobileNumbers?.Split(',') ?? new string[0];
+
+	var mobileNumbers = Worker?.MobileNumbers;      //"9867789840, 7364043357" "split it with array"  //Split mobile numbers
+
+	string[] mobileNumbersArray = !string.IsNullOrEmpty(mobileNumbers) ? mobileNumbers.Split(',') : new string[0];
+
 	var MobileNumber = mobileNumbersArray.Length > 0 ? mobileNumbersArray[0].Trim() : "";
 	var MobileNumber2 = mobileNumbersArray.Length > 1 ? mobileNumbersArray[1].Trim() : "";
 
-	var PermanentAddress = address[0]?.Address ?? "";
-	var CurrentAddress = address[1]?.Address ?? "";
-	var WorkerAddressId1 = address[0].WorkerAddressId;
-	var WorkerAddressId2 = address[1].WorkerAddressId;
+	var address = ViewBag.Addresses;
+	// Ensure there are at least two items in the collection before accessing
+	var PermanentAddress = address != null && address.Count > 0 && address[0] != null ? address[0]?.Address ?? "" : "";
+	var CurrentAddress = address != null && address.Count > 1 && address[1] != null ? address[1]?.Address ?? "" : "";
+
+
+
+	var WorkerAddressId1 = address != null &&address.Count > 0 ?  address[0].WorkerAddressId ?? "" :"";
+	var WorkerAddressId2 = address != null && address.Count > 1 ? address[1].WorkerAddressId ?? "" : "";
 
 }
 

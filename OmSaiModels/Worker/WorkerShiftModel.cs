@@ -15,6 +15,8 @@ namespace OmSaiModels.Worker
 
 		[Required]
 		public int WorkerId { get; set; }
+		public int SiteShiftId { get; set; }
+		
 
 		[Required]
 		[StringLength(25)]

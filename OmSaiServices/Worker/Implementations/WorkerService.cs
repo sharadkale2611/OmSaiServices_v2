@@ -1,5 +1,6 @@
 ﻿using LmsServices.Common;
 using Microsoft.Data.SqlClient;
+using OmSaiEnvironment;
 using OmSaiModels.Worker;
 using OmSaiServices.Common;
 using OmSaiServices.Worker.Interfaces;
@@ -11,6 +12,7 @@ using System.Reflection.Metadata;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace OmSaiServices.Worker.Implimentation
 {
@@ -107,25 +109,108 @@ namespace OmSaiServices.Worker.Implimentation
 			return GetAll(sp_r, mapEntity, GetParams(null, workmanId, null));
 		}
 
-
 		public List<WorkerModel> GetAll()
 		{
-
 			// Define the mapping function
 			var mapEntity = new Func<IDataReader, WorkerModel>(reader => _mapper.MapEntity<WorkerModel>(reader));
 
 			return GetAll(sp_r, mapEntity, GetParams());
 		}
 
-		
 
 		public WorkerProfileModel GetProfileById(int? id = null, string? workmanId = null)
 		{
+			/*
+						string connString = DBConnection.DefaultConnection;
+						var parameters = GetParamsProfile(id, workmanId);
+
+						List<WorkerProfileModel> results = new List<WorkerProfileModel>();
+						using (SqlConnection con = new SqlConnection(connString))
+						{
+							con.Open();
+							using (SqlCommand cmd = new SqlCommand("usp_GetAll_WorkerProfile", con))
+							{
+								cmd.CommandType = CommandType.StoredProcedure;
+
+								// Add parameters to command
+								if (parameters != null)
+								{
+									cmd.Parameters.AddRange(parameters);
+								}
+
+								using (SqlDataReader dr = cmd.ExecuteReader())
+								{
+									while (dr.Read())
+									{
+
+										var columnCount = dr.FieldCount;
+										for (int i = 0; i < columnCount; i++)
+										{
+											Console.WriteLine(dr.GetName(i)); // Log all column names
+										}
+
+										// Map each row to the desired model using the provided mapping function
+										var model = new WorkerProfileModel
+										{
+											WorkerId = dr.GetInt32(dr.GetOrdinal("WorkerId")),
+											WorkmanId = dr.GetString(dr.GetOrdinal("WorkmanId")),
+											FirstName = dr.GetString(dr.GetOrdinal("FirstName")),
+											MiddleName = dr.GetString(dr.GetOrdinal("MiddleName")),
+											LastName = dr.GetString(dr.GetOrdinal("LastName")),
+
+											DepartmentId = dr.GetInt32(dr.GetOrdinal("DepartmentId")),
+											DepartmentName = dr.GetString(dr.GetOrdinal("DepartmentName")),
+											MarritalStatus = dr.IsDBNull(dr.GetOrdinal("MarritalStatus")) ? null : dr.GetString(dr.GetOrdinal("MarritalStatus")),
+											SpouseName = dr.IsDBNull(dr.GetOrdinal("SpouseName")) ? null : dr.GetString(dr.GetOrdinal("SpouseName")),
+											DateofBirth = dr.IsDBNull(dr.GetOrdinal("DateofBirth")) ? null : DateOnly.FromDateTime(dr.GetDateTime(dr.GetOrdinal("DateofBirth"))),
+											Age = dr.IsDBNull(dr.GetOrdinal("Age")) ? (int?)null : dr.GetInt32(dr.GetOrdinal("Age")),
+											Gender = dr.IsDBNull(dr.GetOrdinal("Gender")) ? null : dr.GetString(dr.GetOrdinal("Gender")),
+
+											WorkerQualificationId = dr.GetInt32(dr.GetOrdinal("WorkerQualificationId")),
+											QualificationId = dr.GetInt32(dr.GetOrdinal("QualificationId")),
+											QualificationName = dr.GetString(dr.GetOrdinal("QualificationName")),
+											DateofJoining = dr.IsDBNull(dr.GetOrdinal("DateofJoining")) ? null : DateOnly.FromDateTime(dr.GetDateTime(dr.GetOrdinal("DateofJoining"))),
+
+											MobileNumbers = dr.IsDBNull(dr.GetOrdinal("MobileNumbers")) ? null : dr.GetString(dr.GetOrdinal("MobileNumbers")),
+
+											ProjectId = dr.GetInt32(dr.GetOrdinal("ProjectId")),
+											ProjectName = dr.GetString(dr.GetOrdinal("ProjectName")),
+											SiteId = dr.GetInt32(dr.GetOrdinal("SiteId")),
+											SiteName = dr.GetString(dr.GetOrdinal("SiteName")),
+											SiteLocation = dr.GetString(dr.GetOrdinal("SiteLocation")),
+											GpsLocation = dr.GetString(dr.GetOrdinal("GpsLocation")),
+
+											//WorkerShiftId = 1,
+											WorkerShiftId = dr.IsDBNull(dr.GetOrdinal("WorkerShiftId")) ? (int?)null : dr.GetInt32(dr.GetOrdinal("WorkerShiftId	")),
+											//SiteShiftId = dr.IsDBNull(dr.GetOrdinal("SiteShiftId")) ? (int?)null : dr.GetInt32(dr.GetOrdinal("SiteShiftId")),
+											//ShiftName = dr.IsDBNull(dr.GetOrdinal("ShiftName")) ? null : dr.GetString(dr.GetOrdinal("ShiftName")),
+
+											//StartTime = dr.IsDBNull(dr.GetOrdinal("StartTime"))
+											//			? (TimeSpan?)null
+											//			: TimeSpan.Parse(dr.GetString(dr.GetOrdinal("StartTime"))),
+
+											//EndTime = dr.IsDBNull(dr.GetOrdinal("EndTime"))
+											//		  ? (TimeSpan?)null
+											//		  : TimeSpan.Parse(dr.GetString(dr.GetOrdinal("EndTime"))),
+
+											//ShiftCreatedAt = dr.IsDBNull(dr.GetOrdinal("ShiftCreatedAt"))
+											//				 ? (DateTime?)null
+											//				 : dr.GetDateTime(dr.GetOrdinal("ShiftCreatedAt"))
+										}; 
+										results.Add(model);
+									}
+								}
+							}
+						}
+			;
+						return results?.FirstOrDefault();
+			*/
+
 			var mapEntity = new Func<IDataReader, WorkerProfileModel>(
 				   reader => _mapper.MapEntity<WorkerProfileModel>(reader)
 			   );
 
-			var result = QueryService.Query("usp_GetAll_WorkerProfile", mapEntity, GetParamsProfile(id, workmanId));
+			var result = QueryService.Query("dbo.usp_GetAll_WorkerProfile", mapEntity, GetParamsProfile(id, workmanId));
 			return result?.FirstOrDefault();
 
 		}

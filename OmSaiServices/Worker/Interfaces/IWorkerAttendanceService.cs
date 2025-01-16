@@ -10,6 +10,6 @@ namespace OmSaiServices.Worker.Interfaces
 	public interface IWorkerAttendanceService
 	{
 		public void ManageAttendance(WorkerAttendanceModel model);
-		public List<WorkerAttendanceViewModel> GetAll(int? WorkerId, int? SiteId, DateOnly? CurrentDate);
+		public List<WorkerAttendanceViewModel> GetAll(int? WorkerId, int? SiteId, DateOnly? CurrentDate, string? WorkmanId, int? RecordCount);
 	}
 }

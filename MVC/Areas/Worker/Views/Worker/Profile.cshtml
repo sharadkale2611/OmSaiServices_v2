@@ -4,14 +4,21 @@
     var worker = @ViewBag.AllData;
     var fullName = worker.FirstName + " " + worker.MiddleName + " " + worker.LastName;
     var attendanceHistory = ViewBag.AttendanceHistory; //test commentn
-    var address = ViewBag.Addresses;
 
-    var PermanentAddress = address[0]?.Address??"";
-    var CurrentAddress = address[1]?.Address ?? "";
+    var address = ViewBag.Addresses;
+    // Ensure there are at least two items in the collection before accessing
+    var PermanentAddress = address.Count > 0 ? address[0]?.Address ?? "" : "";
+    var CurrentAddress = address.Count > 1 ? address[1]?.Address ?? "" : "";
+
     int serialNumber = 0;
 }
 
 <style>
+
+    .border-danger{
+        border:0px solid maroon;
+        box-shadow: 1px 1px 5px maroon;
+    }
 
     .selfie-image{
     width:40px;
@@ -101,6 +108,49 @@
                         </div>
                     </div>
                 </div>
+                <div class="card @(worker.WorkerShiftId == null?"border-danger":"")">
+                    <div class="card-header ">
+                        <h4 class="card-title">Current Shift</h4>
+                    </div>
+                    @if (worker.WorkerShiftId != null){
+                        <div class="card-body p-2" id="card-workershift-display">
+
+                            <button type="button" class="btn btn-sm btn-warning" style="float:right;" onclick="EditShift()" id="btnEditShift">Edit</button>
+
+                            @worker.ShiftName (@DateTime.Today.Add(@worker.StartTime).ToString("hh:mm tt") -
+                            @DateTime.Today.Add(@worker.EndTime).ToString("hh:mm tt"))
+                        </div>
+                    }
+
+                                                
+                    <div class="card-body p-2 @(worker.WorkerShiftId == null?"":"d-none")" id="card-workershift-form">
+                        <form id="formWorkerShift" method="post">
+                            
+                            <input type="hidden" id="txtWorkerId1" value="@worker.WorkerId" />
+                            <div class="mb-3">
+                                <label class="form-label" for="drpShiftId"> Shift Time </label>
+                                <select class="form-control" id="drpShiftId">
+                                    @foreach (var shift in ViewBag.SiteShifts)
+                                    {
+                                        <option value="@shift.SiteShiftId">
+                                            @shift.ShiftName : (@DateTime.Today.Add(@shift.StartTime).ToString("hh:mm tt") -
+                                            @DateTime.Today.Add(@shift.EndTime).ToString("hh:mm tt"))
+                                        </option>
+
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="text-center">
+
+                                <button class="btn btn-outline-primary" type="submit" id="btnSaveformWorkerShift"><i class="fe fe-save"></i> Save</button>
+                                <button class="btn btn-outline-danger" type="button" id="btnCancelformWorkerShift" onclick="cancelShift()"><i class="fe fe-x"></i> Cancel</button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+
 
                 <div class="card">
                     <div class="card-header">
@@ -218,6 +268,7 @@
                                     <th>Site Name</th>
                                     <th>In Time</th>
                                     <th>Out Time</th>
+                                    <th>Working Hours</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
@@ -225,18 +276,42 @@
                                 @foreach (var attendance in attendanceHistory)
                                 {
                                     serialNumber++;
+                                    var timeDifference = "---";
+
+                                    // Check if both InTime and OutTime are not null
+
+                                    if (attendance.OutTime is DateTime outTime && attendance.InTime is DateTime inTime)
+                                    {
+                                        var difference = outTime - inTime;
+                                        timeDifference = $"{difference.Hours} Hrs {difference.Minutes} Min";
+
+                                        // Use difference as needed
+                                    }
+
+                                    @* if (attendance.OutTime.HasValue && attendance.InTime.HasValue) *@
+                                    @* { *@
+                                    @*     var difference = attendance.OutTime.Value - attendance.InTime.Value; *@
+                                    @*     // Use difference as needed *@
+                                    @*     timeDifference = $"{difference.Hours} Hrs {difference.Minutes} Min"; *@
+
+                                    @* } *@
+
+
+
+
                                     <tr>
                                         <td>@serialNumber</td>
                                         <td>@attendance.CreatedAt?.ToString("ddd, dd MMM yy")</td>
                                         <td>@attendance.SiteName</td>
                                         <td>
-                                            <img src="@attendance.InSelfiPath" class="selfie-image" />
+                                            <img src="@attendance.InSelfiPath" class="selfie-image" /><br />
                                             @attendance.InTime?.ToString("hh:mm tt")
                                         </td>
                                         <td>
-                                            <img src="@attendance.OutSelfiPath" class="selfie-image" />
+                                            <img src="@attendance.OutSelfiPath" class="selfie-image" /><br />
                                             @attendance.OutTime?.ToString("hh:mm tt")
                                         </td>
+                                        <td>@timeDifference</td>
                                         <td>
 
                                             @if (attendance.Status == "Present")
@@ -413,6 +488,9 @@
 @section Scripts {
 
     <script>
+
+
+
         $(document).ready(function () {
             // Open modal when the button is clicked
             $('.btn-upload').on('click', function () {
@@ -471,13 +549,13 @@
             });
 
             // Handle form submission via AJAX
-                  $('#imageUploadForm').on('submit', function (e) {
-            e.preventDefault();
+            $('#imageUploadForm').on('submit', function (e) {
+                    e.preventDefault();
 
-            var formData = new FormData();
-            const fileInput = document.getElementById('imageInput');
+                    var formData = new FormData();
+                    const fileInput = document.getElementById('imageInput');
 
-            // // Ensure file is selected
+                    // Ensure file is selected
                       if (!fileInput.files || fileInput.files.length === 0) {
                           // alert('You Have Not Selected Document File.');
 
@@ -493,50 +571,94 @@
                       }
 
 
-            // Add parameters
-            formData.append('WorkerId', $('#txtWorkerId').val());
+                // Add parameters
+                formData.append('WorkerId', $('#txtWorkerId').val());
 
-            formData.append('DocumentId', $('#txtDocumentId').val());
+                formData.append('DocumentId', $('#txtDocumentId').val());
                 formData.append('DocumentNumber', $('#txtDocumentNumber').val());
                 formData.append('DocumentImage', $('#documentImage').val());
 
 
+                // Send AJAX request
+                $.ajax({
+                    url: '/api/Worker/UploadDocument',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        console.log(response);
+                        if (response.success) {
+                            alert('Document uploaded successfully!');
+                            location.reload();
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX Error Status:', status);
+                        console.error('AJAX Error Message:', error);
+                        console.error('AJAX Response Text:', xhr.responseText);
+                        alert('An error occurred while uploading the document.');
+                    }
+                });
+        });
 
-            // Debugging: Log FormData keys and values
-            for (let [key, value] of formData.entries()) {
-                console.log(key, value);
+        });
+
+
+            $('#btnSaveformWorkerShift').click(()=>{
+                
+                $('#formWorkerShift').submit();
+            })
+
+            function EditShift(){
+                $('#btnEditShift').addClass('d-none');
+                $('#card-workershift-form').removeClass('d-none');
             }
 
-            // Send AJAX request
-            $.ajax({
-                url: '/api/Worker/UploadDocument',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    console.log(response);
-                    if (response.success) {
-                        alert('Document uploaded successfully!');
-                        location.reload();
-                    } else {
-                        alert('Error: ' + response.message);
+            function cancelShift(){
+                $('#btnEditShift').removeClass('d-none');
+                $('#card-workershift-form').addClass('d-none');
+            }
+
+            // Handle form submission via AJAX
+            $('#formWorkerShift').on('submit', function (e) {
+                    e.preventDefault();
+
+                    var formData = new FormData();
+
+                // Add parameters
+                formData.append('workerId', $('#txtWorkerId1').val());
+
+                formData.append('shiftId', $('#drpShiftId').val());
+
+                // Send AJAX request
+                $.ajax({
+                    url: '/api/Worker/ChangeWorkerShift',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        console.log(response);
+                        if (response.success) {
+                            alert('Shift updated successfully!');
+                            location.reload();
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX Error Status:', status);
+                        console.error('AJAX Error Message:', error);
+                        console.error('AJAX Response Text:', xhr.responseText);
+                        alert('An error occurred while updating shfit.');
                     }
-                },
-                error: function (xhr, status, error) {
-                    console.error('AJAX Error Status:', status);
-                    console.error('AJAX Error Message:', error);
-                    console.error('AJAX Response Text:', xhr.responseText);
-                    alert('An error occurred while uploading the document.');
-                }
-            });
+                });
         });
 
 
-
-
-
-        });
     </script>
 
 }
