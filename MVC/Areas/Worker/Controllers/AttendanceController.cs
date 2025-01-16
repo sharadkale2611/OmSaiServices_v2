@@ -48,11 +48,31 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult CreateLedger(int? SiteId, int? SiteShiftId, int? Year, int? Month)
+		public IActionResult CreateLedger(LedgerViewModel model)
 		{
-			ViewData["success"] = "Ledger updated successfully!";
-			_attendanceService.CreateLedger(SiteId, SiteShiftId, Year, Month);
+			model.SiteId = model.SiteId > 0 ? model.SiteId : null;
+			model.SiteShiftId = model.SiteShiftId > 0 ? model.SiteShiftId : null;
+			model.Year = model.Year > 0 ? model.Year : null;
+			model.Month = model.Month > 0 ? model.Month : null;
+
+
+			if (ModelState.IsValid)
+			{
+				ViewData["success"] = "Ledger updated successfully!";
+				_attendanceService.CreateLedger(model.SiteId, model.SiteShiftId, model.Year, model.Month);
+				return RedirectToAction("Ledger");
+			}
+			else
+			{
+				var errorMessages = ModelState.Values
+									.SelectMany(v => v.Errors)
+									.Select(e => e.ErrorMessage)
+									.ToList();
+
+				TempData["errors"] = errorMessages;
+			}
 			return RedirectToAction("Ledger");
+
 		}
 
 		public IActionResult LedgerNew(LedgerViewModel model, string? hasAllLedger = "yes")
@@ -65,9 +85,9 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 
 				// Set default or provided values for the filters
 				ViewBag.Month = model.Month;
-				ViewBag.MonthName = model.Month >= 1 && model.Month <= 12
-									? new DateTime(1, model.Month, 1).ToString("MMM")
-									: "---";
+				ViewBag.MonthName = model.Month.HasValue && model.Month >= 1 && model.Month <= 12
+					? new DateTime(1, model.Month.Value, 1).ToString("MMM")
+					: null;
 
 				ViewBag.Year = model.Year.ToString();
 				ViewBag.SiteId = model.SiteId;
@@ -137,9 +157,9 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 
 				ViewBag.Month = model.Month;
 
-				ViewBag.MonthName = model.Month >= 1 && model.Month <= 12
-								? new DateTime(1, model.Month, 1).ToString("MMM")
-								: "---";
+				ViewBag.MonthName = model.Month.HasValue && model.Month >= 1 && model.Month <= 12
+					? new DateTime(1, model.Month.Value, 1).ToString("MMM")
+					: null;
 
 				ViewBag.Year = model.Year.ToString();
 				ViewBag.SiteId = model.SiteId;

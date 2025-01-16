@@ -146,20 +146,16 @@ namespace OmSaiModels.Worker
 	public class LedgerViewModel
 	{
 		[Required]
-		[GreaterThanZeroAttribute]
-		public int SiteId { get; set; }
+		public int? SiteId { get; set; }
 
 		[Required]
-		[GreaterThanZeroAttribute]
-		public int SiteShiftId { get; set; }
+		public int? SiteShiftId { get; set; }
 
 		[Required]
-		[GreaterThanZeroAttribute]
-		public int Year { get; set; }
+		public int? Year { get; set; }
 
 		[Required]
-		[GreaterThanZeroAttribute]
-		public int Month { get; set; }
+		public int? Month { get; set; }
 	}
 
 
@@ -167,14 +163,23 @@ namespace OmSaiModels.Worker
 	{
 		protected override ValidationResult IsValid(object value, ValidationContext validationContext)
 		{
+			// Handle null or empty value (required validation)
+			if (value == null || (value is string str && string.IsNullOrEmpty(str)))
+			{
+				return new ValidationResult($"{validationContext.DisplayName} is required.");
+			}
+
+			// Check if value is a valid integer and greater than zero
 			if (value is not int intValue || intValue <= 0)
 			{
-				return new ValidationResult($"{validationContext.DisplayName} can not be empty.");
+				return new ValidationResult($"{validationContext.DisplayName} must be greater than zero.");
 			}
 
 			return ValidationResult.Success;
 		}
 	}
+
+
 
 
 }

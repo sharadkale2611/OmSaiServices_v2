@@ -62,10 +62,46 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 		{
 			var worker = _workerService.GetProfileById(id, null);
 			ViewBag.AllData = worker;
+
 			if (ViewBag.AllData == null)
 			{
 				return RedirectToAction(nameof(Index));// nameof checks method compiletime to avoid errors
 			}
+
+			var ledger = _attendanceService.GetLedger(worker.WorkerId, worker.SiteId, worker.SiteShiftId, DateTime.Now.Year, DateTime.Now.Month);
+
+			//var ledger = _attendanceService.GetLedger(1, 1, 1, 2025, 1);
+			if (ledger.Count > 0)
+			{
+				ViewBag.Ledger = ledger[0];
+
+				// Directly use Year and Month as they are already integers
+				int year = ledger[0].Year;
+				int month = int.Parse(ledger[0].Month);
+
+				// Validate the month value
+				if (year > 0 && month >= 1 && month <= 12)
+				{
+					// Get the first day of the month
+					DateTime firstDayOfMonth = new DateTime(year, month, 1);
+
+					// Get the day number (1 = Monday, 2 = Tuesday, ..., 7 = Sunday)
+					int dayNumber = (int)firstDayOfMonth.DayOfWeek;
+
+					// Adjust so that 1 = Monday and 7 = Sunday
+					dayNumber = dayNumber == 0 ? 7 : dayNumber;
+
+					ViewBag.FirstDay = firstDayOfMonth;
+					ViewBag.DayNumber = dayNumber;
+				}
+				else
+				{
+					ViewBag.FirstDay = null;
+					ViewBag.DayNumber = null;
+				}
+			}
+
+
 			ViewBag.AttendanceHistory = _attendanceService.GetAll(id, null, null, null,10);
 			ViewBag.WorkerDocuments = _workerDocumentService.GetAll(id);
 			ViewBag.Addresses = _workerAddressService.GetByWorkerId(id);

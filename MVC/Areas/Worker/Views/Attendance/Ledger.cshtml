@@ -117,7 +117,7 @@
                         <div class="mb-3">
                             <label class="form-label">Month</label>
                             <select class="form-control" id="Month" asp-for="Month" required>
-                                <option value="" disabled >---</option>
+                                <option value="" >---</option>
                                 @for (int i = 1; i <= 12; i++)
                                 {
                                     <option value="@i" >
@@ -200,12 +200,20 @@
     }
     else
     {
-        <p>No data available for the selected criteria.</p>
+        <div class="card">
+            <div class="card-body text-center text-danger">
+                <p>No data available for the selected criteria.</p>
+            </div>
+        </div>
     }
 }
 else
 {
-    <p>Please provide valid search criteria.</p>
+    <div class="card">
+        <div class="card-body text-center text-danger">
+            <p>Please provide valid search criteria.</p>
+        </div>
+    </div>
 }
 @section Scripts{
     <script>

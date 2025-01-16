@@ -13,15 +13,19 @@
     var CurrentAddress = address.Count > 1 ? address[1]?.Address ?? "" : "";
 
     int serialNumber = 0;
-    
+
+    if (ViewBag.Ledger != null)
+    {
+        var ledger = ViewBag.Ledger;
+    }
 
 }
 
 <style>
 
     .border-danger{
-        border:0px solid maroon;
-        box-shadow: 1px 1px 5px maroon;
+    border:0px solid maroon;
+    box-shadow: 1px 1px 5px maroon;
     }
 
     .selfie-image{
@@ -49,13 +53,18 @@
     font-weight: bold;
     }
 
-    .calendar-box.present {
+    .calendar-box.P {
     background-color: #28a745; /* Green for Present */
     color: #fff;
     }
 
-    .calendar-box.absent {
+    .calendar-box.A {
     background-color: #dc3545; /* Red for Absent */
+    color: #fff;
+    }
+
+    .calendar-box.L {
+    background-color: #ed9809; /* Red for Absent */
     color: #fff;
     }
 
@@ -74,6 +83,10 @@
     height: 30px;
     font-size:11px;
     text-align:center;
+    }
+
+    .list-group-item {
+        padding: 0.35rem 0.50rem !important; 
     }
 
 </style>
@@ -168,10 +181,10 @@
                         </div>
                     }
 
-                                                
+
                     <div class="card-body p-2 @(worker.WorkerShiftId == null?"":"d-none")" id="card-workershift-form">
                         <form id="formWorkerShift" method="post">
-                            
+
                             <input type="hidden" id="txtWorkerId1" value="@worker.WorkerId" />
                             <div class="mb-3">
                                 <label class="form-label" for="drpShiftId"> Shift Time </label>
@@ -232,10 +245,49 @@
                 </div>
 
                 <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Current Month Attendace</h3>
+                    </div>
                     <div class="card-body">
 
                         <div class="container p-2">
-                            <h2 class="text-center mb-4">Current Month Attendace</h2>
+                            @if (ViewBag.Ledger != null)
+                            {
+                                var ledger = ViewBag.Ledger;
+                                <ul class="list-group list-group-numbered mb-4">
+                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            <div class="fw-bold">Total Days</div>
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">@ledger.TotalDays</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            Present
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">@ledger.DaysPresent</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            Absent
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">@ledger.DaysAbsent</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            Leave
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">@ledger.DaysLeave</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            Half Day
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">@ledger.DaysHalfDay</span>
+                                    </li>
+                                </ul>
+                            }
+
 
                             <!-- Calendar Header -->
                             <div class="calendar-header row text-center">
@@ -248,45 +300,26 @@
                                 <div class="col">Sat</div>
                             </div>
 
+
                             <!-- Calendar Grid -->
                             <div class="calendar">
-                                <!-- Empty Days (for alignment) -->
-                                <div class="calendar-box empty"></div>
-                                <div class="calendar-box empty"></div>
-                                <div class="calendar-box empty"></div>
-                                <div class="calendar-box empty"></div>
 
-                                <!-- Days with Present/Absent Status -->
-                                <div class="calendar-box present">1</div>
-                                <div class="calendar-box absent">2</div>
-                                <div class="calendar-box present">3</div>
-                                <div class="calendar-box absent">4</div>
-                                <div class="calendar-box present">5</div>
-                                <div class="calendar-box present">6</div>
-                                <div class="calendar-box absent">7</div>
-                                <div class="calendar-box present">8</div>
-                                <div class="calendar-box absent">9</div>
-                                <div class="calendar-box absent">10</div>
-                                <div class="calendar-box present">11</div>
-                                <div class="calendar-box present">12</div>
-                                <div class="calendar-box absent">13</div>
-                                <div class="calendar-box present">14</div>
-                                <div class="calendar-box present">15</div>
-                                <div class="calendar-box absent">16</div>
-                                <div class="calendar-box present">17</div>
-                                <div class="calendar-box absent">18</div>
-                                <div class="calendar-box absent">19</div>
-                                <div class="calendar-box present">20</div>
-                                <div class="calendar-box absent">21</div>
-                                <div class="calendar-box present">22</div>
-                                <div class="calendar-box absent">23</div>
-                                <div class="calendar-box present">24</div>
-                                <div class="calendar-box absent">25</div>
-                                <div class="calendar-box absent">26</div>
-                                <div class="calendar-box present">27</div>
-                                <div class="calendar-box present">28</div>
-                                <div class="calendar-box absent">29</div>
-                                <div class="calendar-box present">30</div>
+                                @if (ViewBag.Ledger != null)
+                                {
+                                    @for (int day = 1; day <= ViewBag.DayNumber; day++)
+                                    {
+                                        <div class="calendar-box empty"></div>
+                                    }
+
+                                    var ledger = ViewBag.Ledger;
+                                    @for (int day = 1; day <= 31; day++)
+                                    {
+                                        string status = ledger.GetType().GetProperty($"Day{day}")?.GetValue(ledger);
+                                        <div class="calendar-box @status">@day</div>
+                                    }
+
+                                }
+
                             </div>
                         </div>
 
@@ -302,7 +335,7 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title">Worker Attendance</h4>
+                                <h4 class="card-title">Worker Attendance</h4>
                     </div>
                     <div class="table-responsive">
 
