@@ -211,7 +211,70 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			}
 		}
 
-		[HttpPost]
+        [HttpPost]
+        [Route("api/Worker/UploadProfileImage")]
+        public IActionResult UploadProfileImage([FromForm] IFormFile? file, [FromForm] int workerId, [FromForm] string? profileImage = "")
+        {
+            string uploadPath = "media/profile_images";
+
+            var model = new ProfileImageModel
+            {
+                WorkerId = workerId,
+                ProfileImage = profileImage
+            };
+
+            try
+            {
+                if (file != null && file.Length > 0)
+                {
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", uploadPath);
+
+                    if (!Directory.Exists(filePath))
+                        Directory.CreateDirectory(filePath);
+
+                    var uniqueFileName = $"{Path.GetFileNameWithoutExtension(file.FileName)}_{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+                    var completeFilePath = Path.Combine(filePath, uniqueFileName);
+
+                    using (var stream = new FileStream(completeFilePath, FileMode.Create))
+                    {
+                        file.CopyTo(stream);
+                    }
+
+                    model.ProfileImage = $"{uploadPath}/{uniqueFileName}";
+
+                    _workerService.UploadProfileImage(workerId, model.ProfileImage);
+
+                    return Ok(new
+                    {
+                        success = true,
+                        message = "Profile image uploaded successfully!",
+                        filePath = $"{uploadPath}/{uniqueFileName}"
+                    });
+                }
+                else
+                {
+                    model.ProfileImage = profileImage;
+
+                    _workerService.UploadProfileImage(workerId, model.ProfileImage);
+
+                    return Ok(new
+                    {
+                        success = true,
+                        message = "Profile image updated successfully!",
+                        filePath = profileImage
+                    });
+                }
+
+                return BadRequest(new { success = false, message = "No file uploaded." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = $"An error occurred: {ex.Message}" });
+            }
+        }
+
+
+        [HttpPost]
 		[Route("api/Worker/UploadDocument")]
 		public IActionResult UploadDocument([FromForm] IFormFile? file, [FromForm] int WorkerId, int DocumentId, [FromForm] string? documentNumber = "", string? documentImage = null)
 		{
