@@ -58,7 +58,8 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 		}
 
         [HttpPost("upload-profile-image")]
-        public IActionResult UploadProfileImage([FromForm] IFormFile? file, [FromForm] int workerId, [FromForm] string? profileImage = "")
+		[Authorize(AuthenticationSchemes = "Jwt")]
+		public IActionResult UploadProfileImage([FromForm] IFormFile? file, [FromForm] int workerId, [FromForm] string? profileImage = "")
         {
             string uploadPath = "media/profile_images";
 

@@ -85,8 +85,6 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			}
 		}
 
-
-
 		[HttpPost("worker-selfie-attendance")]
 		[Authorize(AuthenticationSchemes = "Jwt")]
 		public async Task<IActionResult> WorkerSelfieAttendance([FromForm] WorkerAttendanceModel model, IFormFile SelfieImage)

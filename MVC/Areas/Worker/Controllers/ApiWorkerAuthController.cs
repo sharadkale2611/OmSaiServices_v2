@@ -77,59 +77,6 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 
 		}
 
-/*
-		[HttpPost]
-		[Route("api/Worker/ChangePassword")]
-		public async Task<IActionResult> ChangePassword(int? workerId, string oldPassword, string newPassword, string confirmPassword)
-		{
-
-
-			if (!workerId.HasValue || workerId.Value <= 0 ||  string.IsNullOrEmpty(oldPassword) || string.IsNullOrEmpty(newPassword) || string.IsNullOrEmpty(confirmPassword))
-			{
-				// Return failure with validation errors
-				var errors = new
-				{
-					WorkerId = new[] { "The WorkerId field is required and must be a valid positive number." },
-					OldPassword = string.IsNullOrEmpty(oldPassword) ? new[] { "The old password field is required." } : null,
-					NewPassword = string.IsNullOrEmpty(newPassword) ? new[] { "The new password field is required." } : null,
-					ConfirmPassword = string.IsNullOrEmpty(confirmPassword) ? new[] { "The confirm password field is required." } : null,
-				};
-				return BadRequest(new ApiResponseModel<object>(false, null, errors));
-			}
-
-			try
-			{
-				// Validate the input data
-				if (workerId == 0 || string.IsNullOrEmpty(oldPassword) || string.IsNullOrEmpty(newPassword))
-				{
-					return BadRequest(new
-					{
-						Success = false,
-						Message = "Invalid request data."
-					});
-				}
-
-				// Attempt to change the password using the service method
-				var result = _workerService.ChangePassword(workerId, oldPassword, newPassword);
-
-				return Ok(new
-				{
-					Success = true,
-					Message = "Password changed successfully.",
-					Data = result
-				});
-			}
-			catch (Exception ex)
-			{
-				return BadRequest(new
-				{
-					Success = false,
-					Message = ex.Message
-				});
-			}
-		}
-*/
-
 
 		[HttpGet("test")]
 		public IActionResult GetTestInfo()
