@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
@@ -14,6 +15,7 @@ using OmSaiServices.Worker.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GeneralTemplate.Areas.Worker.Controllers
 {
@@ -77,6 +79,101 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 
 		}
 
+
+		//[HttpPost]
+		//[Route("api/Worker/ChangePassword")]
+		//public async Task<IActionResult> ChangePassword(int? workerId, string oldPassword, string newPassword, string confirmPassword)
+		//{
+
+
+		//	if (!workerId.HasValue || workerId.Value <= 0 || string.IsNullOrEmpty(oldPassword) || string.IsNullOrEmpty(newPassword) || string.IsNullOrEmpty(confirmPassword))
+		//	{
+		//		 //Return failure with validation errors
+		//		var errors = new
+		//		{
+		//			WorkerId = new[] { "The WorkerId field is required and must be a valid positive number." },
+		//			OldPassword = string.IsNullOrEmpty(oldPassword) ? new[] { "The old password field is required." } : null,
+		//			NewPassword = string.IsNullOrEmpty(newPassword) ? new[] { "The new password field is required." } : null,
+		//			ConfirmPassword = string.IsNullOrEmpty(confirmPassword) ? new[] { "The confirm password field is required." } : null,
+		//		};
+		//		return BadRequest(new ApiResponseModel<object>(false, null, errors));
+		//	}
+
+		//	try
+		//	{
+		//		 //Validate the input data
+		//		if (workerId == 0 || string.IsNullOrEmpty(oldPassword) || string.IsNullOrEmpty(newPassword))
+		//		{
+		//			return BadRequest(new
+		//			{
+		//				Success = false,
+		//				Message = "Invalid request data."
+		//			});
+		//		}
+
+		//		// Attempt to change the password using the service method
+		//		var result = _workerService.ChangePassword(WorkerId, oldPassword, newPassword);
+
+		//		return Ok(new
+		//		{
+		//			Success = true,
+		//			Message = "Password changed successfully.",
+		//			Data = result
+		//		});
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		return BadRequest(new
+		//		{
+		//			Success = false,
+		//			Message = ex.Message
+		//		});
+		//	}
+		//}
+
+		[HttpPost]
+		[Route("ChangePassword")]
+		public async Task<IActionResult> ChangePassword(WorkerChangePasswordModel model)
+		{
+			try
+			{
+				// Validate the input data
+				if (model.WorkerId == 0 || string.IsNullOrEmpty(model.OldPassword) || string.IsNullOrEmpty(model.NewPassword))
+				{
+					var errors = new
+					{
+						WorkerId = new[] { "The WorkerId field is required and must be a valid positive number." },
+						OldPassword = string.IsNullOrEmpty(model.OldPassword) ? new[] { "The old password field is required." } : null,
+						NewPassword = string.IsNullOrEmpty(model.NewPassword) ? new[] { "The new password field is required." } : null,
+						ConfirmPassword = string.IsNullOrEmpty(model.ConfirmPassword) ? new[] { "The confirm password field is required." } : null,
+					};
+					return BadRequest(new ApiResponseModel<object>(false, null, errors));	
+				}
+
+				if (model.NewPassword != model.ConfirmPassword)
+				{
+					var errors = new
+					{
+						WorkmanId = new[] { "Worker not found!" }
+					};
+					return BadRequest(new ApiResponseModel<object>(false, null, errors));
+				}
+
+				// Attempt to change the password using the service method
+				var result = _workerService.ChangePassword(model.WorkerId, model.OldPassword, model.NewPassword);
+
+				return Ok(new ApiResponseModel<object>(true, result, null));
+
+			}
+			catch (Exception ex)
+			{
+				var errors = new
+				{					
+					Message = new[] {ex.Message},					
+				};
+				return BadRequest(new ApiResponseModel<object>(false, null, errors));	
+			}
+		}
 
 		[HttpGet("test")]
 		public IActionResult GetTestInfo()

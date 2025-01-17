@@ -119,14 +119,16 @@ namespace OmSaiServices.Worker.Implementations
 
 		}
 
-		private SqlParameter[] GetParams(int? id = null, int? LeaveTypeId = null, int? ApproverId = null, bool? Status = null)
+		private SqlParameter[] GetParams(int? id = null, int? WorkerId = null)
 		{
 			return new SqlParameter[]
 			{
 				new SqlParameter("@LeaveRequestId", id),
-				new SqlParameter("@LeaveTypeId", LeaveTypeId),
-				new SqlParameter("@ApproverId", ApproverId),
-				new SqlParameter("@Status", Status)
+				//new SqlParameter("@LeaveTypeId", LeaveTypeId),
+				new SqlParameter("@WorkerId", WorkerId),
+
+				//new SqlParameter("@ApproverId", ApproverId),
+				//new SqlParameter("@Status", Status)
 			};
 		}
 
