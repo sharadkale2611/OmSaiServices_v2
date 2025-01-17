@@ -295,9 +295,6 @@ namespace OmSaiServices.Worker.Implimentation
             };
 		}
 
-
-
-
 		public bool ChangePassword(int WorkerId, string oldPassword, string newPassword)
 		{
 

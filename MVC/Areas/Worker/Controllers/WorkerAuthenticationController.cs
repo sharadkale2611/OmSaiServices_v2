@@ -89,71 +89,71 @@ namespace GeneralTemplate.Areas.Worker.Controllers
             return View();
         }
 
-		[HttpGet("ChangePassword")]
-		[WorkerAuthorizeFilter]
-		public IActionResult ChangePassword()
-		{
-			var workerId = HttpContext.Session.GetInt32("WorkerId");
-			{
-				return View();
-			}
-		}
+		//[HttpGet("ChangePassword")]
+		//[WorkerAuthorizeFilter]
+		//public IActionResult ChangePassword()
+		//{
+		//	var workerId = HttpContext.Session.GetInt32("WorkerId");
+		//	{
+		//		return View();
+		//	}
+		//}
 
 
-		[HttpPost("ChangePassword")]
-		[WorkerAuthorizeFilter]
-		//[ValidateAntiForgeryToken]
-		public IActionResult ChangePassword(WorkerChangePasswordModel model)
-		{
-			var workerId = HttpContext.Session.GetInt32("WorkerId");
+		//[HttpPost("ChangePassword")]
+		//[WorkerAuthorizeFilter]
+		////[ValidateAntiForgeryToken]
+		//public IActionResult ChangePassword(WorkerChangePasswordModel model)
+		//{
+		//	var workerId = HttpContext.Session.GetInt32("WorkerId");
 
-			if (!ModelState.IsValid)
-			{
+		//	if (!ModelState.IsValid)
+		//	{
 
-				var errorMessages = new List<string>();
-				foreach (var state in ModelState)
-				{
-					foreach (var error in state.Value.Errors)
-					{
-						errorMessages.Add(error.ErrorMessage);
-					}
-				}
-				TempData["errors"] = errorMessages;
+		//		var errorMessages = new List<string>();
+		//		foreach (var state in ModelState)
+		//		{
+		//			foreach (var error in state.Value.Errors)
+		//			{
+		//				errorMessages.Add(error.ErrorMessage);
+		//			}
+		//		}
+		//		TempData["errors"] = errorMessages;
 
-			}
-			try
-			{
+		//	}
+		//	try
+		//	{
 
-				var result = _workerService.ChangePassword(workerId.Value, model.OldPassword, model.NewPassword);
+		//		var result = _workerService.ChangePassword(workerId.Value, model.OldPassword, model.NewPassword);
 
-				if (!result)
-				{
-					//ModelState.AddModelError(string.Empty, "Old password is incorrect.");
+		//		if (!result)
+		//		{
+		//			//ModelState.AddModelError(string.Empty, "Old password is incorrect.");
 
-					var errorMessages = new List<string>();
-					foreach (var state in ModelState)
-					{
-						foreach (var error in state.Value.Errors)
-						{
-							errorMessages.Add(error.ErrorMessage);
-						}
-					}
-					TempData["errors"] = errorMessages;
-					return View(model);
-				}
+		//			var errorMessages = new List<string>();
+		//			foreach (var state in ModelState)
+		//			{
+		//				foreach (var error in state.Value.Errors)
+		//				{
+		//					errorMessages.Add(error.ErrorMessage);
+		//				}
+		//			}
+		//			TempData["errors"] = errorMessages;
+		//			return View(model);
+		//		}
 
-				HttpContext.Session.Clear();
-				TempData["success"] = "Your password has been changed successfully. Please log in with your new password.";
-				return RedirectToAction("Login");
-			}
-			catch (Exception ex)
-			{
-				TempData["errors"] = null;
-				TempData["error"] = ex.Message;
-				return View();
-			}
+		//		HttpContext.Session.Clear();
+		//		TempData["success"] = "Your password has been changed successfully. Please log in with your new password.";
+		//		return RedirectToAction("Login");
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		TempData["errors"] = null;
+		//		TempData["error"] = ex.Message;
+		//		return View();
+		//	}
 
-		}
+		//}
 
 		[HttpGet("LeaveRequest")]
 		[WorkerAuthorizeFilter]
