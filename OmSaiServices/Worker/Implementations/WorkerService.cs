@@ -295,7 +295,42 @@ namespace OmSaiServices.Worker.Implimentation
             };
 		}
 
-		public bool ChangePassword(int WorkerId, string oldPassword, string newPassword)
+        //new method 
+        public ProfileImageModel UploadProfileImage(int workerId, string profileImage)
+        {
+            if (string.IsNullOrWhiteSpace(profileImage) || workerId <= 0)
+            {
+                throw new ArgumentException("Invalid WorkerId or ProfileImage.");
+            }
+
+
+            var mapEntity = new Func<IDataReader, ProfileImageModel>(reader =>
+            {
+                return new ProfileImageModel
+                {
+                    WorkerId = Convert.ToInt32(reader["WorkerId"]),
+                    ProfileImage = reader["ProfileImage"] as string
+                };
+            });
+
+
+            var parameters = new SqlParameter[]
+            {
+        new SqlParameter("@WorkerId", workerId),
+        new SqlParameter("@ProfileImage", profileImage)
+            };
+
+
+            var result = QueryService.Query("usp_Update_WorkerProfileImage", mapEntity, parameters);
+
+
+            return result?.FirstOrDefault();
+        }
+
+
+
+
+        public bool ChangePassword(int WorkerId, string oldPassword, string newPassword)
 		{
 
 			// Fetch the worker details using the WorkerId

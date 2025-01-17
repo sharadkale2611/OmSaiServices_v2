@@ -18,6 +18,9 @@ namespace OmSaiModels.Worker
 		public string MiddleName { get; set; }
 		public string LastName { get; set; }
 
+		public string? ProfileImage {  get; set; }
+
+		public string? Password  { get; set; }
 		public int DepartmentId { get; set; }
 		public string DepartmentName { get; set; }
 		public string? MarritalStatus { get; set; }

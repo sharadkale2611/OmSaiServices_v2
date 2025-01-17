@@ -13,15 +13,19 @@
     var CurrentAddress = address.Count > 1 ? address[1]?.Address ?? "" : "";
 
     int serialNumber = 0;
-    
+
+    if (ViewBag.Ledger != null)
+    {
+        var ledger = ViewBag.Ledger;
+    }
 
 }
 
 <style>
 
     .border-danger{
-        border:0px solid maroon;
-        box-shadow: 1px 1px 5px maroon;
+    border:0px solid maroon;
+    box-shadow: 1px 1px 5px maroon;
     }
 
     .selfie-image{
@@ -49,13 +53,18 @@
     font-weight: bold;
     }
 
-    .calendar-box.present {
+    .calendar-box.P {
     background-color: #28a745; /* Green for Present */
     color: #fff;
     }
 
-    .calendar-box.absent {
+    .calendar-box.A {
     background-color: #dc3545; /* Red for Absent */
+    color: #fff;
+    }
+
+    .calendar-box.L {
+    background-color: #ed9809; /* Red for Absent */
     color: #fff;
     }
 
@@ -76,6 +85,10 @@
     text-align:center;
     }
 
+    .list-group-item {
+        padding: 0.35rem 0.50rem !important; 
+    }
+
 </style>
 
 <div class="my-3 my-md-5">
@@ -89,6 +102,10 @@
                     <div class="card-header d-flex">
                         <a asp-area="worker" asp-controller="worker" asp-action="Edit" asp-route-id="@worker.WorkerId" class="btn btn-outline-warning ml-1"><i class="fe fe-edit"></i> Edit Profile</a>
                         <a class="btn btn-outline-warning ml-1"  onclick="$('#topcard').show()"><i class="fe fe-lock"></i> Change Password</a>
+                        <!-- Upload Profile Image Button -->
+                        <button type="button" class="btn btn-outline-primary ml-auto btn-upload2" data-worker-id="@worker.WorkerId" data-bs-toggle="modal" data-bs-target="#ppUploadImageModal">
+                            <i class="fe fe-camera"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -136,9 +153,28 @@
                         <div class="media">
                             @* <span class="avatar avatar-xxl mr-5" style="background-image: url('@user.ImagePath')"></span> *@
 
-                            <span class="avatar avatar-xxl mr-5" style="background-image: url(demo/faces/male/21.jpg)">
+                            @* <span class="avatar avatar-xxl mr-5" style="background-image: url(demo/faces/male/21.jpg)">
                                 <i class="fe fe-camera"></i>    
-                            </span>
+                            </span> *@
+
+                            <!-- Profile Image Display -->
+                            @if ( worker.ProfileImage!=null)
+                            {
+                                <div class="text-center mt-3">
+                                    <span id="profileImage" class="avatar avatar-xxl"
+                                          style="background-image: url('@Url.Content($"~/{worker.ProfileImage}")')">
+                                       
+                                    </span>
+
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-center mt-3">
+                                    <span id="profileImage" class="avatar avatar-xxl" style="background-image: url('/demo/faces/profile-picture.png')"></span>
+                                </div>
+                            }
+
                             <div class="media-body">
                                 <h4 class="m-0 mb-1">@fullName</h4>
                                 <p class="text-muted mb-1"><b class="text-info">@worker.WorkmanId</b> [ <b>@worker.DepartmentName</b>]</p>
@@ -168,10 +204,10 @@
                         </div>
                     }
 
-                                                
+
                     <div class="card-body p-2 @(worker.WorkerShiftId == null?"":"d-none")" id="card-workershift-form">
                         <form id="formWorkerShift" method="post">
-                            
+
                             <input type="hidden" id="txtWorkerId1" value="@worker.WorkerId" />
                             <div class="mb-3">
                                 <label class="form-label" for="drpShiftId"> Shift Time </label>
@@ -232,10 +268,49 @@
                 </div>
 
                 <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Current Month Attendace</h3>
+                    </div>
                     <div class="card-body">
 
                         <div class="container p-2">
-                            <h2 class="text-center mb-4">Current Month Attendace</h2>
+                            @if (ViewBag.Ledger != null)
+                            {
+                                var ledger = ViewBag.Ledger;
+                                <ul class="list-group list-group-numbered mb-4">
+                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            <div class="fw-bold">Total Days</div>
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">@ledger.TotalDays</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            Present
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">@ledger.DaysPresent</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            Absent
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">@ledger.DaysAbsent</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            Leave
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">@ledger.DaysLeave</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            Half Day
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">@ledger.DaysHalfDay</span>
+                                    </li>
+                                </ul>
+                            }
+
 
                             <!-- Calendar Header -->
                             <div class="calendar-header row text-center">
@@ -248,45 +323,26 @@
                                 <div class="col">Sat</div>
                             </div>
 
+
                             <!-- Calendar Grid -->
                             <div class="calendar">
-                                <!-- Empty Days (for alignment) -->
-                                <div class="calendar-box empty"></div>
-                                <div class="calendar-box empty"></div>
-                                <div class="calendar-box empty"></div>
-                                <div class="calendar-box empty"></div>
 
-                                <!-- Days with Present/Absent Status -->
-                                <div class="calendar-box present">1</div>
-                                <div class="calendar-box absent">2</div>
-                                <div class="calendar-box present">3</div>
-                                <div class="calendar-box absent">4</div>
-                                <div class="calendar-box present">5</div>
-                                <div class="calendar-box present">6</div>
-                                <div class="calendar-box absent">7</div>
-                                <div class="calendar-box present">8</div>
-                                <div class="calendar-box absent">9</div>
-                                <div class="calendar-box absent">10</div>
-                                <div class="calendar-box present">11</div>
-                                <div class="calendar-box present">12</div>
-                                <div class="calendar-box absent">13</div>
-                                <div class="calendar-box present">14</div>
-                                <div class="calendar-box present">15</div>
-                                <div class="calendar-box absent">16</div>
-                                <div class="calendar-box present">17</div>
-                                <div class="calendar-box absent">18</div>
-                                <div class="calendar-box absent">19</div>
-                                <div class="calendar-box present">20</div>
-                                <div class="calendar-box absent">21</div>
-                                <div class="calendar-box present">22</div>
-                                <div class="calendar-box absent">23</div>
-                                <div class="calendar-box present">24</div>
-                                <div class="calendar-box absent">25</div>
-                                <div class="calendar-box absent">26</div>
-                                <div class="calendar-box present">27</div>
-                                <div class="calendar-box present">28</div>
-                                <div class="calendar-box absent">29</div>
-                                <div class="calendar-box present">30</div>
+                                @if (ViewBag.Ledger != null)
+                                {
+                                    @for (int day = 1; day <= ViewBag.DayNumber; day++)
+                                    {
+                                        <div class="calendar-box empty"></div>
+                                    }
+
+                                    var ledger = ViewBag.Ledger;
+                                    @for (int day = 1; day <= 31; day++)
+                                    {
+                                        string status = ledger.GetType().GetProperty($"Day{day}")?.GetValue(ledger);
+                                        <div class="calendar-box @status">@day</div>
+                                    }
+
+                                }
+
                             </div>
                         </div>
 
@@ -302,7 +358,7 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title">Worker Attendance</h4>
+                                <h4 class="card-title">Worker Attendance</h4>
                     </div>
                     <div class="table-responsive">
 
@@ -485,6 +541,38 @@
             </div>
           </div>
         </div>
+<!-- Modal for uploading profile image -->
+<div class="modal fade" id="ppUploadImageModal" tabindex="-1" aria-labelledby="ppUploadImageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ppUploadImageModalLabel">Upload Profile Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="ppImageUploadForm">
+                    <!-- Hidden WorkerId input -->
+                    <input type="hidden" id="ppTxtWorkerId" value="@worker.WorkerId">
+
+                    <div class="mb-3">
+                        <label for="ppImageInput" class="form-label">Select Image</label>
+                        <input type="file" class="form-control" id="ppImageInput" accept="image/*">
+                        <input class="form-control" type="hidden" id="profileImage">
+                    </div>
+                    <div class="mb-3">
+                        <!-- Image preview -->
+                        <img id="ppImagePreview" src="#" alt="Selected Image" class="img-fluid d-none" style="max-height: 200px;">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btnCloseModal" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="ppImageUploadBtn">Upload</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 <!-- Modal -->
@@ -534,7 +622,89 @@
 @section Scripts {
 
     <script>
-            
+        $(document).ready(function () {
+            // Open modal and set WorkerId dynamically
+            $('.btn-upload2').on('click', function () {
+                $('#ppUploadImageModal').modal('show');  // Open modal
+                const workerId = $(this).data('worker-id');  // Get WorkerId from the button
+                $('#ppTxtWorkerId').val(workerId);  // Set WorkerId in hidden input
+                $('#ppImageInput').val('');  // Reset the file input field
+                $('#ppImagePreview').addClass('d-none');  // Hide preview initially
+            });
+
+            // Close the modal when clicking close button
+            $('.btnCloseModal').on('click', function () {
+                $('#ppUploadImageModal').modal('hide');
+            });
+
+            // Show image preview when file is selected
+            document.getElementById('ppImageInput').addEventListener('change', function (event) {
+                const imageInput = event.target;
+                const preview = document.getElementById('ppImagePreview');
+
+                if (imageInput.files && imageInput.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        preview.src = e.target.result;
+                        preview.classList.remove('d-none');
+                    };
+                    reader.readAsDataURL(imageInput.files[0]); // Preview the selected image
+                } else {
+                    preview.src = '#';
+                    preview.classList.add('d-none');
+                }
+            });
+
+            // AJAX image upload on form submission
+            $('#ppImageUploadBtn').on('click', function () {
+                const formData = new FormData();
+                const fileInput = document.getElementById('ppImageInput');
+
+                if (fileInput.files && fileInput.files.length > 0) {
+                    formData.append('file', fileInput.files[0]);
+                } else {
+                    alert('Please select an image to upload.');
+                    return;
+                }
+
+                formData.append('workerId', $('#ppTxtWorkerId').val());  // Add WorkerId to formData
+
+                $.ajax({
+                    url: '/api/Worker/UploadProfileImage',  // Adjust URL as necessary
+                    type: 'POST',
+                    data: formData,
+                    processData: false,  // Prevent jQuery from processing data
+                    contentType: false,  // Prevent jQuery from setting contentType
+                    success: function (response) {
+                        if (response.success) {
+                            alert(response.message);  // Alert user
+                            window.location.reload();
+                           
+                        } else {
+                            alert('Error: ' + response.message);  // Alert if error occurs
+                        }
+                    },
+                    // success: function (response) {
+                    //     if (response.success) {
+                    //         console.log('Updated file path:', response.filePath);
+
+                    //         // Force update the profile image with the new path
+                    //         $('#profileImage').css('background-image', `url('${response.filePath}?t=${new Date().getTime()}')`);
+
+                    //         // Hide the modal after successful upload
+                    //         $('#ppUploadImageModal').modal('hide');
+                    //     } else {
+                    //         alert('Error: ' + response.message);
+                    //     }
+                    // },
+                    error: function (xhr, status, error) {
+                        console.error(error);
+                        alert('An error occurred while uploading the image.');
+                    }
+                });
+            });
+        });
+
 
         $(document).ready(function () {
 

@@ -62,10 +62,46 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 		{
 			var worker = _workerService.GetProfileById(id, null);
 			ViewBag.AllData = worker;
+
 			if (ViewBag.AllData == null)
 			{
 				return RedirectToAction(nameof(Index));// nameof checks method compiletime to avoid errors
 			}
+
+			var ledger = _attendanceService.GetLedger(worker.WorkerId, worker.SiteId, worker.SiteShiftId, DateTime.Now.Year, DateTime.Now.Month);
+
+			//var ledger = _attendanceService.GetLedger(1, 1, 1, 2025, 1);
+			if (ledger.Count > 0)
+			{
+				ViewBag.Ledger = ledger[0];
+
+				// Directly use Year and Month as they are already integers
+				int year = ledger[0].Year;
+				int month = int.Parse(ledger[0].Month);
+
+				// Validate the month value
+				if (year > 0 && month >= 1 && month <= 12)
+				{
+					// Get the first day of the month
+					DateTime firstDayOfMonth = new DateTime(year, month, 1);
+
+					// Get the day number (1 = Monday, 2 = Tuesday, ..., 7 = Sunday)
+					int dayNumber = (int)firstDayOfMonth.DayOfWeek;
+
+					// Adjust so that 1 = Monday and 7 = Sunday
+					dayNumber = dayNumber == 0 ? 7 : dayNumber;
+
+					ViewBag.FirstDay = firstDayOfMonth;
+					ViewBag.DayNumber = dayNumber;
+				}
+				else
+				{
+					ViewBag.FirstDay = null;
+					ViewBag.DayNumber = null;
+				}
+			}
+
+
 			ViewBag.AttendanceHistory = _attendanceService.GetAll(id, null, null, null,10);
 			ViewBag.WorkerDocuments = _workerDocumentService.GetAll(id);
 			ViewBag.Addresses = _workerAddressService.GetByWorkerId(id);
@@ -175,7 +211,70 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			}
 		}
 
-		[HttpPost]
+        [HttpPost]
+        [Route("api/Worker/UploadProfileImage")]
+        public IActionResult UploadProfileImage([FromForm] IFormFile? file, [FromForm] int workerId, [FromForm] string? profileImage = "")
+        {
+            string uploadPath = "media/profile_images";
+
+            var model = new ProfileImageModel
+            {
+                WorkerId = workerId,
+                ProfileImage = profileImage
+            };
+
+            try
+            {
+                if (file != null && file.Length > 0)
+                {
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", uploadPath);
+
+                    if (!Directory.Exists(filePath))
+                        Directory.CreateDirectory(filePath);
+
+                    var uniqueFileName = $"{Path.GetFileNameWithoutExtension(file.FileName)}_{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+                    var completeFilePath = Path.Combine(filePath, uniqueFileName);
+
+                    using (var stream = new FileStream(completeFilePath, FileMode.Create))
+                    {
+                        file.CopyTo(stream);
+                    }
+
+                    model.ProfileImage = $"{uploadPath}/{uniqueFileName}";
+
+                    _workerService.UploadProfileImage(workerId, model.ProfileImage);
+
+                    return Ok(new
+                    {
+                        success = true,
+                        message = "Profile image uploaded successfully!",
+                        filePath = $"{uploadPath}/{uniqueFileName}"
+                    });
+                }
+                else
+                {
+                    model.ProfileImage = profileImage;
+
+                    _workerService.UploadProfileImage(workerId, model.ProfileImage);
+
+                    return Ok(new
+                    {
+                        success = true,
+                        message = "Profile image updated successfully!",
+                        filePath = profileImage
+                    });
+                }
+
+                return BadRequest(new { success = false, message = "No file uploaded." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = $"An error occurred: {ex.Message}" });
+            }
+        }
+
+
+        [HttpPost]
 		[Route("api/Worker/UploadDocument")]
 		public IActionResult UploadDocument([FromForm] IFormFile? file, [FromForm] int WorkerId, int DocumentId, [FromForm] string? documentNumber = "", string? documentImage = null)
 		{

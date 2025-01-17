@@ -62,5 +62,38 @@ namespace OmSaiServices.Worker.Implementations
 		}
 
 
+		public List<WorkerAttendanceLedgerModel> GetLedger(int? WorkerId = null, int? SiteId = null, int? SiteShiftId = null, int? Year = null, int? Month = null)
+		{
+			var mapEntity = new Func<IDataReader, WorkerAttendanceLedgerModel>(reader => _mapper.MapEntity<WorkerAttendanceLedgerModel>(reader));
+
+
+			var parameters = new[]
+			   {
+					new SqlParameter("@WorkerId", WorkerId ?? (object)DBNull.Value),
+					new SqlParameter("@SiteId", SiteId ?? (object)DBNull.Value),
+					new SqlParameter("@SiteShiftId", SiteShiftId ?? (object)DBNull.Value),
+					new SqlParameter("@Year", Year),
+					new SqlParameter("@Month", Month)
+				};
+
+			return QueryService.Query("usp_GetAll_AttendanceLedger", mapEntity, parameters);
+		}
+
+		public void CreateLedger( int? SiteId = null, int? SiteShiftId = null, int? Year = null, int? Month = null)
+		{
+
+			var parameters = new List<KeyValuePair<string, object>>
+			{
+				new("@SiteId", SiteId ?? (object)DBNull.Value),
+				new("@SiteShiftId", SiteShiftId ?? (object)DBNull.Value),
+				new("@Year", Year),
+				new("@Month", Month)
+
+			};
+
+			 QueryService.NonQuery("usp_GenerateAttendanceLedger",  parameters);
+		}
+
+
 	}
 }
