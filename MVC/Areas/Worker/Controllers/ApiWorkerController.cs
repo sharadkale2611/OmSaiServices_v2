@@ -5,6 +5,7 @@ using OmSaiModels.Common;
 using OmSaiModels.Worker;
 using OmSaiServices.Worker.Implementations;
 using OmSaiServices.Worker.Implimentation;
+using OmSaiServices.Worker.Interfaces;
 using System.Net;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -140,8 +141,98 @@ namespace GeneralTemplate.Areas.Worker.Controllers
                 return BadRequest(new ApiResponseModel<object>(false, null, errors));
 
             }
+
+           
         }
 
 
+        [HttpPost("upload-document")]
+       
+        public IActionResult UploadDocument([FromForm] IFormFile? file, [FromForm] int WorkerId, [FromForm] int DocumentId, [FromForm] string? documentNumber = "", string? documentImage = null)
+        {
+            string uploadPath = "media/documents";
+
+            var model = new WorkerDocumentModel
+            {
+                DocumentId = DocumentId,
+                DocumentNumber = documentNumber,
+                WorkerId = WorkerId
+
+            };
+            try
+            {
+                var worker = _workerService.GetById(WorkerId);
+                if (worker == null)
+                {
+                    var errors = new
+                    {
+                        WorkerId = new[] { "Worker not found!" },
+                        File = file == null ? new[] { "No file uploaded!" } : null,
+                        DocumentId = DocumentId <= 0 ? new[] { "Invalid DocumentId!" } : null
+                    };
+                    return BadRequest(new ApiResponseModel<object>(false, null, errors));
+
+
+                }
+                if (file != null && file.Length > 0)
+                {
+
+                    var documentPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", uploadPath);
+
+
+                    if (!Directory.Exists(documentPath))
+                        Directory.CreateDirectory(documentPath);
+
+
+                    var uniqueFileName = $"{Path.GetFileNameWithoutExtension(file.FileName)}_{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+                    var filePath = Path.Combine(documentPath, uniqueFileName);
+
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        file.CopyTo(stream);
+                    }
+                    model.DocumentImage = $"{uploadPath}/{uniqueFileName}";
+                    _workerDocumentService.Update(model);
+
+                    return Ok(new ApiResponseModel<object>(true, new
+
+                    {
+                        
+                        message = "Document uploaded successfully!",
+                        filePath = $"{uploadPath}/{uniqueFileName}"
+                    }, null));
+                }
+                else
+                {
+                    model.DocumentImage = documentImage;
+
+                    _workerDocumentService.Update(model);
+                    return Ok(new ApiResponseModel<object>(true, new
+
+                    {
+                    
+                        message = "Document updated successfully!",
+                        filePath = documentImage
+                    }, null));
+
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                var errors = new
+                {
+                    message = $"An error occurred: {ex.Message}"
+                };
+
+                return BadRequest(new ApiResponseModel<object>(false, null, errors));
+
+            }
+        }
+
     }
+
+
 }
