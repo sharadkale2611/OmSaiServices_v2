@@ -116,9 +116,11 @@ builder.Services.AddRazorPages()
 	builder.Services.AddDistributedMemoryCache(); // Enables in-memory session storage
 	builder.Services.AddSession(options =>
 	{
-		options.IdleTimeout = TimeSpan.FromMinutes(30); // Session timeout
-		options.Cookie.HttpOnly = true; // Security setting
-		options.Cookie.IsEssential = true; // GDPR compliance
+		options.IdleTimeout = TimeSpan.FromMinutes(30);
+		options.Cookie.HttpOnly = true;
+		options.Cookie.IsEssential = true;
+		options.Cookie.SameSite = SameSiteMode.None; // Allows cross-origin requests
+		options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Ensures cookies are sent over HTTPS
 	});
 
 
@@ -136,6 +138,13 @@ builder.Services.AddCors(options =>
 			  .AllowAnyMethod()     // Allows all HTTP methods (GET, POST, etc.)
 			  .AllowAnyHeader();    // Allows all headers
 	});
+});
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+	options.Cookie.SameSite = SameSiteMode.None; // Allows cross-origin requests
+	options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Ensures cookies are sent over HTTPS
+	options.AccessDeniedPath = "/Account/AccessDenied"; // Redirect path for access denied
 });
 
 
