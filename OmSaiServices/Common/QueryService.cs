@@ -115,5 +115,44 @@ namespace LmsServices.Common
 		}
 
 
+		public static Dictionary<string, object> QueryOutputs(
+			string spName,
+			List<SqlParameter> parameters,
+			List<string> outputParameterNames)
+		{
+			string connString = DBConnection.DefaultConnection;
+			var outputValues = new Dictionary<string, object>();
+
+			using (SqlConnection con = new SqlConnection(connString))
+			{
+				con.Open();
+				using (SqlCommand cmd = new SqlCommand(spName, con))
+				{
+					cmd.CommandType = CommandType.StoredProcedure;
+
+					// Add parameters to command
+					if (parameters != null)
+					{
+						cmd.Parameters.AddRange(parameters.ToArray());
+					}
+
+					// Execute the procedure
+					cmd.ExecuteNonQuery();
+
+					// Retrieve output parameter values
+					foreach (var paramName in outputParameterNames)
+					{
+						if (cmd.Parameters.Contains(paramName))
+						{
+							outputValues[paramName] = cmd.Parameters[paramName].Value;
+						}
+					}
+				}
+			}
+			return outputValues;
+		}
+
+
+
 	}
 }

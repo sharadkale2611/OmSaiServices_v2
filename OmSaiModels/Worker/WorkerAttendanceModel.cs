@@ -93,4 +93,26 @@ namespace OmSaiModels.Worker
 	}
 
 
+	public class AttendanceRecord
+	{
+		public int WorkerAttendanceId { get; set; }
+		public int WorkerId { get; set; }
+		public string VerifyBy { get; set; }
+		public int SiteId { get; set; }
+		public int ShiftId { get; set; }
+		public DateTime InTime { get; set; }
+		public DateTime OutTime { get; set; }
+		public string InSelfiPath { get; set; }
+		public string OutSelfiPath { get; set; }
+		public string InGeoLocation { get; set; }
+		public string OutGeoLocation { get; set; }
+		public bool LateIn { get; set; }
+		public bool EarlyOut { get; set; }
+		public string Status { get; set; }
+		public DateTime CreatedAt { get; set; }
+		public bool IsDeleted { get; set; }
+		public DateTime? DeletedAt { get; set; }
+	}
+
+
 }
