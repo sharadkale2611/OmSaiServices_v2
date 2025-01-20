@@ -1,4 +1,5 @@
 ﻿using GeneralTemplate.Areas.Identity.Data;
+using GeneralTemplate.Filter;
 using GeneralTemplate.Migrations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +12,7 @@ using OmSaiServices.Admin.Interfaces;
 namespace GeneralTemplate.Areas.Admin.Controllers
 {
 	[Area("Admin")]
+	[EmpAuthorizeFilter]
 	public class AssetController : Controller
 	{
 

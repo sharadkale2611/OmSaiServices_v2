@@ -104,24 +104,14 @@
                             </div>
                             <div class="dropdown">
 
-
-                                @if (SignInManager.IsSignedIn(User))
+                                @if (ViewBag.IsSignedInAdmin == true)
                                 {
-                                    var user = await UserManager.GetUserAsync(User);
-                                    IList<string> roles = user != null ? await UserManager.GetRolesAsync(user) : new List<string>();
-
-                                    if (user != null)
-                                    {
-                                        roles = await UserManager.GetRolesAsync(user);
-
-                                    }
-
                                     <a href="#" class="nav-link pr-0 leading-none" data-toggle="dropdown">
                                         <span class="avatar" style="background-image: url('@Url.Content("~/demo/faces/female/25.jpg")')"></span>
                                         <span class="ml-2 d-none d-lg-block">
-                                            <span class="text-default">@UserManager.GetUserName(User)</span>
+                                            <span class="text-default">@ViewBag.EmployeeName</span>
                                             <small class="text-muted d-block mt-1">
-                                                @string.Join(", ", roles)
+                                                @ViewBag.EmployeeRoles
                                             </small>
                                         </span>
                                     </a>
@@ -143,13 +133,10 @@
                                         @* <a class="dropdown-item" href="#"> *@
                                         @*     <i class="dropdown-icon fe fe-help-circle"></i> Need help? *@
                                         @* </a> *@
-                                        <a class="dropdown-item" href="#">
-                                            <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                                                <button id="logout" type="submit" class="nav-link btn btn-link text-dark border-0"><i class="dropdown-icon fe fe-log-out"></i> Sign out</button>
-                                            </form>
+                                        <a class="dropdown-item btn btn-link text-dark border-0" asp-area="" asp-action="logout" asp-controller="Account">
+                                            <i class="dropdown-icon fe fe-log-out"></i> Sign out
                                         </a>
                                     </div>
-
                                 }
                                 else
                                 {
@@ -194,7 +181,7 @@
 
                             </div>
                         </div>
-                        @if (SignInManager.IsSignedIn(User))
+                        @if (ViewBag.IsSignedInAdmin == true)
                         {
                             <a href="#" class="header-toggler d-lg-none ml-3 ml-lg-0 text-primary" data-toggle="collapse" data-target="#headerMenuCollapse">
                                 <span class="header-toggler-icon"></span>
@@ -210,7 +197,7 @@
                     </div>
                 </div>
             </div>
-            @if (!SignInManager.IsSignedIn(User))
+            @if (ViewBag.IsSignedInAdmin == true)
             {
 
                 @if (ViewBag.IsSignedIn == true)
@@ -244,7 +231,7 @@
             }
 
 
-            @if (SignInManager.IsSignedIn(User))
+            @if (ViewBag.IsSignedInAdmin == true)
             {
                 <partial name="_AdminMenuItemPartial" />
             }

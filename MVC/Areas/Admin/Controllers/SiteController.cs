@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using GeneralTemplate.Filter;
+using Microsoft.AspNetCore.Mvc;
 using OmSaiModels.Admin;
 using OmSaiServices.Admin.Implementations;
 using OmSaiServices.Admin.Interfaces;
@@ -6,7 +7,8 @@ using OmSaiServices.Admin.Interfaces;
 namespace GeneralTemplate.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class SiteController : Controller
+	[EmpAuthorizeFilter]
+	public class SiteController : Controller
     {
 		private readonly ProjectService _projectService;
 		private readonly SiteService _siteService;

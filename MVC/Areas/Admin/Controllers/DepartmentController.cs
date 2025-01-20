@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using GeneralTemplate.Filter;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OmSaiModels.Admin;
 using OmSaiServices.Admin.Implementations;
@@ -7,7 +8,8 @@ using OmSaiServices.Admin.Interfaces;
 namespace GeneralTemplate.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class DepartmentController : Controller
+	[EmpAuthorizeFilter]
+	public class DepartmentController : Controller
     {
         private readonly DepartmentService _departmentService;
         public DepartmentController()

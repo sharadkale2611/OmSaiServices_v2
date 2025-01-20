@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using GeneralTemplate.Filter;
+using Microsoft.AspNetCore.Mvc;
 using OmSaiModels.Worker;
 using OmSaiServices.Worker.Implementations;
 
 namespace GeneralTemplate.Areas.Worker.Controllers
 {
     [Area("Worker")]
-    public class WorkerMobileNumberController : Controller
+	[EmpAuthorizeFilter]
+	public class WorkerMobileNumberController : Controller
     {
         private readonly WorkerMobileNumbersService _workerMobileNumbersService;
         public WorkerMobileNumberController()

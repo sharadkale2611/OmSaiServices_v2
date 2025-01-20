@@ -1,4 +1,5 @@
 ﻿using GeneralTemplate.Areas.Identity.Data;
+using GeneralTemplate.Filter;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace GeneralTemplate.Areas.Admin.Controllers
 {
 	[Area("Admin")]
+	[EmpAuthorizeFilter]
 	public class UserController : Controller
 	{
 		private readonly UserManager<AppUser> _userManager;

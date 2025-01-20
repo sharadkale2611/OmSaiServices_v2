@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using GeneralTemplate.Filter;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OmSaiModels.Admin;
 using OmSaiModels.Worker;
@@ -11,7 +12,7 @@ using System.Security.Claims;
 namespace GeneralTemplate.Areas.Admin.Controllers
 {
 	[Area("Admin")]
-    [Authorize]
+    [EmpAuthorizeFilter]
     public class AssetIssueController : Controller
     {
 
@@ -45,7 +46,8 @@ namespace GeneralTemplate.Areas.Admin.Controllers
                 if (ModelState.IsValid)
                 {
                     // Get the logged-in user's ID
-                    string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    //string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    string userId = ViewBag.EmployeeId;
                     model.IssueBy = userId;
                     _assetsIssuesService.Create(model);
 					TempData["success"] = "Record added successfully!";

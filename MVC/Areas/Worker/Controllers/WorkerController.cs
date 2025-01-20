@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using GeneralTemplate.Filter;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using OmSaiModels.Admin;
@@ -13,6 +14,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace GeneralTemplate.Areas.Worker.Controllers
 {
 	[Area("Worker")]
+	[EmpAuthorizeFilter]
 	public class WorkerController : Controller
 	{
 		private readonly WorkerService _workerService;

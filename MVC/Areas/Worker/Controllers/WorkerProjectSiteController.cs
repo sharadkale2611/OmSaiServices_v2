@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using GeneralTemplate.Filter;
+using Microsoft.AspNetCore.Mvc;
 using OmSaiModels.Worker;
 using OmSaiServices.Admin.Implementations;
 using OmSaiServices.Worker.Implementations;
@@ -7,7 +8,8 @@ using OmSaiServices.Worker.Implimentation;
 namespace GeneralTemplate.Areas.Worker.Controllers
 {
     [Area("Worker")]
-    public class WorkerProjectSiteController : Controller
+	[EmpAuthorizeFilter]
+	public class WorkerProjectSiteController : Controller
     {
         private readonly WorkerProjectSiteService _workerProjectSiteService;
         private readonly WorkerService _workerService;

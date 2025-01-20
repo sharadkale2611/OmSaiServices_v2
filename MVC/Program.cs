@@ -78,6 +78,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options => options.SignIn.Re
 .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<UserManager<AppUser>>();
+
 builder.Services.AddScoped<RoleManager<IdentityRole>>();
 
 //builder.Services.AddControllersWithViews(options =>
@@ -96,20 +97,20 @@ builder.Services.AddAuthorization(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
-builder.Services.AddRazorPages()
-	 .AddRazorPagesOptions(options =>
-	 {
-		 // Map Identity routes without the "Identity" prefix
-		 options.Conventions.AddAreaPageRoute("Identity", "/Account/AccessDenied", "Account/AccessDenied");
-		 options.Conventions.AddAreaPageRoute("Identity", "/Account/Login", "Account/Login");
-		 options.Conventions.AddAreaPageRoute("Identity", "/Account/Register", "Account/Register");
-		 options.Conventions.AddAreaPageRoute("Identity", "/Account/Logout", "Account/Logout");
-		 options.Conventions.AddAreaPageRoute("Identity", "/Account/Manage/Index", "Account/Manage");
-		 options.Conventions.AddAreaPageRoute("Identity", "/Account/Manage/Email", "Account/Manage/Email");
-		 options.Conventions.AddAreaPageRoute("Identity", "/Account/Manage/ChangePassword", "Account/Manage/ChangePassword");
-		 options.Conventions.AddAreaPageRoute("Identity", "/Account/Manage/TwoFactorAuthentication", "Account/Manage/TwoFactorAuthentication");
-		 options.Conventions.AddAreaPageRoute("Identity", "/Account/Manage/PersonalData", "Account/Manage/PersonalData");
-	 });
+//builder.Services.AddRazorPages()
+//	 .AddRazorPagesOptions(options =>
+//	 {
+//		 // Map Identity routes without the "Identity" prefix
+//		 options.Conventions.AddAreaPageRoute("Identity", "/Account/AccessDenied", "Account/AccessDenied");
+//		 options.Conventions.AddAreaPageRoute("Identity", "/Account/Login", "Account/Login");
+//		 options.Conventions.AddAreaPageRoute("Identity", "/Account/Register", "Account/Register");
+//		 options.Conventions.AddAreaPageRoute("Identity", "/Account/Logout", "Account/Logout");
+//		 options.Conventions.AddAreaPageRoute("Identity", "/Account/Manage/Index", "Account/Manage");
+//		 options.Conventions.AddAreaPageRoute("Identity", "/Account/Manage/Email", "Account/Manage/Email");
+//		 options.Conventions.AddAreaPageRoute("Identity", "/Account/Manage/ChangePassword", "Account/Manage/ChangePassword");
+//		 options.Conventions.AddAreaPageRoute("Identity", "/Account/Manage/TwoFactorAuthentication", "Account/Manage/TwoFactorAuthentication");
+//		 options.Conventions.AddAreaPageRoute("Identity", "/Account/Manage/PersonalData", "Account/Manage/PersonalData");
+//	 });
 
 
 	// Add services to the container.
@@ -145,6 +146,13 @@ builder.Services.ConfigureApplicationCookie(options =>
 	options.Cookie.SameSite = SameSiteMode.None; // Allows cross-origin requests
 	options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Ensures cookies are sent over HTTPS
 	options.AccessDeniedPath = "/Account/AccessDenied"; // Redirect path for access denied
+});
+
+
+builder.Services.AddControllersWithViews(options =>
+{
+	// Add the filter globally
+	options.Filters.Add<SessionInfoFilter>();
 });
 
 
@@ -190,9 +198,9 @@ using (var scope = app.Services.CreateScope())
 app.MapRazorPages();
 
 // Add URL Rewrite Rules
-var rewriteOptions = new RewriteOptions()
-	.AddRedirect(@"^Identity/(.*)", "$1"); // Redirect "Identity/..." to root
-app.UseRewriter(rewriteOptions);
+//var rewriteOptions = new RewriteOptions()
+//	.AddRedirect(@"^Identity/(.*)", "$1"); // Redirect "Identity/..." to root
+//app.UseRewriter(rewriteOptions);
 
 app.UseSession(); // Enable session middleware
 

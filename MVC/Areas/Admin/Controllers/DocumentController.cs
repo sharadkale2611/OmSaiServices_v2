@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using GeneralTemplate.Filter;
+using Microsoft.AspNetCore.Mvc;
 using OmSaiModels.Admin;
 using OmSaiServices.Admin.Implementations;
 using OmSaiServices.Admin.Interfaces;
@@ -6,7 +7,8 @@ using OmSaiServices.Admin.Interfaces;
 namespace GeneralTemplate.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class DocumentController : Controller
+	[EmpAuthorizeFilter]
+	public class DocumentController : Controller
     {
         
         private readonly DocumentService _documentService;
