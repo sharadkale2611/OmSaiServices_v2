@@ -53,8 +53,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 				address,
 				documents,
 			}, null));
-
-			
+		
 		}
 
         [HttpPost("upload-profile-image")]

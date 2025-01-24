@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using OmSaiModels.Admin;
 using OmSaiModels.Worker;
@@ -274,7 +275,40 @@ namespace GeneralTemplate.Areas.Worker.Controllers
         }
 
 
-        [HttpPost]
+		[HttpPost]
+		//[Route("verify-document/{id}")]
+		public IActionResult VerifyDocument(int id, bool IsVerified)
+		{
+			WorkerDocumentModel model = new WorkerDocumentModel
+			{
+				IsVerified = IsVerified,
+				WorkerDocumentId = id
+			};
+			if (id <= 0)
+			{
+				return BadRequest("Invalid WorkerDocumentId");
+			}
+			_workerDocumentService.VerifyDocument(id, IsVerified);
+
+			var workerDocuments = _workerDocumentService.GetAll();
+			ViewBag.WorkerDocuments = workerDocuments;
+
+			TempData["success"] = "Document successfully verified.";
+			return RedirectToAction("Profile", new { id = model.WorkerId });
+			//return View();
+		}
+
+		//var document = _workerDocumentService.VerifyDocument(id, IsVerified);
+		//if (document != null)
+		//{
+		//	document.IsVerified = true;
+
+		//	return Ok("successfully verified");
+		//}
+		//return BadRequest("Document not verified.");
+
+
+		[HttpPost]
 		[Route("api/Worker/UploadDocument")]
 		public IActionResult UploadDocument([FromForm] IFormFile? file, [FromForm] int WorkerId, int DocumentId, [FromForm] string? documentNumber = "", string? documentImage = null)
 		{
@@ -695,5 +729,14 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			return RedirectToAction("Profile", new { id = model.WorkerId });
 
 		}
-	}
+
+		//[HttpPost]
+		//public IActionResult CreateUpdateAttendance(WorkerAttendanceViewModel model)
+		//{
+		//	_
+		//	return RedirectToAction("Profile", new { id = model.WorkerId });
+
+		//}
+
+	}	
 }

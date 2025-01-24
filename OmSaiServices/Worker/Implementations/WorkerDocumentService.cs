@@ -11,6 +11,7 @@ using System.Reflection.Metadata;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace OmSaiServices.Worker.Implementations
 {
@@ -19,6 +20,7 @@ namespace OmSaiServices.Worker.Implementations
 		private readonly string sp_cud;
 		private readonly string sp_r;
 		private readonly Mapper _mapper;
+
 
 		public WorkerDocumentService()
 		{
@@ -74,6 +76,14 @@ namespace OmSaiServices.Worker.Implementations
 			};
 		}
 
-
+		public void VerifyDocument(int id, bool IsVerified = true)
+		{
+			var parameters = new List<KeyValuePair<string, object>>
+			{
+				new("@WorkerDocumentId", id ),
+				new("@IsVerified", IsVerified),
+			};
+			QueryService.NonQuery("VerifyWorkerDocument", parameters);
+		}	
 	}
 }

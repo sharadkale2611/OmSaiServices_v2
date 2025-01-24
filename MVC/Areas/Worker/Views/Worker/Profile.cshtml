@@ -438,7 +438,12 @@
                     </div>
                 </div>
 
+                <div class="row">
+                    <partial name="~/Views/shared/_alertpartial.cshtml" />
+                </div>
+                <div class="row">
                 <div class="card">
+                   
                     <div class="card-header">
                         <h4>Worker Documents</h4>
                     </div>
@@ -510,6 +515,13 @@
                                                 else
                                                 {
                                                     <span class="status-icon bg-danger"></span> <span>Not Verified</span>
+                                                    @* <button class="btn btn-primary btn-sm" onclick="verifyDocument(doc.DocumentId)">Verify</button> *@
+                                                    <a class=" btn btn-primary btn-sm btn-verify" data-document-id="@doc.WorkerDocumentId">
+                                                        Verify
+                                                     @*   data_id="@doc.id"
+                                                       data_display="@doc.IsVerified"> *@
+                                                        @* <i class="fe fe-check"></i> *@
+                                                    </a>
                                                 }
                                             }else{
                                                  <span>-</span>
@@ -517,6 +529,9 @@
 
                                         </td>
                                         <td>
+                                          @*   <button class="btn btn-info btn-warning">
+                                                <i class="fe fe-check"></i>
+                                            </button> *@
                                             <button class="btn btn-info btn-upload"
                                                     data-document_id="@doc.DocumentId"
                                                     data-document_name="@doc.DocumentName"
@@ -526,7 +541,7 @@
                                                     data-is_document_image="@doc.IsDocumentImage"
                                                     data-worker_id="@doc.WorkerId">
                                                 <i class="fe fe-upload"></i>
-                                            </button>
+                                            </button >
                                         </td>
                                     </tr>
 
@@ -536,11 +551,33 @@
                         </table>
                     </div>
                 </div>
-
+                </div>
               </div>
             </div>
           </div>
         </div>
+
+        @* For verify document pop-up  *@
+<div class="modal fade" id="verify_model" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <form method="post" id="formVerify" asp-area="Worker" asp-controller="Worker" asp-action="VerifyDocument">
+                    <h2><i class="bi bi-check-circle"></i>Are you sure want to Verify ?</h2>
+                    <input type="hidden" name="id" id="verify_id" value="" />
+                    <input type="hidden" name="IsVerified" value="true" />
+
+                    <button type="button" class="main-btn btn btn-warning cancel" id="closeModel" data-dismiss="modal">No</button>
+                    @* <input type="hidden" name="id" id="verify_id" value="" /> *@
+                    <input type="submit" value="Yes" class="main-btn btn btn-success" id="btnFormVerify" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 <!-- Modal for uploading profile image -->
 <div class="modal fade" id="ppUploadImageModal" tabindex="-1" aria-labelledby="ppUploadImageModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -877,6 +914,51 @@
         });
 
 
+        //For Document Verification 
+         $("#closeModel").click(() => {
+            $("#verify_model").modal('hide')
+        })
+
+        $('#verify_model').on('shown.bs.modal', function () {
+
+            $('#formVerify').submit((e) => {
+                e.preventDefault();                          //  form submission for debugging
+
+                $('#formVerify').off('submit').submit();
+            });
+        });
+
+        $('.btn-verify').click((event) => {
+            const documentId = $(event.currentTarget).data('document-id');
+             $('#verify_id').val(documentId);
+            // const data_id = $(event.currentTarget).data('data_id');
+            // $('#WorkerDocumentId').val(data_id);
+            $("#verify_model").modal('show')
+
+        })
+
+
     </script>
 
 }
+
+        @*              $.ajax({
+                url: '/Worker/VerifyDocument',
+                type: 'POST',
+                data: { id: documentId, IsVerified: true },
+                success: function (response) {
+                    // Update the specific row in the table dynamically
+                    const row = $(`[data-document-id="${documentId}"]`).closest('tr');
+                    row.find('.status-icon').removeClass('bg-danger').addClass('bg-success'); // Change icon
+                    row.find('span:contains("Not Verified")').text("Verified"); // Change text
+                    row.find('.btn-verify').remove(); // Remove the Verify button
+
+                    // Hide the modal
+                    $('#verify_model').modal('hide');
+                },
+                error: function () {
+                    alert('Error verifying the document.');
+                }
+            });
+        });
+ *@

@@ -28,7 +28,8 @@ namespace OmSaiModels.Worker
 		[StringLength(100)]
 		public string? DocumentImage { get; set; }
 
-		public bool IsVerified { get; set; } = false;
+		public bool IsVerified { get; set; } 
+		//public bool IsVerified { get; set; } = false;
 
 		public DateTime? CreatedAt { get; set; } = DateTime.Now;
 		public DateTime? UpdatedAt { get; set; } = DateTime.Now;

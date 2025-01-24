@@ -14,7 +14,6 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 		private readonly LeaveRequestService _leaveRequestService;
 		private readonly LeaveTypeService _leaveTypeservice;
 		private readonly WorkerService _workerservice;
-		//private readonly RoleService _roleService;
 
 
 		public LeaveRequestController()
@@ -22,7 +21,6 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			_leaveRequestService = new LeaveRequestService();
 			_workerservice = new WorkerService();
 			_leaveTypeservice = new LeaveTypeService();
-			//_roleService = new RoleService();
 		}
 		public IActionResult Index()
 		{
@@ -40,7 +38,6 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			ViewBag.LeaveType = _leaveTypeservice.GetAll();
 			ViewBag.Worker = _workerservice.GetAll();
 			ViewBag.IsSignedIn = true;
-			//ViewBag.Role = _roleService.GetAll();
 
 			return View();
 		}
@@ -48,9 +45,7 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		public IActionResult Create(LeaveRequestModel model)
-		{
-			//var result =  _leaveRequestService.Create(model);			
-			//return RedirectToAction(nameof(Index));
+		{			
 			try
 			{
 				if (ModelState.IsValid)

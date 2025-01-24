@@ -10,6 +10,7 @@ namespace OmSaiServices.Worker.Interfaces
 {
 	public interface IWorkerDocumentService : IRepository<WorkerDocumentModel>
 	{
+		public void VerifyDocument(int id,bool IsVerified);
 		
 	}
 }
