@@ -164,12 +164,6 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 
 				return Ok(new ApiResponseModel<object>(true, result, null));
 
-				//return Ok(new
-				//{
-				//	Success = true,
-				//	Message = "Password changed successfully.",
-				//	Data = result
-				//});
 			}
 			catch (Exception ex)
 			{

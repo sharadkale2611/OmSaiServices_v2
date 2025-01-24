@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using GeneralTemplate.Filter;
+using Microsoft.AspNetCore.Mvc;
 using OmSaiModels.Admin;
 using OmSaiServices.Admin.Implementations;
 
 namespace GeneralTemplate.Areas.Admin.Controllers
 {
 	[Area("Admin")]
-
+	[EmpAuthorizeFilter]
 	public class LeaveTypeController : Controller
 	{
 		private readonly LeaveTypeService _leaveTypeService;

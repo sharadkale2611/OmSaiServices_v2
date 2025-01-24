@@ -6,6 +6,7 @@ using OmSaiServices.Worker.Implimentation;
 using LmsServices.Common;
 using Microsoft.AspNetCore.Http;
 using OmSaiServices.Admin.Interfaces;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace GeneralTemplate.Areas.Worker.Controllers
 {
@@ -188,8 +189,6 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 		}
 
 
-		
-
 		public (string statusCode, string remark) ValidateAttendance(WorkerProfileModel worker, int graceTimeIn, int halfDayIn, int graceTimeOut, int halfDayOut, string InOutType)
 		{
 
@@ -259,9 +258,30 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			}
 			return (statusCode, remark);
 		}
-
-
 		public IActionResult Create(string workmanId)
+		{
+			var worker = _workerService.GetProfileById(null, workmanId);
+			if (worker == null || workmanId == null)
+			{
+				ViewData["Errpr"] = "Invalid WorkerId";
+				return RedirectToAction(nameof(Error));
+			}
+
+			ValidateAttendanceModel validateData = _attendanceService.ValidateAttendance(worker.WorkerId);
+			
+			ViewBag.attendanceHistory = validateData.AttendanceRecords;
+			ViewBag.isAttendanceAllowed = validateData.IsAttendanceAllowed;
+			ViewBag.remark = validateData.Remark;
+			ViewBag.InOutType = validateData.InOutType;
+			ViewBag.Worker = worker;
+			ViewBag.CurrentTime = null;
+			ViewBag.Status = validateData.InOutType == "in" ? validateData.StatusCode: validateData.NewStatus;
+			return View();
+
+		}
+
+
+		public IActionResult Create_Old(string workmanId)
 		{
 
 			var worker = _workerService.GetProfileById(null, workmanId);

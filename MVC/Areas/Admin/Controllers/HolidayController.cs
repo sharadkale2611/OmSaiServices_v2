@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using GeneralTemplate.Filter;
+using Microsoft.AspNetCore.Mvc;
 using OmSaiModels.Admin;
 using OmSaiServices.Admin.Implementations;
 
@@ -6,7 +7,8 @@ using OmSaiServices.Admin.Implementations;
 namespace GeneralTemplate.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class HolidayController : Controller
+	[EmpAuthorizeFilter]
+	public class HolidayController : Controller
     {
         private readonly HolidayService _holidayService;
         public HolidayController()

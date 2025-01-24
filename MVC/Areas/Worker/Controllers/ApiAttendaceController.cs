@@ -7,6 +7,7 @@ using OmSaiModels.Worker;
 using OmSaiServices.Worker.Implementations;
 using OmSaiServices.Worker.Implimentation;
 using System.Net;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GeneralTemplate.Areas.Worker.Controllers
 {
@@ -25,16 +26,6 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			_mms = new MultiMediaService();
 
 		}
-
-		//public ApiAttendaceController(
-		//	WorkerService workerService,
-		//	WorkerAttendanceService attendanceService,
-		//	MultiMediaService mms)
-		//{
-		//	_workerService = workerService;
-		//	_attendanceService = attendanceService;
-		//	_mms = mms;
-		//}
 
 
 		[HttpPost("worker-attendance-report")]
@@ -84,8 +75,6 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 				});
 			}
 		}
-
-
 
 		[HttpPost("worker-selfie-attendance")]
 		[Authorize(AuthenticationSchemes = "Jwt")]
@@ -168,6 +157,51 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 		}
 
 
+		[HttpPost("validate-attendance")]
+		public IActionResult ValidateAttendance(string workmanId)
+		{
+			try
+			{
+				var worker = _workerService.GetProfileById(null, workmanId);
+				if (worker == null || workmanId == null)
+				{
+					return BadRequest(new
+					{
+						success = false,
+						data = (object)null,
+						errors = new
+						{
+							message = "Invalid Worker!"
+						}
+					});
+				}
+
+				ValidateAttendanceModel validateData = _attendanceService.ValidateAttendance(worker.WorkerId);
+
+				// Return a successful response
+				return Ok(new
+				{
+					success = true,
+					data = validateData,
+					errors = (object)null
+				});
+
+			}
+			catch (Exception ex)
+			{
+				// Handle exceptions
+				return StatusCode(500, new
+				{
+					success = false,
+					data = (object)null,
+					errors = new
+					{
+						message = "An error occurred while processing the request.",
+						details = ex.Message
+					}
+				});
+			}
+		}
 
 	}
 }
