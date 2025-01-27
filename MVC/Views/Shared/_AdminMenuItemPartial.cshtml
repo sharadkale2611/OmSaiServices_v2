@@ -14,7 +14,7 @@
                     <li class="nav-item">
                         <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link"><i class="fe fe-home"></i> Home</a>
                     </li>
-                    @if (User.IsInRole("Administrator"))
+                    @if (ViewBag.EmployeeRoles.Contains("Administrator", StringComparison.OrdinalIgnoreCase))
                     {
                         <li class="nav-item">
                             <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-box"></i> Configuration <i class="fe fe-chevron-down"></i></a>

@@ -99,7 +99,6 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			}
 		}
 
-
 		[HttpPost("ChangePassword")]
 		[WorkerAuthorizeFilter]
 		//[ValidateAntiForgeryToken]

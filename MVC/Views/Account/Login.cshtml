@@ -1,0 +1,56 @@
+﻿@{
+    Layout = "_LayoutWorker";
+    ViewData["Title"] = "Employee Login";
+}
+
+@if (ViewBag.Message != null)
+{
+    <p class="text-danger text-center">@ViewBag.Message</p>
+}
+
+@section css {
+
+    @* <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> *@
+
+}
+
+
+<div class="row bg-white p-4 rounded">
+
+    <div class="col-md-6 col-sm-12 d-none d-lg-flex">
+        <img src="~/assets/images/login/admin.png" />
+    </div>
+
+    <div class="col-md-4">
+        <section>
+
+            <div class="card shadow" style="box-shadow:2px 2px 10px gray !important;">
+                <div class="card-header">
+                    <h1 class="card-title bold fs-3"><b> @ViewData["Title"]</b></h1>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-controller="Account" asp-action="Login">
+                        @* <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div> *@
+                        <div class="form-floating mb-3">
+                            <label for="Email" class="form-label">Email</label>
+                            <input name="Email" id="Email" class="form-control" autocomplete="Email" aria-required="true" placeholder="Email" />
+                        </div>
+                        <div class="form-floating mb-3">
+                            <label for="Password" class="form-label">Password:</label>
+                            <input type="password" name="Password" id="Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Password" />
+                        </div>
+                        <div>
+                            <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary ">Log in</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

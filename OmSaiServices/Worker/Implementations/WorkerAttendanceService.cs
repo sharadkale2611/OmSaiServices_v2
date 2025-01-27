@@ -22,6 +22,69 @@ namespace OmSaiServices.Worker.Implementations
 			_mapper = new Mapper();
 		}
 
+
+		public ValidateAttendanceModel ValidateAttendance(int WorkerId)
+		{
+			// Define the input and output parameters
+			var parameters = new List<SqlParameter>
+	{
+		new SqlParameter("@WorkerId", SqlDbType.Int) { Value = WorkerId },
+		new SqlParameter("@InOutType", SqlDbType.NVarChar, 10) { Direction = ParameterDirection.Output },
+		new SqlParameter("@OldStatus", SqlDbType.NVarChar, 20) { Direction = ParameterDirection.Output },
+		new SqlParameter("@Remark", SqlDbType.NVarChar, 255) { Direction = ParameterDirection.Output },
+		new SqlParameter("@IsAttendanceAllowed", SqlDbType.Bit) { Direction = ParameterDirection.Output },
+		new SqlParameter("@NewStatus", SqlDbType.NVarChar, 20) { Direction = ParameterDirection.Output },
+		new SqlParameter("@StatusCode", SqlDbType.NVarChar, 20) { Direction = ParameterDirection.Output }
+	};
+
+			// Execute the stored procedure and retrieve the output values and result set
+			var outputs = QueryService.QueryOutputs("usp_ValidateAttendanceByWorkerID", parameters, parameters.Select(p => p.ParameterName).ToList());
+
+			// Initialize AttendanceRecords list
+			var attendanceRecords = new List<AttendanceRecord>();
+
+			// Check if the result contains tables (AttendanceRecords) and extract the data
+			if (outputs.ContainsKey("AttendanceRecords") && outputs["AttendanceRecords"] is DataTable)
+			{
+				var table = (DataTable)outputs["AttendanceRecords"];
+				foreach (DataRow row in table.Rows)
+				{
+					attendanceRecords.Add(new AttendanceRecord
+					{
+						WorkerAttendanceId = Convert.ToInt32(row["WorkerAttendanceId"]),
+						WorkerId = Convert.ToInt32(row["WorkerId"]),
+						VerifyBy = row["VerifyBy"].ToString(),
+						SiteId = Convert.ToInt32(row["SiteId"]),
+						ShiftId = Convert.ToInt32(row["ShiftId"]),
+						InTime = Convert.ToDateTime(row["InTime"]),
+						OutTime = Convert.ToDateTime(row["OutTime"]),
+						InSelfiPath = row["InSelfiPath"].ToString(),
+						OutSelfiPath = row["OutSelfiPath"].ToString(),
+						InGeoLocation = row["InGeoLocation"].ToString(),
+						OutGeoLocation = row["OutGeoLocation"].ToString(),
+						LateIn = Convert.ToBoolean(row["LateIn"]),
+						EarlyOut = Convert.ToBoolean(row["EarlyOut"]),
+						Status = row["Status"].ToString(),
+						CreatedAt = Convert.ToDateTime(row["CreatedAt"]),
+						IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+						DeletedAt = row["DeletedAt"] != DBNull.Value ? Convert.ToDateTime(row["DeletedAt"]) : (DateTime?)null
+					});
+				}
+			}
+
+			// Map and return the model in a concise way
+			return new ValidateAttendanceModel
+			{
+				InOutType = outputs["@InOutType"]?.ToString(),
+				OldStatus = outputs["@OldStatus"]?.ToString(),
+				Remark = outputs["@Remark"]?.ToString(),
+				IsAttendanceAllowed = outputs["@IsAttendanceAllowed"] != DBNull.Value && Convert.ToBoolean(outputs["@IsAttendanceAllowed"]),
+				NewStatus = outputs["@NewStatus"]?.ToString(),
+				StatusCode = outputs["@StatusCode"]?.ToString(),
+				AttendanceRecords = attendanceRecords  // Add AttendanceRecords as a list
+			};
+		}
+
 		public void ManageAttendance(WorkerAttendanceModel model )
 		{
 

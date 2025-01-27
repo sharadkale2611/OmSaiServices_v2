@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using OmSaiModels.Admin;
 using OmSaiServices.Admin.Interfaces;
+using GeneralTemplate.Filter;
 
 namespace GeneralTemplate.Areas.Admin.Controllers
 {
 	[Area("Admin")]
+	[EmpAuthorizeFilter]
 	public class ProjectController : Controller
 	{
 		private readonly ProjectService _projectService;

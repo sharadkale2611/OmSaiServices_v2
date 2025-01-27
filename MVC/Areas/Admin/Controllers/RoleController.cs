@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using GeneralTemplate.Filter;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OmSaiModels.Admin;
 using OmSaiServices.Admin.Implementations;
@@ -8,6 +9,7 @@ using OmSaiServices.Admin.Implementations;
 namespace GeneralTemplate.Areas.Admin.Controllers
 {
 	[Area("Admin")]
+	[EmpAuthorizeFilter]
 	public class RoleController : Controller
 	{
 		private readonly RoleManager<IdentityRole> _roleManager;

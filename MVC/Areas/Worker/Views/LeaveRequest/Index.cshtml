@@ -149,8 +149,8 @@
                             </div>
                             <div class="mb-3">
                                 <label asp-for="LeaveTypeId" class="col-form-label">Leave Type Name</label>
-                                <select class="form-control" asp-for="LeaveTypeId" id="LeaveTypeName" required>
-                                    <option value="">Select Leave Type</option>
+                                <select class="form-control" asp-for="LeaveTypeId" id="LeaveTypeName" placeholder="Select Leave Type" required>
+                                    @* <option value="">Select Leave Type</option> *@
                                     @foreach (var worker in ViewBag.LeaveType)
                                     {
                                         <option value="@worker.LeaveTypeId">@worker.LeaveTypeName</option>

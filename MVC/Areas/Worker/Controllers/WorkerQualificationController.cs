@@ -6,11 +6,13 @@ using OmSaiServices.Worker.Implementations;
 using OmSaiServices.Admin.Implementations;
 using OmSaiServices.Worker.Interfaces;
 using OmSaiServices.Worker.Implimentation;
+using GeneralTemplate.Filter;
 
 namespace GeneralTemplate.Areas.Worker.Controllers
 {
     [Area("Worker")]
-    public class WorkerQualificationController : Controller
+	[EmpAuthorizeFilter]
+	public class WorkerQualificationController : Controller
     {
 
         private readonly WorkerQualificationService _workerQualificationService;
