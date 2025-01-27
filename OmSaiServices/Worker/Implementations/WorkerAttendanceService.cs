@@ -94,6 +94,33 @@ namespace OmSaiServices.Worker.Implementations
 			 QueryService.NonQuery("usp_GenerateAttendanceLedger",  parameters);
 		}
 
+        //TO GET WORKER MANUAL ATTENDANCE
+        public List<WorkerAttendanceDetailsViewModel> GetWorkerAttendanceDetails()
+        {
+            var mapEntity = new Func<IDataReader, WorkerAttendanceDetailsViewModel>(reader => _mapper.MapEntity<WorkerAttendanceDetailsViewModel>(reader));
 
-	}
+            // Execute stored procedure and return results
+            return QueryService.Query("usp_GetWorkerAttendanceDetails", mapEntity);
+        }
+
+        // Method to create or update worker attendance
+        public void CreateOrUpdateWorkerAttendance(int workerId, DateTime inTime, DateTime outTime, string status)
+        {
+            using (var connection = new SqlConnection("Server=A2NWPLSK14SQL-v04.shr.prod.iad2.secureserver.net;Database=om_sai_services_db_v1;User Id=omuser;Password=YSAAS#2024;TrustServerCertificate=True"))
+            {
+                using (var command = new SqlCommand("usp_CreateUpdateManualWorkerAttendance", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@WorkerId", workerId);
+                    command.Parameters.AddWithValue("@InTime", inTime);
+                    command.Parameters.AddWithValue("@OutTime", outTime);
+                    command.Parameters.AddWithValue("@Status", status);
+
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+    }
 }

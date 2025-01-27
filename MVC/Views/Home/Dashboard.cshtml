@@ -1,4 +1,4 @@
-﻿@{
+﻿@* @{
     ViewData["Title"] = "Home Page";
 }
 
@@ -527,4 +527,192 @@
             </div>
         </div>
     </div>
+</div> *@
+
+
+@{
+    ViewData["Title"] = "Home Page";
+    var dashboardData = ViewBag.DashboardData as List<OmSaiModels.Admin.DashboardDataModel>;
+    var workerAttendance = ViewBag.WorkerAttendance as OmSaiModels.Admin.WorkerPresentAbsentModel;
+
+
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
 </div>
+
+<!-- Form for selecting a specific date -->
+<form method="get" action="@Url.Action("Dashboard")">
+    <div class="form-group">
+        <label for="inputDate">Select Date</label>
+        <input type="date" class="form-control" id="inputDate" name="inputDate" value="@ViewBag.InputDate">
+    </div>
+    <button type="submit" class="btn btn-primary">Filter</button>
+</form>
+
+<div class="row row-cards row-deck">
+    <!-- Card for Worker Attendance Summary (Present/Absent) -->
+    <div class="col-sm-6 col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Worker Attendance Summary</h2>
+            </div>
+            <div class="card-body" style="max-height: 200px; overflow-y: auto;">
+                <table class="table card-table">
+                    <tbody>
+                        <tr>
+                            <td>Present Workers</td>
+                            <td class="text-right">
+                                <span class="badge badge-default"> @workerAttendance?.WorkerPresent</span>
+                               
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Absent Workers</td>
+                            <td class="text-right">
+                                <span class="badge badge-default"> @workerAttendance?.WorkerAbsent</span>
+
+                                
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Projects</h2>
+            </div>
+            <div class="card-body" style="max-height: 200px; overflow-y: auto;">
+               <table class="table card-table">
+                   <tbody>
+                    <tr>
+                        <td>Hadpsar Project</td>
+                        <td class="text-right">
+                            <span class="badge badge-default">65%</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Warje Project</td>
+                        <td class="text-right">
+                            <span class="badge badge-success">Finished</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Katraj Projecct</td>
+                        <td class="text-right">
+                            <span class="badge badge-danger">Rejected</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Shivaji Nagar</td>
+                        <td class="text-right">
+                            <span class="badge badge-default">40%</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+    <!-- Card for Role Names and Employee Counts -->
+    <div class="col-sm-6 col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Roles and Employee Counts</h2>
+            </div>
+            <div class="card-body" style="max-height: 200px; overflow-y: auto;">
+            <table class="table card-table">
+                <tbody>
+                    @foreach (var item in dashboardData)
+                    {
+                        <tr>
+                            <td>@item.RoleName</td>
+                            @* <td class="badge badge-default text-right ">@item.TotalEmployees</td> *@
+                            <td class="text-right">
+                                <span class="badge badge-default">@item.TotalEmployees</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card for Total Workers -->
+    <div class="col-sm-6 col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Total Workers</h2>
+            </div>
+            <div class="card-body" style="max-height: 200px; overflow-y: auto;">
+            <table class="table card-table">
+                <tbody>
+                    <tr>
+                        <td>Total Workers</td>
+                        <td class="text-right">
+                            <span class="badge badge-default"> @dashboardData.FirstOrDefault()?.TotalWorkers</span>
+                           @*  @dashboardData.FirstOrDefault()?.TotalWorkers *@
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+    <!--  Card for Projects and Site Counts -->
+    <div class="col-sm-6 col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Projects and Site Counts</h2>
+            </div>
+            <div class="card-body" style="max-height: 200px; overflow-y: auto;">
+            <table class="table card-table">
+                <tbody>
+                    @foreach (var project in ViewBag.ProjectSiteData)
+                    {
+                        <tr>
+                            <td>@project.ProjectName</td>
+                            <td class="text-right">
+                                <span class="badge badge-default">@project.SiteCount</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+    <!-- Card for Sites and Worker Counts -->
+    <div class="col-sm-6 col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Sites and Worker Counts</h2>
+            </div>
+            <div class="card-body" style="max-height: 200px; overflow-y: auto;">
+            <table class="table card-table">
+                <tbody>
+                    @foreach (var site in ViewBag.SiteWorkerData)
+                    {
+                        <tr>
+                            <td>@site.SiteName</td>
+                            <td class="text-right">
+                                    <span class="badge badge-default">@site.WorkerCount </span>
+                             </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+

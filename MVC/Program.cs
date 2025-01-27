@@ -116,7 +116,7 @@ builder.Services.AddRazorPages()
 	builder.Services.AddDistributedMemoryCache(); // Enables in-memory session storage
 	builder.Services.AddSession(options =>
 	{
-		options.IdleTimeout = TimeSpan.FromMinutes(30); // Session timeout
+		options.IdleTimeout = TimeSpan.FromHours(2); // Session timeout
 		options.Cookie.HttpOnly = true; // Security setting
 		options.Cookie.IsEssential = true; // GDPR compliance
 	});

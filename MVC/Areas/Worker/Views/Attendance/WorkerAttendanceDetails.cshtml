@@ -1,0 +1,132 @@
+﻿@model IEnumerable<OmSaiModels.Worker.WorkerAttendanceDetailsViewModel>
+
+@{
+    ViewData["Title"] = "Worker Attendance Details";
+    var currentDate = DateTime.Now.ToString("dd MMM yyyy");
+}
+
+<h2>Date: @currentDate</h2>
+
+<!-- Table displaying worker attendance -->
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Sr.No</th>
+            <th>Worker Name</th>
+            <th>Site Name (Start Time to End Time)</th>
+            <th>In-Time</th>
+            <th>Out-Time</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            int serialNumber = 0;
+            foreach (var item in Model)
+            {
+                serialNumber++;
+                <tr>
+                    <td>@serialNumber</td>
+                    <td>@item.WorkerName</td>
+                    <td>
+                        @item.SiteName
+                        (@(item.StartTime.HasValue ? DateTime.Today.Add(item.StartTime.Value).ToString("hh:mm tt") : "-")
+                        To @(item.EndTime.HasValue ? DateTime.Today.Add(item.EndTime.Value).ToString("hh:mm tt") : "-"))
+                    </td>
+                    <td>@(item.InTime?.ToString("hh:mm tt") ?? "-")</td>
+                    <td>@(item.OutTime?.ToString("hh:mm tt") ?? "-")</td>
+                    <td>@(item.Status ?? "-")</td>
+                    <td>
+                        <button class="btn btn-primary" onclick="btnShowNewWorkerForm('@item.WorkerId', '@item.WorkerName')">Attendance</button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="7" class="text-center">No records available.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal for Adding/Updating Attendance -->
+<div class="modal fade" id="newWorkerModal" tabindex="-1" aria-labelledby="newWorkerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="newWorkerAttendanceForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newWorkerModalLabel">Add/Update Worker Attendance</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="workerId" name="workerId" />
+
+                    <div class="mb-3">
+                        <label for="workerName" class="form-label">Worker Name</label>
+                        <input type="text" class="form-control" id="workerName" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inTime" class="form-label">In-Time</label>
+                        <input type="datetime-local" class="form-control" id="inTime" name="inTime">
+                    </div>
+                    <div class="mb-3">
+                        <label for="outTime" class="form-label">Out-Time</label>
+                        <input type="datetime-local" class="form-control" id="outTime" name="outTime">
+                    </div>
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-select" name="status" id="status">
+                            <option value="on-time-in">On Time In</option>
+                            <option value="half-day-in">Half Day In</option>
+                            <option value="on-time-out">On Time Out</option>
+                            <option value="early-exit">Early Exit</option>
+                            <option value="half-day-out">Half Day Out</option>
+                            <option value="present">Present</option>
+                            <option value="absent">Absent</option>
+                            <option value="leave">Leave</option>
+                            <option value="miss">Miss</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="closenewmodal" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Attendance</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function btnShowNewWorkerForm(workerId, workerName) {
+            $('#workerId').val(workerId);
+            $('#workerName').val(workerName);
+            $('#newWorkerModal').modal('show');
+        }
+        $("#closenewmodal").click(() => {
+            $("#newWorkerModal").modal('hide');
+        });
+
+        $('#newWorkerAttendanceForm').on('submit', function (e) {
+            e.preventDefault();
+
+            const data = $(this).serialize();
+
+            $.post('/Worker/Attendance/ManualAttendance', data, function (response) {
+                if (response.success) {
+                    alert(response.message);
+                    location.reload();
+                } else {
+                    alert('Error: ' + response.message);
+                }
+            }).fail(function () {
+                alert('Failed to save attendance!');
+            });
+        });
+    </script>
+}

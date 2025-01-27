@@ -13,6 +13,8 @@ namespace OmSaiServices.Worker.Interfaces
 		public List<WorkerAttendanceViewModel> GetAll(int? WorkerId, int? SiteId, DateOnly? CurrentDate, string? WorkmanId, int? RecordCount);
 		public List<WorkerAttendanceLedgerModel> GetLedger(int? WorkerId, int? SiteId, int? SiteShiftId, int? Year, int? Month);
 		public void CreateLedger(int? SiteId, int? SiteShiftId, int? Year, int? Month);
+        //public void CreateUpdateManualAttendance(int workerId, DateTime? intime, DateTime? outtime, string status);
 
-	}
+
+    }
 }

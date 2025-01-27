@@ -6,6 +6,7 @@ using OmSaiServices.Worker.Implimentation;
 using LmsServices.Common;
 using Microsoft.AspNetCore.Http;
 using OmSaiServices.Admin.Interfaces;
+using OmSaiServices.Worker.Interfaces;
 
 namespace GeneralTemplate.Areas.Worker.Controllers
 {
@@ -505,11 +506,65 @@ namespace GeneralTemplate.Areas.Worker.Controllers
 			}
 		}
 
+        //[HttpGet]
+        //public IActionResult ManualAttendance()
+        //{
+        //	// Fetch all worker attendance data
+        //	var attendanceList = _attendanceService.GetAll();
+        //	return View(attendanceList); // Pass data to the view
+        //}
+
+        //// POST: Attendance/ManualAttendance
+        //[HttpPost]
+        //public IActionResult ManualAttendance(ManualWorkerAttendanceModel model)
+        //{
+        //	if (!ModelState.IsValid)
+        //	{
+        //		return BadRequest("Invalid form submission.");
+        //	}
+
+        //	try
+        //	{
+        //		// Call service to handle attendance creation/update
+        //		_attendanceService.CreateUpdateManualAttendance(model.WorkerId, model.InTime, model.OutTime, model.Status);
+
+        //		// Success response
+        //		TempData["SuccessMessage"] = "Attendance recorded successfully.";
+        //		return RedirectToAction(nameof(ManualAttendance));
+        //	}
+        //	catch (Exception ex)
+        //	{
+        //		// Log error (if logging is set up)
+        //		TempData["ErrorMessage"] = "An error occurred: " + ex.Message;
+        //		return RedirectToAction(nameof(ManualAttendance));
+        //	}
+        //}
+
+    
+        // GET: Attendance/WorkerAttendanceDetails
+        public IActionResult WorkerAttendanceDetails()
+        {
+            var attendanceDetails = _attendanceService.GetWorkerAttendanceDetails();
+            return View(attendanceDetails);
+        }
+
+        // POST: Attendance/ManualAttendance
+        [HttpPost]
+        public IActionResult ManualAttendance(int workerId, DateTime inTime, DateTime outTime, string status)
+        {
+            try
+            {
+                _attendanceService.CreateOrUpdateWorkerAttendance(workerId, inTime, outTime, status);
+                return Json(new { success = true, message = "Attendance updated successfully!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
 
 
-
-
-		public IActionResult Error(string id)
+        public IActionResult Error(string id)
 		{
 			ViewBag.WorkerId = id;
 
